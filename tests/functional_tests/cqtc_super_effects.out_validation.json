@@ -1,7 +1,7 @@
 {
 	"common": {
 		"operator": { "operation_type": "IN" },
-		"super_efecto": { "effect_type": "no_effect", "effect_length": 50, "delay_image": 0 },
+		"super_effect": { "effect_type": "no_effect", "effect_length": 50, "delay_image": 0 },
 		"expected_result": "CANCELLED",
 		"expected_sequences": [],
 		"expected_calls": { "new_effect": null },

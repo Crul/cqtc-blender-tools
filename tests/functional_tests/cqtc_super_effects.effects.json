@@ -1,7 +1,7 @@
 {
 	"common": {
 		"operator": { "operation_type": "TRANSITION" },
-		"super_efecto": {
+		"super_effect": {
 			"add_color_to_transition": true,
 			"effect_length": 16,
 			"delay_image": 0,
@@ -15,7 +15,7 @@
 	
 	"tests": [
 		{	"name": "test FADE effect",
-			"super_efecto": { "effect_type": "fade" },
+			"super_effect": { "effect_type": "fade" },
 			"sequences": [
 				{
 					"name": "MySequence1",
@@ -71,7 +71,7 @@
 			}
 		},
 		{	"name": "test IRIS IN effect",
-			"super_efecto": { "effect_type": "iris_in" },
+			"super_effect": { "effect_type": "iris_in" },
 			"sequences": [
 				{
 					"name": "MySequence1",
@@ -127,7 +127,7 @@
 			}
 		},
 		{	"name": "test IRIS OUT effect",
-			"super_efecto": { "effect_type": "iris_out" },
+			"super_effect": { "effect_type": "iris_out" },
 			"sequences": [
 				{
 					"name": "MySequence1",
@@ -183,7 +183,7 @@
 			}
 		},
 		{	"name": "test CLOCK effect",
-			"super_efecto": { "effect_type": "clock" },
+			"super_effect": { "effect_type": "clock" },
 			"sequences": [
 				{
 					"name": "MySequence1",
@@ -239,7 +239,7 @@
 			}
 		},
 		{	"name": "test CLOCK ANTI effect",
-			"super_efecto": { "effect_type": "clock_anti" },
+			"super_effect": { "effect_type": "clock_anti" },
 			"sequences": [
 				{
 					"name": "MySequence1",
@@ -295,7 +295,7 @@
 			}
 		},
 		{	"name": "test SLIDE DOWN effect",
-			"super_efecto": { "effect_type": "slide_down" },
+			"super_effect": { "effect_type": "slide_down" },
 			"sequences": [
 				{
 					"name": "MySequence1",
@@ -351,7 +351,7 @@
 			}
 		},
 		{	"name": "test SLIDE UP effect",
-			"super_efecto": { "effect_type": "slide_up" },
+			"super_effect": { "effect_type": "slide_up" },
 			"sequences": [
 				{
 					"name": "MySequence1",
@@ -407,7 +407,7 @@
 			}
 		},
 		{	"name": "test SLIDE RIGHT effect",
-			"super_efecto": { "effect_type": "slide_right" },
+			"super_effect": { "effect_type": "slide_right" },
 			"sequences": [
 				{
 					"name": "MySequence1",
@@ -463,7 +463,7 @@
 			}
 		},
 		{	"name": "test SLIDE LEFT effect",
-			"super_efecto": { "effect_type": "slide_left" },
+			"super_effect": { "effect_type": "slide_left" },
 			"sequences": [
 				{
 					"name": "MySequence1",
@@ -519,7 +519,7 @@
 			}
 		},
 		{	"name": "test DOUBLE HORIZONTAL SLIDE OPEN effect",
-			"super_efecto": { "effect_type": "double_horizontal_slide_open" },
+			"super_effect": { "effect_type": "double_horizontal_slide_open" },
 			"sequences": [
 				{
 					"name": "MySequence1",
@@ -575,7 +575,7 @@
 			}
 		},
 		{	"name": "test DOUBLE HORIZONTAL SLIDE CLOSE effect",
-			"super_efecto": { "effect_type": "double_horizontal_slide_close" },
+			"super_effect": { "effect_type": "double_horizontal_slide_close" },
 			"sequences": [
 				{
 					"name": "MySequence1",
@@ -631,7 +631,7 @@
 			}
 		},
 		{	"name": "test DOUBLE VERTICAL SLIDE OPEN effect",
-			"super_efecto": { "effect_type": "double_vertical_slide_open" },
+			"super_effect": { "effect_type": "double_vertical_slide_open" },
 			"sequences": [
 				{
 					"name": "MySequence1",
@@ -687,7 +687,7 @@
 			}
 		},
 		{	"name": "test DOUBLE VERTICAL SLIDE CLOSE effect",
-			"super_efecto": { "effect_type": "double_vertical_slide_close" },
+			"super_effect": { "effect_type": "double_vertical_slide_close" },
 			"sequences": [
 				{
 					"name": "MySequence1",

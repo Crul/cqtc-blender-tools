@@ -6,7 +6,7 @@ effectable_strip_types = ["COLOR","IMAGE","MOVIE","SCENE","TRANSFORM","CROSS","G
 transitionable_strip_types = ["COLOR","IMAGE","MOVIE","SCENE","TRANSFORM","CROSS","GAUSSIAN_BLUR"]
 sound_capable_strip_types = ["COLOR","IMAGE","MOVIE","TRANSFORM","CROSS","GAUSSIAN_BLUR"]
 
-class SuperEfectoCreator():
+class SuperEffectCreator():
 	
 	def create(self, context, operation_type):
 		error = self.__validate_global(context, operation_type)
@@ -31,8 +31,8 @@ class SuperEfectoCreator():
 	
 	def __validate_global(self, context, operation_type):
 		is_effect_length_percentage_over_limit = (operation_type == "IN_OUT" 
-			and context.scene.super_efecto.effect_length_type == "PERCENTAGE"
-			and context.scene.super_efecto.effect_length_percentage > 50)
+			and context.scene.super_effect.effect_length_type == "PERCENTAGE"
+			and context.scene.super_effect.effect_length_percentage > 50)
 		
 		if is_effect_length_percentage_over_limit:
 			return ({"ERROR"}, "No se puede crear un efecto de Entrada y Salida con más del 50% de porcentage de duración" )
@@ -44,9 +44,9 @@ class SuperEfectoCreator():
 		if len(selected_not_sound_sequences) == 0:
 			return ({"ERROR"}, "Debes seleccionar al menos una strip que no sea de tipo sonido" )
 		
-		effect_length = context.scene.super_efecto.effect_length
-		delay_image = context.scene.super_efecto.delay_image
-		if context.scene.super_efecto.effect_length_type == "FRAMES":
+		effect_length = context.scene.super_effect.effect_length
+		delay_image = context.scene.super_effect.delay_image
+		if context.scene.super_effect.effect_length_type == "FRAMES":
 			min_length = effect_length
 			if is_in:
 				min_length += delay_image
@@ -87,7 +87,7 @@ class SuperEfectoCreator():
 			if len(not_sound_sequence_matches) == 0:
 				return ({"ERROR"}, "La strip de sonido " + selected_sound_sequence.name + " no corresponde con ninguna strip de imagen, vídeo" )
 			
-		if context.scene.super_efecto.effect_length_type == "PERCENTAGE":
+		if context.scene.super_effect.effect_length_type == "PERCENTAGE":
 			return ({"ERROR"}, "No se puede añadir una transición con una duración de tipo porcentaje" )
 		
 		strip_tmp_1 = selected_not_sound_sequences[0]
@@ -115,9 +115,9 @@ class SuperEfectoCreator():
 		if error:
 			return error
 
-		effect = context.scene.super_efecto.get_effect()
-		if (not is_in) and context.scene.super_efecto.reverse_out_effect:
-			effect = context.scene.super_efecto.get_reversed_effect(effect)
+		effect = context.scene.super_effect.get_effect()
+		if (not is_in) and context.scene.super_effect.reverse_out_effect:
+			effect = context.scene.super_effect.get_reversed_effect(effect)
 		
 		selected_sequences = context.selected_sequences.copy()			
 		for sequence in selected_sequences:
@@ -126,10 +126,10 @@ class SuperEfectoCreator():
 	
 	def __create_in_or_out_strip_effect(self, context, effect, is_in, sequence):
 
-		delay_image = context.scene.super_efecto.delay_image
-		effect_length = context.scene.super_efecto.effect_length \
-			if context.scene.super_efecto.effect_length_type == "FRAMES" \
-			else int(context.scene.super_efecto.effect_length_percentage * sequence.frame_final_duration / 100)
+		delay_image = context.scene.super_effect.delay_image
+		effect_length = context.scene.super_effect.effect_length \
+			if context.scene.super_effect.effect_length_type == "FRAMES" \
+			else int(context.scene.super_effect.effect_length_percentage * sequence.frame_final_duration / 100)
 		
 		if is_in:
 			start_frame = sequence.frame_final_start
@@ -139,7 +139,7 @@ class SuperEfectoCreator():
 			start_frame = sequence.frame_final_end - effect_length
 			final_frame = sequence.frame_final_end
 		
-		if context.scene.super_efecto.apply_to_sound:
+		if context.scene.super_effect.apply_to_sound:
 			self.__apply_effect_sound_transition(sequence, start_frame, final_frame, effect_length, is_in)
 	
 		if sequence.type in effectable_strip_types:
@@ -181,7 +181,7 @@ class SuperEfectoCreator():
 		
 		(seq1_sound, seq2_sound) = self.__get_transition_sound_sequences(context, seq1, seq2)
 			
-		if context.scene.super_efecto.add_color_to_transition:
+		if context.scene.super_effect.add_color_to_transition:
 			return self.__create_transition_with_color(context, seq1, seq2, seq1_sound, seq2_sound)
 			
 		else:
@@ -201,13 +201,13 @@ class SuperEfectoCreator():
 		seq2 = self.__add_blur_strip(context, seq2, start_frame, final_frame, is_in=True)
 		seq2 = self.__add_transform_strip(context, seq2, start_frame, final_frame, is_in=True)
 		
-		effect = context.scene.super_efecto.get_effect()
+		effect = context.scene.super_effect.get_effect()
 		
 		max_channel = max([s.channel for s in context.selected_sequences])
 		channel = bpy_utils.get_available_channel(context, start_frame, final_frame, max_channel)
 		effect_strip = effect.create_effect_strip(context, channel, start_frame, final_frame, seq1, seq2)
 						
-		if context.scene.super_efecto.apply_to_sound:
+		if context.scene.super_effect.apply_to_sound:
 			self.__apply_overlapped_sound_transition(context, seq1_sound, seq2_sound, start_frame, final_frame)
 	
 	
@@ -216,13 +216,13 @@ class SuperEfectoCreator():
 		if error:
 			return error
 	
-		effect_length = context.scene.super_efecto.effect_length
+		effect_length = context.scene.super_effect.effect_length
 		half_effect_length = int(effect_length / 2)
 		
 		start_frame = seq1.frame_final_end - half_effect_length
 		final_frame = seq2.frame_final_start + half_effect_length
-		delay_image = context.scene.super_efecto.delay_image
-		effect = context.scene.super_efecto.get_effect()
+		delay_image = context.scene.super_effect.delay_image
+		effect = context.scene.super_effect.get_effect()
 
 		seq1 = self.__add_blur_strip(context, seq1, start_frame, seq1.frame_final_end, is_in=False)
 		seq1 = self.__add_transform_strip(context, seq1, start_frame, seq1.frame_final_end, is_in=False)
@@ -232,8 +232,8 @@ class SuperEfectoCreator():
 		color_channel = bpy_utils.get_available_channel(context, start_frame, final_frame + delay_image, max(seq1.channel, seq2.channel))
 		color_strip = effect.create_color_strip(context, color_channel, start_frame, final_frame + delay_image)
 		
-		seq1_effect = effect if not context.scene.super_efecto.reverse_out_effect \
-			else context.scene.super_efecto.get_reversed_effect(effect)
+		seq1_effect = effect if not context.scene.super_effect.reverse_out_effect \
+			else context.scene.super_effect.get_reversed_effect(effect)
 		
 		channel = bpy_utils.get_available_channel(context, start_frame, seq1.frame_final_end, color_channel)
 		effect_strip = seq1_effect.create_effect_strip(context, channel, start_frame, seq1.frame_final_end, seq1, color_strip)
@@ -243,12 +243,12 @@ class SuperEfectoCreator():
 		
 		seq2.frame_offset_start += delay_image
 		
-		if context.scene.super_efecto.apply_to_sound:
+		if context.scene.super_effect.apply_to_sound:
 			self.__apply_consecutive_sound_transition(seq1_sound, seq2_sound, start_frame, final_frame, half_effect_length)
 	
 	
 	def __add_transform_strip(self, context, sequence, start_frame, final_frame, is_in):
-		is_transform_required = context.scene.super_efecto.is_transform_required()
+		is_transform_required = context.scene.super_effect.is_transform_required()
 		if not is_transform_required:
 			return sequence
 
@@ -280,7 +280,7 @@ class SuperEfectoCreator():
 	
 	
 	def __add_blur_strip(self, context, sequence, start_frame, final_frame, is_in):
-		is_blur_required = context.scene.super_efecto.is_blur_required()
+		is_blur_required = context.scene.super_effect.is_blur_required()
 		if not is_blur_required:
 			return sequence
 		
@@ -340,7 +340,7 @@ class SuperEfectoCreator():
 	
 	
 	def __apply_overlapped_sound_transition(self, context, seq1_sound, seq2_sound, start_frame, final_frame):
-		if context.scene.super_efecto.overlap_sound:
+		if context.scene.super_effect.overlap_sound:
 		
 			effect_length = (final_frame - start_frame)
 			if seq1_sound is not None:
@@ -438,12 +438,12 @@ class SuperEfectoCreator():
 	
 	
 	def __set_animatable_properties(self, context, animatable_properties_info, is_in, start_frame, final_frame):
-		delay_image = context.scene.super_efecto.delay_image
+		delay_image = context.scene.super_effect.delay_image
 		if is_in:
 			start_frame += delay_image
 			final_frame += delay_image
 		
-		for obj, seq_attr, super_efecto_prop, options in animatable_properties_info:
+		for obj, seq_attr, super_effect_prop, options in animatable_properties_info:
 			is_horizontal_mirrorable = "is_horizontal_mirrorable" in options
 			is_vertical_mirrorable = "is_vertical_mirrorable" in options
 			get_value_fn = options["get_value_fn"] if "get_value_fn" in options else lambda value : value
@@ -451,7 +451,7 @@ class SuperEfectoCreator():
 			self.__set_animatable_property(context,
 				obj,
 				seq_attr,
-				super_efecto_prop,
+				super_effect_prop,
 				start_frame,
 				final_frame,
 				is_in,
@@ -464,7 +464,7 @@ class SuperEfectoCreator():
 		context,
 		obj,
 		seq_attr,
-		super_efecto_prop,
+		super_effect_prop,
 		start_frame,
 		end_frame,
 		is_in,
@@ -472,17 +472,17 @@ class SuperEfectoCreator():
 		is_horizontal_mirrorable=False,
 		get_value_fn=lambda value : value
 	):
-		initial_value = get_value_fn(getattr(context.scene.super_efecto, "initial_%s" % super_efecto_prop))
-		final_value = get_value_fn(getattr(context.scene.super_efecto, "final_%s" % super_efecto_prop))
-		is_animated_value = getattr(context.scene.super_efecto, "%s_animated" % super_efecto_prop)
+		initial_value = get_value_fn(getattr(context.scene.super_effect, "initial_%s" % super_effect_prop))
+		final_value = get_value_fn(getattr(context.scene.super_effect, "final_%s" % super_effect_prop))
+		is_animated_value = getattr(context.scene.super_effect, "%s_animated" % super_effect_prop)
 		
 		setattr(obj, seq_attr, initial_value)		
 		if not is_animated_value:
 			return
 	
-		is_reversed =  ((not is_in) and context.scene.super_efecto.reverse_out_effect)
-		is_horizontal_mirrored = (is_horizontal_mirrorable and (not is_in) and context.scene.super_efecto.mirror_horizontal_out_effect)
-		is_vertical_mirrored = (is_vertical_mirrorable and(not is_in) and context.scene.super_efecto.mirror_vertical_out_effect)
+		is_reversed =  ((not is_in) and context.scene.super_effect.reverse_out_effect)
+		is_horizontal_mirrored = (is_horizontal_mirrorable and (not is_in) and context.scene.super_effect.mirror_horizontal_out_effect)
+		is_vertical_mirrored = (is_vertical_mirrorable and(not is_in) and context.scene.super_effect.mirror_vertical_out_effect)
 		
 		if is_reversed:
 			setattr(obj, seq_attr, final_value)

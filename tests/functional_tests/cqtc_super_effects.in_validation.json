@@ -1,7 +1,7 @@
 {
 	"common": {
 		"operator": { "operation_type": "IN" },
-		"super_efecto": { "effect_type": "no_effect", "effect_length": 90, "delay_image": 0 },
+		"super_effect": { "effect_type": "no_effect", "effect_length": 90, "delay_image": 0 },
 		"expected_result": "CANCELLED",
 		"expected_sequences": [],
 		"expected_calls": { "new_effect": null },
@@ -34,7 +34,7 @@
 			]
 		},
 		{	"name": "test IN too short sequence selected because delay",
-			"super_efecto": { "delay_image": 10 },
+			"super_effect": { "delay_image": 10 },
 			"sequences": [
 				{"name": "MySequence1", "type": "MOVIE", "frame_final_duration": 90 }
 			],
@@ -69,7 +69,7 @@
 		},
 		{	"name": "test IN OUT incorrect % effect length percentage",
 			"operator": { "operation_type": "IN_OUT" },
-			"super_efecto": { "effect_length_type": "PERCENTAGE", "effect_length_percentage": 51 },
+			"super_effect": { "effect_length_type": "PERCENTAGE", "effect_length_percentage": 51 },
 			"sequences": [
 				{"name": "MySequence", "type": "MOVIE", "frame_final_start": 30, "frame_final_end": 50, "frame_final_duration": 90 },
 				{"name": "MySequenceSound", "type": "SOUND", "frame_final_start": 10, "frame_final_end": 20 }

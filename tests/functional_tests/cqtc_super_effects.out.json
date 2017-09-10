@@ -1,7 +1,7 @@
 {
 	"common": {
 		"operator": { "operation_type": "OUT" },
-		"super_efecto": {
+		"super_effect": {
 			"effect_type": "no_effect",
 			"effect_length": 50,
 			"delay_image": 0,
@@ -19,7 +19,7 @@
 	
 	"tests": [
 		{	"name": "test create OUT effect: do not apply delay frame_offset_start",
-			"super_efecto": { "delay_image": 10 },
+			"super_effect": { "delay_image": 10 },
 			"sequences": [
 				{
 					"name": "MySequence",
@@ -42,7 +42,7 @@
 			]
 		},
 		{	"name": "test create OUT effect: initial values",
-			"super_efecto": {
+			"super_effect": {
 				"initial_position_x": 21,
 				"initial_position_y": 31,
 				"initial_zoom": 0.41,
@@ -88,7 +88,7 @@
 			]
 		},
 		{	"name": "test create OUT effect: tranform animation",
-			"super_efecto": {
+			"super_effect": {
 				"initial_position_x": 21,
 				"position_x_animated": true,
 				"final_position_x": 121,
@@ -181,7 +181,7 @@
 			]
 		},
 		{	"name": "test create OUT effect: add tranform strip from MOVIE",
-			"super_efecto": {
+			"super_effect": {
 				"initial_position_x": 21
 			},
 			"sequences": [
@@ -223,7 +223,7 @@
 			}
 		},
 		{	"name": "test create OUT effect: add tranform strip on GAUSSIAN_BLUR",
-			"super_efecto": {
+			"super_effect": {
 				"initial_position_x": 21
 			},
 			"sequences": [
@@ -273,7 +273,7 @@
 			}
 		},
 		{	"name": "test create OUT effect: add effect on TRANSFORM strip with GAUSSIAN_BLUR child",
-			"super_efecto": {
+			"super_effect": {
 				"initial_position_x": 21
 			},
 			"sequences": [
@@ -329,7 +329,7 @@
 			}
 		},
 		{	"name": "test create OUT effect: add effect on GAUSSIAN_BLUR with TRANSFORM child",
-			"super_efecto": {
+			"super_effect": {
 				"initial_position_x": 21
 			},
 			"sequences": [
@@ -384,7 +384,7 @@
 			}
 		},
 		{	"name": "test create OUT effect: add blur initial values",
-			"super_efecto": {
+			"super_effect": {
 				"initial_blur_x": 11,
 				"initial_blur_y": 21
 			},
@@ -422,7 +422,7 @@
 			}
 		},
 		{	"name": "test create OUT effect: add blur animation",
-			"super_efecto": {
+			"super_effect": {
 				"initial_blur_x": 11,
 				"blur_x_animated": true,
 				"final_blur_x": 111,
@@ -478,7 +478,7 @@
 			]
 		},
 		{	"name": "test create OUT effect: add blur on TRANSFORM strip",
-			"super_efecto": {
+			"super_effect": {
 				"initial_blur_x": 11,
 				"initial_blur_y": 21
 			},
@@ -529,7 +529,7 @@
 			}
 		},
 		{	"name": "test create OUT effect: add blur on TRANSFORM strip with GAUSSIAN_BLUR child",
-			"super_efecto": {
+			"super_effect": {
 				"initial_blur_x": 11,
 				"initial_blur_y": 21
 			},
@@ -586,7 +586,7 @@
 			}
 		},
 		{	"name": "test create OUT effect: add blur on GAUSSIAN_BLUR strip with TRANSFORM child",
-			"super_efecto": {
+			"super_effect": {
 				"initial_blur_x": 11,
 				"initial_blur_y": 21
 			},
@@ -641,7 +641,7 @@
 			}
 		},
 		{	"name": "test create OUT effect: add transform and blur",
-			"super_efecto": {
+			"super_effect": {
 				"initial_position_x": 11,
 				"initial_position_y": 21,
 				"initial_blur_x": 31,
@@ -689,7 +689,7 @@
 			}
 		},
 		{	"name": "test create OUT effect: add transform and cross effect",
-			"super_efecto": {
+			"super_effect": {
 				"effect_type": "fade",
 				"initial_position_x": 11,
 				"initial_position_y": 21
@@ -734,7 +734,7 @@
 			}
 		},
 		{	"name": "test create OUT effect: add transform, blur and cross effect",
-			"super_efecto": {
+			"super_effect": {
 				"effect_type": "fade",
 				"initial_position_x": 11,
 				"initial_position_y": 21,
@@ -791,7 +791,7 @@
 			}
 		},
 		{	"name": "test create OUT effect: apply volume to SOUND",
-			"super_efecto": { "apply_to_sound": true },
+			"super_effect": { "apply_to_sound": true },
 			"sequences": [
 				{
 					"name": "MySequence",
@@ -851,7 +851,7 @@
 			]
 		},
 		{	"name": "test create OUT effect: apply volume to SCENE",
-			"super_efecto": { "apply_to_sound": true },
+			"super_effect": { "apply_to_sound": true },
 			"sequences": [
 				{
 					"name": "MySequence",
@@ -912,7 +912,7 @@
 			]
 		},
 		{	"name": "test create OUT effect: effect length in percentage",
-			"super_efecto": {
+			"super_effect": {
 				"effect_length": 99999,
 				"effect_length_type": "PERCENTAGE",
 				"effect_length_percentage": 88,
@@ -962,7 +962,7 @@
 			]
 		},
 		{	"name": "test create OUT effect: apply reverse_out_effect",
-			"super_efecto": {
+			"super_effect": {
 				"delay_image": 9,
 				"reverse_out_effect": true,
 				"initial_position_x": 21,
@@ -1057,7 +1057,7 @@
 			]
 		},
 		{	"name": "test create OUT effect: apply mirror_horizontal_out_effect",
-			"super_efecto": {
+			"super_effect": {
 				"delay_image": 9,
 				"mirror_horizontal_out_effect": true,
 				"initial_position_x": 21,
@@ -1152,7 +1152,7 @@
 			]
 		},
 		{	"name": "test create OUT effect: do not apply mirror_vertical_out_effect",
-			"super_efecto": {
+			"super_effect": {
 				"delay_image": 9,
 				"mirror_vertical_out_effect": true,
 				"initial_position_x": 21,

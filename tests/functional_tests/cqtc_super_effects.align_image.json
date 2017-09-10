@@ -1,7 +1,7 @@
 {
 	"common": {
 		"operator": { "operation_type": "" },
-		"super_efecto": {
+		"super_effect": {
 			"image_alignment_margin": 25
 		},
 		"sequences": [
@@ -22,7 +22,7 @@
 	
 	"tests": [
 		{	"name": "test align image center",
-			"super_efecto": { "image_alignment": "center" },
+			"super_effect": { "image_alignment": "center" },
 			"expected_sequences": [
 				{
 					"name": "MySequence",
@@ -36,7 +36,7 @@
 			]
 		},
 		{	"name": "test align image bottom",
-			"super_efecto": { "image_alignment": "bottom" },
+			"super_effect": { "image_alignment": "bottom" },
 			"expected_sequences": [
 				{
 					"name": "MySequence",
@@ -50,7 +50,7 @@
 			]
 		},
 		{	"name": "test align image top",
-			"super_efecto": { "image_alignment": "top" },
+			"super_effect": { "image_alignment": "top" },
 			"expected_sequences": [
 				{
 					"name": "MySequence",
@@ -64,7 +64,7 @@
 			]
 		},
 		{	"name": "test align image left",
-			"super_efecto": { "image_alignment": "left" },
+			"super_effect": { "image_alignment": "left" },
 			"expected_sequences": [
 				{
 					"name": "MySequence",
@@ -78,7 +78,7 @@
 			]
 		},
 		{	"name": "test align image right",
-			"super_efecto": { "image_alignment": "right" },
+			"super_effect": { "image_alignment": "right" },
 			"expected_sequences": [
 				{
 					"name": "MySequence",
@@ -92,7 +92,7 @@
 			]
 		},
 		{	"name": "test align no image",
-			"super_efecto": { "image_alignment": "center" },
+			"super_effect": { "image_alignment": "center" },
 			"sequences": [
 				{
 					"name": "MySequenceNoImage",
@@ -115,7 +115,7 @@
 			]
 		},
 		{	"name": "test align full screen image",
-			"super_efecto": { "image_alignment": "center" },
+			"super_effect": { "image_alignment": "center" },
 			"sequences": [
 				{
 					"name": "MySequence",

@@ -5,10 +5,11 @@ import pytest
 import warnings
 
 import bpy
-import cqtc_super_efectos
+from cqtc_super_effects.super_effect_properties import SuperEffectProperties
+from cqtc_super_effects.create_super_effect_operator import CreateSuperEffectOperator
 
 test_definition_path = "./tests/functional_tests"
-test_definition_file_pattern = "cqtc_super_efectos.%s.json"
+test_definition_file_pattern = "cqtc_super_effects.%s.json"
 test_definitions = [
 	"unselect_children",
 	"align_image",
@@ -55,16 +56,16 @@ def get_test_data(tests_data, common_data, original_test_data):
 	return (test_name, test_data)
 	
 
-class TestCqtcSuperEfectosFunctional():
+class TestCqtcSuperEffectsFunctional():
 
-	cqtc_super_efectos_operator = None
-	super_efecto_properties = None
+	cqtc_super_effects_operator = None
+	super_effect_properties = None
 	mock_selected_sequences_array = []
 	keyframe_insert_calls = []
 	tests_data = load_tests()
 	common_graph_tests_data = {
 		"operator": { "operation_type": "IN" },
-		"super_efecto": {
+		"super_effect": {
 			"effect_type": "no_effect",
 			"initial_zoom": 1,
 			"final_zoom": 1,
@@ -75,18 +76,18 @@ class TestCqtcSuperEfectosFunctional():
 		"sequences": [ { "name": "MySequence", "type": "MOVIE", "frame_final_duration": 100 } ]
 	}
 	graph_tests_data = [
-		{ "super_efecto": { "initial_position_x": 10, "constant_speed": True } },
-		{ "super_efecto": { "initial_position_x": 10, "constant_speed": False } },
-		{ "super_efecto": { "initial_blur_x": 10, "constant_speed": True } },
-		{ "super_efecto": { "initial_blur_x": 10, "constant_speed": False } }
+		{ "super_effect": { "initial_position_x": 10, "constant_speed": True } },
+		{ "super_effect": { "initial_position_x": 10, "constant_speed": False } },
+		{ "super_effect": { "initial_blur_x": 10, "constant_speed": True } },
+		{ "super_effect": { "initial_blur_x": 10, "constant_speed": False } }
 	]
 	fake_fcurves = {}
 	selected_keyframe_points_on_interpolation_type_call = []
 	
 	def setup_method(self, method):
-		self.cqtc_super_efectos_operator = cqtc_super_efectos.CreateSuperEfectoOperator()
-		self.cqtc_super_efectos_operator.report = mock.MagicMock()
-		self.super_efecto_properties = cqtc_super_efectos.SuperEfectoProperties()
+		self.cqtc_super_effects_operator = CreateSuperEffectOperator()
+		self.cqtc_super_effects_operator.report = mock.MagicMock()
+		self.super_effect_properties = SuperEffectProperties()
 		self.mock_selected_sequences_array = [];
 		self.keyframe_insert_calls = []
 		
@@ -103,12 +104,12 @@ class TestCqtcSuperEfectosFunctional():
 		self.mock_selected_sequences_array = self.create_mock_sequences(test_data)
 		mock_selected_sequences.side_effect = self.get_mock_selected_sequences
 		mock_new_effect.side_effect = self.create_mock_effect_sequence
-		self.set_values(self.super_efecto_properties, test_data["super_efecto"])
-		bpy.context.scene.super_efecto = self.super_efecto_properties
-		self.set_values(self.cqtc_super_efectos_operator, test_data["operator"])
+		self.set_values(self.super_effect_properties, test_data["super_effect"])
+		bpy.context.scene.super_effect = self.super_effect_properties
+		self.set_values(self.cqtc_super_effects_operator, test_data["operator"])
 		
 		
-		result = self.cqtc_super_efectos_operator.execute(bpy.context)
+		result = self.cqtc_super_effects_operator.execute(bpy.context)
 
 		
 		self.assert_report(test_data)
@@ -147,21 +148,21 @@ class TestCqtcSuperEfectosFunctional():
 		mock_new_effect.side_effect = self.create_mock_effect_sequence
 		self.mock_selected_sequences_array = self.create_mock_sequences(test_data)
 		mock_selected_sequences.side_effect = self.get_mock_selected_sequences
-		self.set_values(self.super_efecto_properties, test_data["super_efecto"])
-		bpy.context.scene.super_efecto = self.super_efecto_properties
-		self.set_values(self.cqtc_super_efectos_operator, test_data["operator"])
+		self.set_values(self.super_effect_properties, test_data["super_effect"])
+		bpy.context.scene.super_effect = self.super_effect_properties
+		self.set_values(self.cqtc_super_effects_operator, test_data["operator"])
 		bpy.context.scene.animation_data = None
 		self.create_fake_fcurves()
 		
 		
-		result = self.cqtc_super_efectos_operator.execute(bpy.context)
+		result = self.cqtc_super_effects_operator.execute(bpy.context)
 
 				
-		self.cqtc_super_efectos_operator.report.assert_not_called()
+		self.cqtc_super_effects_operator.report.assert_not_called()
 		mock_animation_data_create.assert_called_once_with()
 		assert 1 == mock_interpolation_type.call_count
 		call_args, named_call_args = mock_interpolation_type.call_args_list[0]
-		expected_interpolation_type = "LINEAR" if test_data["super_efecto"]["constant_speed"] else "BEZIER"
+		expected_interpolation_type = "LINEAR" if test_data["super_effect"]["constant_speed"] else "BEZIER"
 		assert { "type": expected_interpolation_type } == named_call_args
 		assert () == call_args
 		assert [] == self.selected_keyframe_points_on_interpolation_type_call
@@ -204,10 +205,10 @@ class TestCqtcSuperEfectosFunctional():
 	def assert_report(self, test_data):
 		expected_report = test_data["expected_report"]
 		if expected_report is None:
-			self.cqtc_super_efectos_operator.report.assert_not_called()
+			self.cqtc_super_effects_operator.report.assert_not_called()
 		else:
 			expected_report_values = ({ expected_report[0] }, expected_report[1] )
-			self.cqtc_super_efectos_operator.report.assert_has_calls([mock.call(*expected_report_values)])
+			self.cqtc_super_effects_operator.report.assert_has_calls([mock.call(*expected_report_values)])
 
 			
 	def assert_sequences(self, test_data, sequences):

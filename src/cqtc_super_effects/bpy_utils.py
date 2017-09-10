@@ -11,8 +11,8 @@ def align_image(context, sequence):
 	if image_element.orig_width == context.scene.render.resolution_x and image_element.orig_height == context.scene.render.resolution_y:
 		return
 
-	image_alignment = context.scene.super_efecto.image_alignment
-	image_alignment_margin = context.scene.super_efecto.image_alignment_margin
+	image_alignment = context.scene.super_effect.image_alignment
+	image_alignment_margin = context.scene.super_effect.image_alignment_margin
 	
 	sequence.use_translation = True
 	sequence.blend_type = "ALPHA_OVER"
@@ -66,7 +66,7 @@ def get_available_channel(context, start_frame, final_frame, start_channel=1):
 
 
 def overlap_strips(context, seq1, seq2, seq1_sound, seq2_sound):
-	effect_length = context.scene.super_efecto.effect_length
+	effect_length = context.scene.super_effect.effect_length
 	
 	while(seq1.type in ["TRANSFORM","CROSS","GAUSSIAN_BLUR"]):
 		seq1 = seq1.input_1
@@ -116,7 +116,7 @@ def set_interpolation_type(context):
 	context.scene.update()
 
 	try:
-		if context.scene.super_efecto.constant_speed:
+		if context.scene.super_effect.constant_speed:
 			bpy.ops.graph.interpolation_type(type="LINEAR")
 		else:
 			bpy.ops.graph.interpolation_type(type="BEZIER")

@@ -37,7 +37,7 @@ class SuperEffect:
 		
 		color_strip.select = False
 		color_strip.blend_type = 'ALPHA_OVER'
-		color_strip.color = context.scene.super_efecto.color
+		color_strip.color = context.scene.super_effect.color
 		
 		return color_strip
 	

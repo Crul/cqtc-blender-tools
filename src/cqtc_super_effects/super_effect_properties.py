@@ -21,13 +21,13 @@ effect_list = [
 	DoubleVerticalSlideCloseEffect("double_vertical_slide_close"),
 ]
 
-def get_super_efecto_template_options(scene, context):
-	return sorted(context.scene.super_efecto.template_options, key=lambda opt: opt[0].lower())
+def get_super_effect_template_options(scene, context):
+	return sorted(context.scene.super_effect.template_options, key=lambda opt: opt[0].lower())
 	
 def load_template(self, context):
-	bpy.ops.super_efecto.load_template()
+	bpy.ops.super_effect.load_template()
 	
-class SuperEfectoProperties(bpy.types.PropertyGroup):
+class SuperEffectProperties(bpy.types.PropertyGroup):
 	
 	effect_type = bpy.props.EnumProperty(
 			name = "Efecto",
@@ -118,7 +118,7 @@ class SuperEfectoProperties(bpy.types.PropertyGroup):
 	template = bpy.props.EnumProperty(
 			name = "Plantillas",
 			description = "Plantillas guardadas por el usuario",
-			items = get_super_efecto_template_options,
+			items = get_super_effect_template_options,
 			update = load_template
 		)
 	

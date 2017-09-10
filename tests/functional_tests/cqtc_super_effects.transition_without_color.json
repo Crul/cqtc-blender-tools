@@ -1,7 +1,7 @@
 {
 	"common": {
 		"operator": { "operation_type": "TRANSITION" },
-		"super_efecto": {
+		"super_effect": {
 			"add_color_to_transition": false,
 			"effect_type": "no_effect",
 			"effect_length": 90,
@@ -49,7 +49,7 @@
 			]
 		},
 		{	"name": "test TRANSITION without color create transition FADE effect",
-			"super_efecto": { "effect_type": "fade" },
+			"super_effect": { "effect_type": "fade" },
 			"sequences": [
 				{
 					"name": "MySequence1",
@@ -96,7 +96,7 @@
 			}
 		},
 		{	"name": "test TRANSITION without color create transition with initial position transform",
-			"super_efecto": {
+			"super_effect": {
 				"initial_position_x": 21,
 				"initial_position_y": 31,
 				"initial_zoom": 0.41,
@@ -188,7 +188,7 @@
 			}
 		},
 		{	"name": "test TRANSITION without color create transition with transform animation",
-			"super_efecto": {
+			"super_effect": {
 				"initial_position_x": 21,
 				"position_x_animated": true,
 				"final_position_x": 121,
@@ -358,7 +358,7 @@
 			]
 		},
 		{	"name": "test TRANSITION without color create transition with initial position blur",
-			"super_efecto": {
+			"super_effect": {
 				"initial_blur_x": 11,
 				"initial_blur_y": 21
 			},
@@ -422,7 +422,7 @@
 			}
 		},
 		{	"name": "test TRANSITION without color create transition with blur animation",
-			"super_efecto": {
+			"super_effect": {
 				"initial_blur_x": 11,
 				"blur_x_animated": true,
 				"final_blur_x": 23,
@@ -515,7 +515,7 @@
 			]
 		},
 		{	"name": "test TRANSITION without color apply volume to SOUND no overlap",
-			"super_efecto": { "apply_to_sound": true, "overlap_sound": false },
+			"super_effect": { "apply_to_sound": true, "overlap_sound": false },
 			"sequences": [
 				{
 					"name": "MySequence1",
@@ -607,7 +607,7 @@
 			]
 		},
 		{	"name": "test TRANSITION without color apply volume to SOUND with overlap",
-			"super_efecto": { "apply_to_sound": true, "overlap_sound": true },
+			"super_effect": { "apply_to_sound": true, "overlap_sound": true },
 			"sequences": [
 				{
 					"name": "MySequence1",
@@ -699,7 +699,7 @@
 			]
 		},
 		{	"name": "test TRANSITION without color apply volume to SCENE no overlap",
-			"super_efecto": { "apply_to_sound": true, "overlap_sound": false },
+			"super_effect": { "apply_to_sound": true, "overlap_sound": false },
 			"sequences": [
 				{
 					"name": "MySceneSequence1",
@@ -757,7 +757,7 @@
 			]
 		},
 		{	"name": "test TRANSITION without color apply volume to SCENE with overlap",
-			"super_efecto": { "apply_to_sound": true, "overlap_sound": true },
+			"super_effect": { "apply_to_sound": true, "overlap_sound": true },
 			"sequences": [
 				{
 					"name": "MySceneSequence1",
@@ -815,7 +815,7 @@
 			]
 		},
 		{	"name": "test TRANSITION without color create transition without reverse_out_effect",
-			"super_efecto": {
+			"super_effect": {
 				"reverse_out_effect": false,
 				"initial_position_x": 21,
 				"position_x_animated": true,
@@ -986,7 +986,7 @@
 			]
 		},
 		{	"name": "test TRANSITION without color create transition with mirror_horizontal_out_effect",
-			"super_efecto": {
+			"super_effect": {
 				"mirror_horizontal_out_effect": true,
 				"initial_position_x": 21,
 				"position_x_animated": true,
@@ -1157,7 +1157,7 @@
 			]
 		},
 		{	"name": "test TRANSITION without color create transition with mirror_vertical_out_effect",
-			"super_efecto": {
+			"super_effect": {
 				"mirror_vertical_out_effect": true,
 				"initial_position_x": 21,
 				"position_x_animated": true,

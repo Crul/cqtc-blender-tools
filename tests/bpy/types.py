@@ -33,7 +33,7 @@ class Operator:
 		pass
 
 class Scene:
-	super_efecto = None
+	super_effect = None
 	animation_data = None
 	
 	def __init__(self):
