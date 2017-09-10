@@ -28,8 +28,8 @@ class SuperEffect:
 		return name_prefix
 	
 	
-	def createColorStrip(self, channel, start_frame, final_frame, name_prefix=""):
-		color_strip = bpy.context.scene.sequence_editor.sequences \
+	def createColorStrip(self, context, channel, start_frame, final_frame, name_prefix=""):
+		color_strip = context.scene.sequence_editor.sequences \
 			.new_effect(self.getNamePrefix(name_prefix) + "Color", \
 						"COLOR", \
 						channel, \
@@ -38,13 +38,13 @@ class SuperEffect:
 		
 		color_strip.select = False
 		color_strip.blend_type = 'ALPHA_OVER'
-		color_strip.color = bpy.context.scene.super_efecto.color
+		color_strip.color = context.scene.super_efecto.color
 		
 		return color_strip
 	
 	
-	def createEffectStrip(self, channel, start_frame, final_frame, seq1, seq2, name_prefix=""):
-		effect_strip = bpy.context.scene.sequence_editor.sequences \
+	def createEffectStrip(self, context, channel, start_frame, final_frame, seq1, seq2, name_prefix=""):
+		effect_strip = context.scene.sequence_editor.sequences \
 			.new_effect(self.getNamePrefix(name_prefix) + self.name, \
 						self.effect_name, 
 						channel, \
@@ -67,10 +67,10 @@ class NoEffect(SuperEffect):
 	def __init__(self, effect_key):
 		super().__init__(effect_key, "", "Sin efecto", "Sin efecto")
 	
-	def createEffectStrip(self, channel, start_frame, final_frame, seq1, seq2, name_prefix=""):
+	def createEffectStrip(self, context, channel, start_frame, final_frame, seq1, seq2, name_prefix=""):
 		return (seq1 if seq1 is not None else seq2)
 		
-	def createColorStrip(self, channel, start_frame, final_frame, name_prefix=""):
+	def createColorStrip(self, context, channel, start_frame, final_frame, name_prefix=""):
 		return None
 		
 class FadeEffect(SuperEffect):
