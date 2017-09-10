@@ -1,15 +1,11 @@
 import bpy
 import os
-import pickle
+from . import path, pickle_utils
 
-jcPath = r"D:\zonajc\Zona PARTICULAR\MC\YouTubeBLENDER";
-if (os.path.isdir(jcPath)):
-	template_file_path = r"D:\zonajc\Zona PARTICULAR\MC\YouTubeBLENDER\PLUGINS\plantillas_super_efectos.pickle"
-else:
-	template_file_path = r"C:\workspace\blenderCosoQueTeCoso\PLUGINS\plantillas_super_efectos.pickle"
-
-def save_pickle(path, data):
-	pickle.dump( data, open( path, "wb" ) )
+template_filename = 'plantillas_super_efectos'
+template_fullpath = os.path.join(path.addons_path, "%s.pickle" % template_filename )
+def load_templates():
+	return pickle_utils.load_pickle(template_fullpath)
 
 class AddSuperEfectoTemplateOperator(bpy.types.Operator):
 	bl_idname = "super_efecto.add_template"
@@ -39,7 +35,7 @@ class AddSuperEfectoTemplateOperator(bpy.types.Operator):
 				
 		context.scene.super_efecto.template = new_template_name
 		
-		save_pickle(template_file_path, context.scene.super_efecto.template_data)
+		pickle_utils.save_pickle(template_fullpath, context.scene.super_efecto.template_data)
 		
 		context.scene.super_efecto.new_template_name = ''
 		context.scene.super_efecto.override_template = False
@@ -94,7 +90,7 @@ class RemoveSuperEfectoTemplateOperator(bpy.types.Operator):
 			if tmpl["name"] == template:
 				context.scene.super_efecto.template_data.remove(tmpl)
 		
-		save_pickle(template_file_path, context.scene.super_efecto.template_data)
+		pickle_utils.save_pickle(template_fullpath, context.scene.super_efecto.template_data)
 		
 		return {'FINISHED'}
 	

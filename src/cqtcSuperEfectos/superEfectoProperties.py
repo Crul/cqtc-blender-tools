@@ -1,13 +1,6 @@
 import bpy
-import os
-import pickle
 from .effects import *
-
-jcPath = r"D:\zonajc\Zona PARTICULAR\MC\YouTubeBLENDER";
-if (os.path.isdir(jcPath)):
-	template_file_path = r"D:\zonajc\Zona PARTICULAR\MC\YouTubeBLENDER\PLUGINS\plantillas_super_efectos.pickle"
-else:
-	template_file_path = r"C:\workspace\blenderCosoQueTeCoso\PLUGINS\plantillas_super_efectos.pickle"
+from . import templates
 
 effect_list = [
 	NoEffect("no_effect"),
@@ -26,12 +19,6 @@ effect_list = [
 	DoubleVerticalSlideCloseEffect("double_vertical_slide_close"),
 ]
 
-def load_pickle(path):
-	if os.path.isfile(path):
-		return pickle.load( open( path, "rb" ) )
-	
-	return []
-	
 def get_super_efecto_template_options(scene, context):
 	return sorted(context.scene.super_efecto.template_options, key=lambda opt: opt[0].lower())
 	
@@ -39,7 +26,6 @@ def load_plantilla(self, context):
 	bpy.ops.super_efecto.load_template()
 	
 class SuperEfectoProperties(bpy.types.PropertyGroup):
-		
 	
 	effect_type = bpy.props.EnumProperty(
 			name = "Efecto",
@@ -137,7 +123,7 @@ class SuperEfectoProperties(bpy.types.PropertyGroup):
 	new_template_name = bpy.props.StringProperty(name='Nombre', description='Nombre para la nueva plantilla')
 	override_template = bpy.props.BoolProperty(name="Sobreescribir Plantilla", default=False)
 	
-	template_data = load_pickle(template_file_path)
+	template_data = templates.load_templates()
 	template_options = [ (tmpl["name"], tmpl["name"], "Plantilla personalizada") for tmpl in template_data ]
 	
 	def getEffect(self):
