@@ -1,0 +1,141 @@
+{
+	"common": {
+		"operator": { "operation_type": "" },
+		"super_efecto": {
+			"image_alignment_margin": 25
+		},
+		"sequences": [
+			{
+				"name": "MySequence",
+				"type": "IMAGE",
+				"blend_type": "FOO",
+				"frame_final_duration": 100,
+				"elements": [{ "orig_width": 300, "orig_height": 500 }],
+				"use_translation": false,
+				"transform": { "offset_x": 123, "offset_y": 456 }
+			}
+		],
+		"expected_result": "FINISHED",
+		"expected_calls": { "new_effect": null },
+		"expected_report": null
+	},
+	
+	"tests": [
+		{	"name": "test align image center",
+			"super_efecto": { "image_alignment": "center" },
+			"expected_sequences": [
+				{
+					"name": "MySequence",
+					"type": "IMAGE",
+					"blend_type": "ALPHA_OVER",
+					"frame_final_duration": 100,
+					"elements": [{ "orig_width": 300, "orig_height": 500 }],
+					"use_translation": true,
+					"transform": { "offset_x": 810, "offset_y": 290 }
+				}
+			]
+		},
+		{	"name": "test align image bottom",
+			"super_efecto": { "image_alignment": "bottom" },
+			"expected_sequences": [
+				{
+					"name": "MySequence",
+					"type": "IMAGE",
+					"blend_type": "ALPHA_OVER",
+					"frame_final_duration": 100,
+					"elements": [{ "orig_width": 300, "orig_height": 500 }],
+					"use_translation": true,
+					"transform": { "offset_x": 810, "offset_y": 25 }
+				}
+			]
+		},
+		{	"name": "test align image top",
+			"super_efecto": { "image_alignment": "top" },
+			"expected_sequences": [
+				{
+					"name": "MySequence",
+					"type": "IMAGE",
+					"blend_type": "ALPHA_OVER",
+					"frame_final_duration": 100,
+					"elements": [{ "orig_width": 300, "orig_height": 500 }],
+					"use_translation": true,
+					"transform": { "offset_x": 810, "offset_y": 555 }
+				}
+			]
+		},
+		{	"name": "test align image left",
+			"super_efecto": { "image_alignment": "left" },
+			"expected_sequences": [
+				{
+					"name": "MySequence",
+					"type": "IMAGE",
+					"blend_type": "ALPHA_OVER",
+					"frame_final_duration": 100,
+					"elements": [{ "orig_width": 300, "orig_height": 500 }],
+					"use_translation": true,
+					"transform": { "offset_x": 25, "offset_y": 290 }
+				}
+			]
+		},
+		{	"name": "test align image right",
+			"super_efecto": { "image_alignment": "right" },
+			"expected_sequences": [
+				{
+					"name": "MySequence",
+					"type": "IMAGE",
+					"blend_type": "ALPHA_OVER",
+					"frame_final_duration": 100,
+					"elements": [{ "orig_width": 300, "orig_height": 500 }],
+					"use_translation": true,
+					"transform": { "offset_x": 1595, "offset_y": 290 }
+				}
+			]
+		},
+		{	"name": "test align no image",
+			"super_efecto": { "image_alignment": "center" },
+			"sequences": [
+				{
+					"name": "MySequenceNoImage",
+					"type": "MOVIE",
+					"blend_type": "FOO",
+					"elements": [{ "orig_width": 300, "orig_height": 500 }],
+					"use_translation": false,
+					"transform": { "offset_x": 123, "offset_y": 456 }
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequenceNoImage",
+					"type": "MOVIE",
+					"blend_type": "FOO",
+					"elements": [{ "orig_width": 300, "orig_height": 500 }],
+					"use_translation": false,
+					"transform": { "offset_x": 123, "offset_y": 456 }
+				}
+			]
+		},
+		{	"name": "test align full screen image",
+			"super_efecto": { "image_alignment": "center" },
+			"sequences": [
+				{
+					"name": "MySequence",
+					"type": "IMAGE",
+					"blend_type": "FOO",
+					"elements": [{ "orig_width": 1920, "orig_height": 1080 }],
+					"use_translation": false,
+					"transform": { "offset_x": 123, "offset_y": 456 }
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence",
+					"type": "IMAGE",
+					"blend_type": "FOO",
+					"elements": [{ "orig_width": 1920, "orig_height": 1080 }],
+					"use_translation": false,
+					"transform": { "offset_x": 123, "offset_y": 456 }
+				}
+			]
+		}
+	]
+}

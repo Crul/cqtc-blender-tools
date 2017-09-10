@@ -1,0 +1,1331 @@
+{
+	"common": {
+		"operator": { "operation_type": "TRANSITION" },
+		"super_efecto": {
+			"add_color_to_transition": false,
+			"effect_type": "no_effect",
+			"effect_length": 90,
+			"delay_image": 0
+		},
+		"expected_result": "FINISHED",
+		"expected_sequences": [],
+		"expected_calls": { "new_effect": null },
+		"expected_report": null
+	},
+	
+	"tests": [
+		{	"name": "test TRANSITION without color create transition no effect",
+			"sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 15,
+					"frame_final_end": 35,
+					"frame_offset_end": 0
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 15,
+					"frame_final_end": 35,
+					"frame_offset_end": 0
+				}
+			]
+		},
+		{	"name": "test TRANSITION without color create transition FADE effect",
+			"super_efecto": { "effect_type": "fade" },
+			"sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 15,
+					"frame_final_end": 35,
+					"frame_offset_end": 0
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 15,
+					"frame_final_end": 35,
+					"frame_offset_end": 0
+				}
+			],
+			"expected_calls": {
+				"new_effect": [
+					[
+						"Fundido", "CROSS", 0, 15,
+						{
+							"seq1": { "name": "MySequence1" },
+							"seq2": { "name": "MySequence2" },
+							"frame_end": 23
+						}
+					]
+				]
+			}
+		},
+		{	"name": "test TRANSITION without color create transition with initial position transform",
+			"super_efecto": {
+				"initial_position_x": 21,
+				"initial_position_y": 31,
+				"initial_zoom": 0.41,
+				"initial_opacity": 0.51,
+				"initial_offset_x": 61,
+				"initial_offset_y": 71
+			},
+			"sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0,
+					"transform" : {
+						"offset_x": 11,
+						"offset_y": 21
+					}
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 15,
+					"frame_final_end": 35,
+					"frame_offset_end": 0,
+					"transform" : {
+						"offset_x": 11,
+						"offset_y": 21
+					}
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence1_Transform",
+					"type": "TRANSFORM",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0,
+					"translate_start_x": 21,
+					"translate_start_y": 31,
+					"use_uniform_scale": true,
+					"scale_start_x": 0.41,
+					"blend_alpha": 0.51,
+					"use_translation": true,
+					"transform" : {
+						"offset_x": 1171.2,
+						"offset_y": 766.8
+					},
+					"input_1": {
+						"name": "MySequence1",
+						"type": "MOVIE",
+						"select": false
+					}
+				},
+				{
+					"name": "MySequence2_Transform",
+					"type": "TRANSFORM",
+					"frame_final_start": 15,
+					"frame_final_end": 35,
+					"frame_offset_end": 0,
+					"translate_start_x": 21,
+					"translate_start_y": 31,
+					"use_uniform_scale": true,
+					"scale_start_x": 0.41,
+					"blend_alpha": 0.51,
+					"use_translation": true,
+					"transform" : {
+						"offset_x": 1171.2,
+						"offset_y": 766.8
+					},
+					"input_1": {
+						"name": "MySequence2",
+						"type": "MOVIE",
+						"select": false
+					}
+				}
+			],
+			"expected_calls": {
+				"new_effect": [
+					[
+						"MySequence1_Transform", "TRANSFORM", 0, 12, 23,
+						{ "name": "MySequence1" }
+					],
+					[
+						"MySequence2_Transform", "TRANSFORM", 0, 15, 35,
+						{ "name": "MySequence2" }
+					]
+				]
+			}
+		},
+		{	"name": "test TRANSITION without color create transition with transform animation",
+			"super_efecto": {
+				"initial_position_x": 21,
+				"position_x_animated": true,
+				"final_position_x": 121,
+				"initial_position_y": 51,
+				"position_y_animated": true,
+				"final_position_y": 191,
+				"initial_zoom": 0.1,
+				"zoom_animated": true,
+				"final_zoom": 1.2,
+				"initial_opacity": 0.2,
+				"opacity_animated": true,
+				"final_opacity": 0.9,
+				"initial_offset_x": 53,
+				"offset_x_animated": true,
+				"final_offset_x": 153,
+				"initial_offset_y": 72,
+				"offset_y_animated": true,
+				"final_offset_y": 165
+			},
+			"sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0,
+					"transform" : {
+						"offset_x": 11,
+						"offset_y": 21
+					}
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 15,
+					"frame_final_end": 35,
+					"frame_offset_end": 0,
+					"transform" : {
+						"offset_x": 11,
+						"offset_y": 21
+					}
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence1_Transform",
+					"type": "TRANSFORM",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0,
+					"translate_start_x": 21,
+					"translate_start_y": 51,
+					"use_uniform_scale": true,
+					"scale_start_x": 0.1,
+					"blend_alpha": 0.2,
+					"use_translation": true,
+					"transform" : {
+						"offset_x": 1017.6,
+						"offset_y":  777.6
+					},
+					"input_1": {
+						"name": "MySequence1",
+						"type": "MOVIE",
+						"select": false
+					}
+				},
+				{
+					"name": "MySequence2_Transform",
+					"type": "TRANSFORM",
+					"frame_final_start": 15,
+					"frame_final_end": 35,
+					"frame_offset_end": 0,
+					"translate_start_x": 121,
+					"translate_start_y": 191,
+					"use_uniform_scale": true,
+					"scale_start_x": 1.2,
+					"blend_alpha": 0.9,
+					"use_translation": true,
+					"transform" : {
+						"offset_x": 2937.6,
+						"offset_y": 1782.0
+					},
+					"input_1": {
+						"name": "MySequence2",
+						"type": "MOVIE",
+						"select": false
+					}
+				}
+			],
+			"expected_calls": {
+				"new_effect": [
+					[
+						"MySequence1_Transform", "TRANSFORM", 0, 12, 23,
+						{ "name": "MySequence1" }
+					],
+					[
+						"MySequence2_Transform", "TRANSFORM", 0, 15, 35,
+						{ "name": "MySequence2" }
+					]
+				],
+				"sequences_keyframe_insert": [
+					[	
+						[ "translate_start_x", { "index": -1, "frame": 15 } ],
+						[ "translate_start_x", { "index": -1, "frame": 23 } ],
+						[ "translate_start_y", { "index": -1, "frame": 15 } ],
+						[ "translate_start_y", { "index": -1, "frame": 23 } ],
+						[ "scale_start_x", { "index": -1, "frame": 15 } ],
+						[ "scale_start_x", { "index": -1, "frame": 23 } ],
+						[ "blend_alpha", { "index": -1, "frame": 15 } ],
+						[ "blend_alpha", { "index": -1, "frame": 23 } ]
+					],
+					[	
+						[ "translate_start_x", { "index": -1, "frame": 15 } ],
+						[ "translate_start_x", { "index": -1, "frame": 23 } ],
+						[ "translate_start_y", { "index": -1, "frame": 15 } ],
+						[ "translate_start_y", { "index": -1, "frame": 23 } ],
+						[ "scale_start_x", { "index": -1, "frame": 15 } ],
+						[ "scale_start_x", { "index": -1, "frame": 23 } ],
+						[ "blend_alpha", { "index": -1, "frame": 15 } ],
+						[ "blend_alpha", { "index": -1, "frame": 23 } ]
+					]
+				],
+				"sequences_transform_keyframe_insert": [
+					[
+						[ "offset_x", { "index": -1, "frame": 15 } ],
+						[ "offset_x", { "index": -1, "frame": 23 } ],
+						[ "offset_y", { "index": -1, "frame": 15 } ],
+						[ "offset_y", { "index": -1, "frame": 23 } ]
+					],
+					[
+						[ "offset_x", { "index": -1, "frame": 15 } ],
+						[ "offset_x", { "index": -1, "frame": 23 } ],
+						[ "offset_y", { "index": -1, "frame": 15 } ],
+						[ "offset_y", { "index": -1, "frame": 23 } ]
+					]
+				]
+			},
+			"sequences_keyframe_insert_values": [
+				{ "sequence": "MySequence1_Transform", "name": "translate_start_x", "frame": 15, "value": 121 },
+				{ "sequence": "MySequence1_Transform", "name": "translate_start_x", "frame": 23, "value":  21 },
+				{ "sequence": "MySequence1_Transform", "name": "translate_start_y", "frame": 15, "value": 191 },
+				{ "sequence": "MySequence1_Transform", "name": "translate_start_y", "frame": 23, "value":  51 },
+				{ "sequence": "MySequence1_Transform", "name": "scale_start_x", "frame": 15, "value": 1.2 },
+				{ "sequence": "MySequence1_Transform", "name": "scale_start_x", "frame": 23, "value": 0.1 },
+				{ "sequence": "MySequence1_Transform", "name": "blend_alpha", "frame": 15, "value": 0.9 },
+				{ "sequence": "MySequence1_Transform", "name": "blend_alpha", "frame": 23, "value": 0.2 },
+				
+				{ "sequence": "MySequence1_Transform.transform", "name": "offset_x", "frame": 15, "value": 2937.6 },
+				{ "sequence": "MySequence1_Transform.transform", "name": "offset_x", "frame": 23, "value": 1017.6 },
+				{ "sequence": "MySequence1_Transform.transform", "name": "offset_y", "frame": 15, "value": 1782.0 },
+				{ "sequence": "MySequence1_Transform.transform", "name": "offset_y", "frame": 23, "value":  777.6 },
+				
+				{ "sequence": "MySequence2_Transform", "name": "translate_start_x", "frame": 15, "value":  21 },
+				{ "sequence": "MySequence2_Transform", "name": "translate_start_x", "frame": 23, "value": 121 },
+				{ "sequence": "MySequence2_Transform", "name": "translate_start_y", "frame": 15, "value":  51 },
+				{ "sequence": "MySequence2_Transform", "name": "translate_start_y", "frame": 23, "value": 191 },
+				{ "sequence": "MySequence2_Transform", "name": "scale_start_x", "frame": 15, "value": 0.1 },
+				{ "sequence": "MySequence2_Transform", "name": "scale_start_x", "frame": 23, "value": 1.2 },
+				{ "sequence": "MySequence2_Transform", "name": "blend_alpha", "frame": 15, "value": 0.2 },
+				{ "sequence": "MySequence2_Transform", "name": "blend_alpha", "frame": 23, "value": 0.9 },
+				
+				{ "sequence": "MySequence2_Transform.transform", "name": "offset_x", "frame": 15, "value": 1017.6 },
+				{ "sequence": "MySequence2_Transform.transform", "name": "offset_x", "frame": 23, "value": 2937.6 },
+				{ "sequence": "MySequence2_Transform.transform", "name": "offset_y", "frame": 15, "value":  777.6 },
+				{ "sequence": "MySequence2_Transform.transform", "name": "offset_y", "frame": 23, "value": 1782.0 }
+				
+			]
+		},
+		{	"name": "test TRANSITION without color create transition with initial position blur",
+			"super_efecto": {
+				"initial_blur_x": 11,
+				"initial_blur_y": 21
+			},
+			"sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 15,
+					"frame_final_end": 35,
+					"frame_offset_end": 0
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence1_Blur",
+					"type": "GAUSSIAN_BLUR",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0,
+					"size_x": 11,
+					"size_y": 21,
+					"input_1": {
+						"name": "MySequence1",
+						"type": "MOVIE",
+						"select": false
+					}
+				},
+				{
+					"name": "MySequence2_Blur",
+					"type": "GAUSSIAN_BLUR",
+					"frame_final_start": 15,
+					"frame_final_end": 35,
+					"frame_offset_end": 0,
+					"size_x": 11,
+					"size_y": 21,
+					"input_1": {
+						"name": "MySequence2",
+						"type": "MOVIE",
+						"select": false
+					}
+				}
+			],
+			"expected_calls": {
+				"new_effect": [
+					[
+						"MySequence1_Blur", "GAUSSIAN_BLUR", 0, 12, 23,
+						{ "name": "MySequence1" }
+					],
+					[
+						"MySequence2_Blur", "GAUSSIAN_BLUR", 0, 15, 35,
+						{ "name": "MySequence2" }
+					]
+				]
+			}
+		},
+		{	"name": "test TRANSITION without color create transition with blur animation",
+			"super_efecto": {
+				"initial_blur_x": 11,
+				"blur_x_animated": true,
+				"final_blur_x": 23,
+				"initial_blur_y": 45,
+				"blur_y_animated": true,
+				"final_blur_y": 67
+			},
+			"sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 15,
+					"frame_final_end": 35,
+					"frame_offset_end": 0
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence1_Blur",
+					"type": "GAUSSIAN_BLUR",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0,
+					"size_x": 11,
+					"size_y": 45,
+					"input_1": {
+						"name": "MySequence1",
+						"type": "MOVIE",
+						"select": false
+					}
+				},
+				{
+					"name": "MySequence2_Blur",
+					"type": "GAUSSIAN_BLUR",
+					"frame_final_start": 15,
+					"frame_final_end": 35,
+					"frame_offset_end": 0,
+					"size_x": 23,
+					"size_y": 67,
+					"input_1": {
+						"name": "MySequence2",
+						"type": "MOVIE",
+						"select": false
+					}
+				}
+			],
+			"expected_calls": {
+				"new_effect": [
+					[
+						"MySequence1_Blur", "GAUSSIAN_BLUR", 0, 12, 23,
+						{ "name": "MySequence1" }
+					],
+					[
+						"MySequence2_Blur", "GAUSSIAN_BLUR", 0, 15, 35,
+						{ "name": "MySequence2" }
+					]
+				],
+				"sequences_keyframe_insert": [
+					[	
+						[ "size_x", { "index": -1, "frame": 15 } ],
+						[ "size_x", { "index": -1, "frame": 23 } ],
+						[ "size_y", { "index": -1, "frame": 15 } ],
+						[ "size_y", { "index": -1, "frame": 23 } ]
+					],
+					[
+						[ "size_x", { "index": -1, "frame": 15 } ],
+						[ "size_x", { "index": -1, "frame": 23 } ],
+						[ "size_y", { "index": -1, "frame": 15 } ],
+						[ "size_y", { "index": -1, "frame": 23 } ]
+					]
+				]
+			},
+			"sequences_keyframe_insert_values": [
+				{ "sequence": "MySequence1_Blur", "name": "size_x", "frame": 15, "value": 23 },
+				{ "sequence": "MySequence1_Blur", "name": "size_x", "frame": 23, "value": 11 },
+				{ "sequence": "MySequence1_Blur", "name": "size_y", "frame": 15, "value": 67 },
+				{ "sequence": "MySequence1_Blur", "name": "size_y", "frame": 23, "value": 45 },
+				
+				{ "sequence": "MySequence2_Blur", "name": "size_x", "frame": 15, "value": 11 },
+				{ "sequence": "MySequence2_Blur", "name": "size_x", "frame": 23, "value": 23 },
+				{ "sequence": "MySequence2_Blur", "name": "size_y", "frame": 15, "value": 45 },
+				{ "sequence": "MySequence2_Blur", "name": "size_y", "frame": 23, "value": 67 }
+			]
+		},
+		{	"name": "test TRANSITION without color apply volume to SOUND no overlap",
+			"super_efecto": { "apply_to_sound": true, "overlap_sound": false },
+			"sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySoundSequence1",
+					"type": "SOUND",
+					"frame_final_duration": 100,
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"volume": 0.5
+				}		,
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 15,
+					"frame_final_end": 35,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySoundSequence2",
+					"type": "SOUND",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"frame_final_start": 15,
+					"frame_final_end": 35,
+					"volume": 0.5
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySoundSequence1",
+					"type": "SOUND",
+					"frame_final_duration": 100,
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"volume": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 15,
+					"frame_final_end": 35,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySoundSequence2",
+					"type": "SOUND",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"frame_final_start": 15,
+					"frame_final_end": 35,
+					"volume": 1
+				}
+			],
+			"expected_calls": {
+				"new_effect": [],
+				"sequences_keyframe_insert": [
+					[],
+					[
+						[ "volume", { "index": -1, "frame": 15 } ],
+						[ "volume", { "index": -1, "frame": 19 } ]
+					],
+					[],
+					[
+						[ "volume", { "index": -1, "frame": 19 } ],
+						[ "volume", { "index": -1, "frame": 23 } ]
+					]
+				]
+			},
+			"sequences_keyframe_insert_values": [
+				{ "sequence": "MySoundSequence1", "name": "volume", "frame": 15, "value": 1 },
+				{ "sequence": "MySoundSequence1", "name": "volume", "frame": 19, "value": 0 },
+				{ "sequence": "MySoundSequence2", "name": "volume", "frame": 19, "value": 0 },
+				{ "sequence": "MySoundSequence2", "name": "volume", "frame": 23, "value": 1 }
+			]
+		},
+		{	"name": "test TRANSITION without color apply volume to SOUND with overlap",
+			"super_efecto": { "apply_to_sound": true, "overlap_sound": true },
+			"sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySoundSequence1",
+					"type": "SOUND",
+					"frame_final_duration": 100,
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"volume": 0.5
+				}		,
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 15,
+					"frame_final_end": 35,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySoundSequence2",
+					"type": "SOUND",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"frame_final_start": 15,
+					"frame_final_end": 35,
+					"volume": 0.5
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySoundSequence1",
+					"type": "SOUND",
+					"frame_final_duration": 100,
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"volume": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 15,
+					"frame_final_end": 35,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySoundSequence2",
+					"type": "SOUND",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"frame_final_start": 15,
+					"frame_final_end": 35,
+					"volume": 1
+				}
+			],
+			"expected_calls": {
+				"new_effect": [],
+				"sequences_keyframe_insert": [
+					[],
+					[
+						[ "volume", { "index": -1, "frame": 15 } ],
+						[ "volume", { "index": -1, "frame": 23 } ]
+					],
+					[],
+					[
+						[ "volume", { "index": -1, "frame": 15 } ],
+						[ "volume", { "index": -1, "frame": 23 } ]
+					]
+				]
+			},
+			"sequences_keyframe_insert_values": [
+				{ "sequence": "MySoundSequence1", "name": "volume", "frame": 15, "value": 1 },
+				{ "sequence": "MySoundSequence1", "name": "volume", "frame": 23, "value": 0 },
+				{ "sequence": "MySoundSequence2", "name": "volume", "frame": 15, "value": 0 },
+				{ "sequence": "MySoundSequence2", "name": "volume", "frame": 23, "value": 1 }
+			]
+		},
+		{	"name": "test TRANSITION without color apply volume to SCENE no overlap",
+			"super_efecto": { "apply_to_sound": true, "overlap_sound": false },
+			"sequences": [
+				{
+					"name": "MySceneSequence1",
+					"type": "SCENE",
+					"frame_final_duration": 200,
+					"frame_final_start": 12,
+					"frame_final_end": 312,
+					"scene": { "audio_volume": 0.5 }
+				},
+				{
+					"name": "MySceneSequence2",
+					"type": "SCENE",
+					"frame_final_duration": 200,
+					"frame_final_start": 150,
+					"frame_final_end": 350,
+					"scene": { "audio_volume": 0.5 }
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySceneSequence1",
+					"type": "SCENE",
+					"frame_final_duration": 200,
+					"frame_final_start": 12,
+					"frame_final_end": 312,
+					"scene": { "audio_volume": 0 }
+				},
+				{
+					"name": "MySceneSequence2",
+					"type": "SCENE",
+					"frame_final_duration": 200,
+					"frame_final_start": 150,
+					"frame_final_end": 350,
+					"scene": { "audio_volume": 1 }
+				}
+			],
+			"expected_calls": {
+				"new_effect": [],
+				"sequences_scene_keyframe_insert": [
+					[
+						[ "audio_volume", { "index": -1, "frame":  38 } ],
+						[ "audio_volume", { "index": -1, "frame": 119 } ]
+					],
+					[
+						[ "audio_volume", { "index": -1, "frame":  81 } ],
+						[ "audio_volume", { "index": -1, "frame": 162 } ]
+					]
+				]
+			},
+			"sequences_keyframe_insert_values": [
+				{ "sequence": "MySceneSequence1.scene", "name": "audio_volume", "frame":  38, "value": 1 },
+				{ "sequence": "MySceneSequence1.scene", "name": "audio_volume", "frame": 119, "value": 0 },
+				{ "sequence": "MySceneSequence2.scene", "name": "audio_volume", "frame":  81, "value": 0 },
+				{ "sequence": "MySceneSequence2.scene", "name": "audio_volume", "frame": 162, "value": 1 }
+			]
+		},
+		{	"name": "test TRANSITION without color apply volume to SCENE with overlap",
+			"super_efecto": { "apply_to_sound": true, "overlap_sound": true },
+			"sequences": [
+				{
+					"name": "MySceneSequence1",
+					"type": "SCENE",
+					"frame_final_duration": 200,
+					"frame_final_start": 12,
+					"frame_final_end": 312,
+					"scene": { "audio_volume": 0.5 }
+				},
+				{
+					"name": "MySceneSequence2",
+					"type": "SCENE",
+					"frame_final_duration": 200,
+					"frame_final_start": 150,
+					"frame_final_end": 350,
+					"scene": { "audio_volume": 0.5 }
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySceneSequence1",
+					"type": "SCENE",
+					"frame_final_duration": 200,
+					"frame_final_start": 12,
+					"frame_final_end": 312,
+					"scene": { "audio_volume": 0 }
+				},
+				{
+					"name": "MySceneSequence2",
+					"type": "SCENE",
+					"frame_final_duration": 200,
+					"frame_final_start": 150,
+					"frame_final_end": 350,
+					"scene": { "audio_volume": 1 }
+				}
+			],
+			"expected_calls": {
+				"new_effect": [],
+				"sequences_scene_keyframe_insert": [
+					[
+						[ "audio_volume", { "index": -1, "frame":  38 } ],
+						[ "audio_volume", { "index": -1, "frame": 200 } ]
+					],
+					[
+						[ "audio_volume", { "index": -1, "frame":   1 } ],
+						[ "audio_volume", { "index": -1, "frame": 163 } ]
+					]
+				]
+			},
+			"sequences_keyframe_insert_values": [
+				{ "sequence": "MySceneSequence1.scene", "name": "audio_volume", "frame":  38, "value": 1 },
+				{ "sequence": "MySceneSequence1.scene", "name": "audio_volume", "frame": 200, "value": 0 },
+				{ "sequence": "MySceneSequence2.scene", "name": "audio_volume", "frame":   1, "value": 0 },
+				{ "sequence": "MySceneSequence2.scene", "name": "audio_volume", "frame": 163, "value": 1 }
+			]
+		},
+		{	"name": "test TRANSITION without color create transition without reverse_out_effect",
+			"super_efecto": {
+				"reverse_out_effect": false,
+				"initial_position_x": 21,
+				"position_x_animated": true,
+				"final_position_x": 121,
+				"initial_position_y": 51,
+				"position_y_animated": true,
+				"final_position_y": 191,
+				"initial_zoom": 0.1,
+				"zoom_animated": true,
+				"final_zoom": 1.2,
+				"initial_opacity": 0.2,
+				"opacity_animated": true,
+				"final_opacity": 0.9,				
+				"initial_offset_x": 53,
+				"offset_x_animated": true,
+				"final_offset_x": 153,
+				"initial_offset_y": 72,
+				"offset_y_animated": true,
+				"final_offset_y": 165
+			},
+			"sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0,
+					"transform" : {
+						"offset_x": 11,
+						"offset_y": 21
+					}
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 15,
+					"frame_final_end": 35,
+					"frame_offset_end": 0,
+					"transform" : {
+						"offset_x": 11,
+						"offset_y": 21
+					}
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence1_Transform",
+					"type": "TRANSFORM",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0,
+					"translate_start_x": 121,
+					"translate_start_y": 191,
+					"use_uniform_scale": true,
+					"scale_start_x": 1.2,
+					"blend_alpha": 0.9,
+					"use_translation": true,
+					"transform" : {
+						"offset_x": 2937.6,
+						"offset_y": 1782.0
+					},
+					"input_1": {
+						"name": "MySequence1",
+						"type": "MOVIE",
+						"select": false
+					}
+				},
+				{
+					"name": "MySequence2_Transform",
+					"type": "TRANSFORM",
+					"frame_final_start": 15,
+					"frame_final_end": 35,
+					"frame_offset_end": 0,
+					"translate_start_x": 121,
+					"translate_start_y": 191,
+					"use_uniform_scale": true,
+					"scale_start_x": 1.2,
+					"blend_alpha": 0.9,
+					"use_translation": true,
+					"transform" : {
+						"offset_x": 2937.6,
+						"offset_y": 1782.0
+					},
+					"input_1": {
+						"name": "MySequence2",
+						"type": "MOVIE",
+						"select": false
+					}
+				}
+			],
+			"expected_calls": {
+				"new_effect": [
+					[
+						"MySequence1_Transform", "TRANSFORM", 0, 12, 23,
+						{ "name": "MySequence1" }
+					],
+					[
+						"MySequence2_Transform", "TRANSFORM", 0, 15, 35,
+						{ "name": "MySequence2" }
+					]
+				],
+				"sequences_keyframe_insert": [
+					[	
+						[ "translate_start_x", { "index": -1, "frame": 15 } ],
+						[ "translate_start_x", { "index": -1, "frame": 23 } ],
+						[ "translate_start_y", { "index": -1, "frame": 15 } ],
+						[ "translate_start_y", { "index": -1, "frame": 23 } ],
+						[ "scale_start_x", { "index": -1, "frame": 15 } ],
+						[ "scale_start_x", { "index": -1, "frame": 23 } ],
+						[ "blend_alpha", { "index": -1, "frame": 15 } ],
+						[ "blend_alpha", { "index": -1, "frame": 23 } ]
+					],
+					[	
+						[ "translate_start_x", { "index": -1, "frame": 15 } ],
+						[ "translate_start_x", { "index": -1, "frame": 23 } ],
+						[ "translate_start_y", { "index": -1, "frame": 15 } ],
+						[ "translate_start_y", { "index": -1, "frame": 23 } ],
+						[ "scale_start_x", { "index": -1, "frame": 15 } ],
+						[ "scale_start_x", { "index": -1, "frame": 23 } ],
+						[ "blend_alpha", { "index": -1, "frame": 15 } ],
+						[ "blend_alpha", { "index": -1, "frame": 23 } ]
+					]
+				],
+				"sequences_transform_keyframe_insert": [
+					[
+						[ "offset_x", { "index": -1, "frame": 15 } ],
+						[ "offset_x", { "index": -1, "frame": 23 } ],
+						[ "offset_y", { "index": -1, "frame": 15 } ],
+						[ "offset_y", { "index": -1, "frame": 23 } ]
+					],
+					[
+						[ "offset_x", { "index": -1, "frame": 15 } ],
+						[ "offset_x", { "index": -1, "frame": 23 } ],
+						[ "offset_y", { "index": -1, "frame": 15 } ],
+						[ "offset_y", { "index": -1, "frame": 23 } ]
+					]
+				]
+			},
+			"sequences_keyframe_insert_values": [
+				{ "sequence": "MySequence1_Transform", "name": "translate_start_x", "frame": 15, "value":  21 },
+				{ "sequence": "MySequence1_Transform", "name": "translate_start_x", "frame": 23, "value": 121 },
+				{ "sequence": "MySequence1_Transform", "name": "translate_start_y", "frame": 15, "value":  51 },
+				{ "sequence": "MySequence1_Transform", "name": "translate_start_y", "frame": 23, "value": 191 },
+				{ "sequence": "MySequence1_Transform", "name": "scale_start_x", "frame": 15, "value": 0.1 },
+				{ "sequence": "MySequence1_Transform", "name": "scale_start_x", "frame": 23, "value": 1.2 },
+				{ "sequence": "MySequence1_Transform", "name": "blend_alpha", "frame": 15, "value": 0.2 },
+				{ "sequence": "MySequence1_Transform", "name": "blend_alpha", "frame": 23, "value": 0.9 },
+				
+				{ "sequence": "MySequence1_Transform.transform", "name": "offset_x", "frame": 15, "value": 1017.6 },
+				{ "sequence": "MySequence1_Transform.transform", "name": "offset_x", "frame": 23, "value": 2937.6 },
+				{ "sequence": "MySequence1_Transform.transform", "name": "offset_y", "frame": 15, "value":  777.6 },
+				{ "sequence": "MySequence1_Transform.transform", "name": "offset_y", "frame": 23, "value": 1782.0 },
+				
+				{ "sequence": "MySequence2_Transform", "name": "translate_start_x", "frame": 15, "value":  21 },
+				{ "sequence": "MySequence2_Transform", "name": "translate_start_x", "frame": 23, "value": 121 },
+				{ "sequence": "MySequence2_Transform", "name": "translate_start_y", "frame": 15, "value":  51 },
+				{ "sequence": "MySequence2_Transform", "name": "translate_start_y", "frame": 23, "value": 191 },
+				{ "sequence": "MySequence2_Transform", "name": "scale_start_x", "frame": 15, "value": 0.1 },
+				{ "sequence": "MySequence2_Transform", "name": "scale_start_x", "frame": 23, "value": 1.2 },
+				{ "sequence": "MySequence2_Transform", "name": "blend_alpha", "frame": 15, "value": 0.2 },
+				{ "sequence": "MySequence2_Transform", "name": "blend_alpha", "frame": 23, "value": 0.9 },
+				
+				{ "sequence": "MySequence2_Transform.transform", "name": "offset_x", "frame": 15, "value": 1017.6 },
+				{ "sequence": "MySequence2_Transform.transform", "name": "offset_x", "frame": 23, "value": 2937.6 },
+				{ "sequence": "MySequence2_Transform.transform", "name": "offset_y", "frame": 15, "value":  777.6 },
+				{ "sequence": "MySequence2_Transform.transform", "name": "offset_y", "frame": 23, "value": 1782.0 }
+				
+			]
+		},
+		{	"name": "test TRANSITION without color create transition with mirror_horizontal_out_effect",
+			"super_efecto": {
+				"mirror_horizontal_out_effect": true,
+				"initial_position_x": 21,
+				"position_x_animated": true,
+				"final_position_x": 121,
+				"initial_position_y": 51,
+				"position_y_animated": true,
+				"final_position_y": 191,
+				"initial_zoom": 0.1,
+				"zoom_animated": true,
+				"final_zoom": 1.2,
+				"initial_opacity": 0.2,
+				"opacity_animated": true,
+				"final_opacity": 0.9,				
+				"initial_offset_x": 53,
+				"offset_x_animated": true,
+				"final_offset_x": 153,
+				"initial_offset_y": 72,
+				"offset_y_animated": true,
+				"final_offset_y": 165
+			},
+			"sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0,
+					"transform" : {
+						"offset_x": 11,
+						"offset_y": 21
+					}
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 15,
+					"frame_final_end": 35,
+					"frame_offset_end": 0,
+					"transform" : {
+						"offset_x": 11,
+						"offset_y": 21
+					}
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence1_Transform",
+					"type": "TRANSFORM",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0,
+					"translate_start_x": -21,
+					"translate_start_y": 51,
+					"use_uniform_scale": true,
+					"scale_start_x": 0.1,
+					"blend_alpha": 0.2,
+					"use_translation": true,
+					"transform" : {
+						"offset_x": -1017.6,
+						"offset_y":  777.6
+					},
+					"input_1": {
+						"name": "MySequence1",
+						"type": "MOVIE",
+						"select": false
+					}
+				},
+				{
+					"name": "MySequence2_Transform",
+					"type": "TRANSFORM",
+					"frame_final_start": 15,
+					"frame_final_end": 35,
+					"frame_offset_end": 0,
+					"translate_start_x": 121,
+					"translate_start_y": 191,
+					"use_uniform_scale": true,
+					"scale_start_x": 1.2,
+					"blend_alpha": 0.9,
+					"use_translation": true,
+					"transform" : {
+						"offset_x": 2937.6,
+						"offset_y": 1782.0
+					},
+					"input_1": {
+						"name": "MySequence2",
+						"type": "MOVIE",
+						"select": false
+					}
+				}
+			],
+			"expected_calls": {
+				"new_effect": [
+					[
+						"MySequence1_Transform", "TRANSFORM", 0, 12, 23,
+						{ "name": "MySequence1" }
+					],
+					[
+						"MySequence2_Transform", "TRANSFORM", 0, 15, 35,
+						{ "name": "MySequence2" }
+					]
+				],
+				"sequences_keyframe_insert": [
+					[	
+						[ "translate_start_x", { "index": -1, "frame": 15 } ],
+						[ "translate_start_x", { "index": -1, "frame": 23 } ],
+						[ "translate_start_y", { "index": -1, "frame": 15 } ],
+						[ "translate_start_y", { "index": -1, "frame": 23 } ],
+						[ "scale_start_x", { "index": -1, "frame": 15 } ],
+						[ "scale_start_x", { "index": -1, "frame": 23 } ],
+						[ "blend_alpha", { "index": -1, "frame": 15 } ],
+						[ "blend_alpha", { "index": -1, "frame": 23 } ]
+					],
+					[	
+						[ "translate_start_x", { "index": -1, "frame": 15 } ],
+						[ "translate_start_x", { "index": -1, "frame": 23 } ],
+						[ "translate_start_y", { "index": -1, "frame": 15 } ],
+						[ "translate_start_y", { "index": -1, "frame": 23 } ],
+						[ "scale_start_x", { "index": -1, "frame": 15 } ],
+						[ "scale_start_x", { "index": -1, "frame": 23 } ],
+						[ "blend_alpha", { "index": -1, "frame": 15 } ],
+						[ "blend_alpha", { "index": -1, "frame": 23 } ]
+					]
+				],
+				"sequences_transform_keyframe_insert": [
+					[
+						[ "offset_x", { "index": -1, "frame": 15 } ],
+						[ "offset_x", { "index": -1, "frame": 23 } ],
+						[ "offset_y", { "index": -1, "frame": 15 } ],
+						[ "offset_y", { "index": -1, "frame": 23 } ]
+					],
+					[
+						[ "offset_x", { "index": -1, "frame": 15 } ],
+						[ "offset_x", { "index": -1, "frame": 23 } ],
+						[ "offset_y", { "index": -1, "frame": 15 } ],
+						[ "offset_y", { "index": -1, "frame": 23 } ]
+					]
+				]
+			},
+			"sequences_keyframe_insert_values": [
+				{ "sequence": "MySequence1_Transform", "name": "translate_start_x", "frame": 15, "value": -121 },
+				{ "sequence": "MySequence1_Transform", "name": "translate_start_x", "frame": 23, "value":  -21 },
+				{ "sequence": "MySequence1_Transform", "name": "translate_start_y", "frame": 15, "value": 191 },
+				{ "sequence": "MySequence1_Transform", "name": "translate_start_y", "frame": 23, "value":  51 },
+				{ "sequence": "MySequence1_Transform", "name": "scale_start_x", "frame": 15, "value": 1.2 },
+				{ "sequence": "MySequence1_Transform", "name": "scale_start_x", "frame": 23, "value": 0.1 },
+				{ "sequence": "MySequence1_Transform", "name": "blend_alpha", "frame": 15, "value": 0.9 },
+				{ "sequence": "MySequence1_Transform", "name": "blend_alpha", "frame": 23, "value": 0.2 },
+				
+				{ "sequence": "MySequence1_Transform.transform", "name": "offset_x", "frame": 15, "value": -2937.6 },
+				{ "sequence": "MySequence1_Transform.transform", "name": "offset_x", "frame": 23, "value": -1017.6 },
+				{ "sequence": "MySequence1_Transform.transform", "name": "offset_y", "frame": 15, "value": 1782.0 },
+				{ "sequence": "MySequence1_Transform.transform", "name": "offset_y", "frame": 23, "value":  777.6 },
+				
+				{ "sequence": "MySequence2_Transform", "name": "translate_start_x", "frame": 15, "value":  21 },
+				{ "sequence": "MySequence2_Transform", "name": "translate_start_x", "frame": 23, "value": 121 },
+				{ "sequence": "MySequence2_Transform", "name": "translate_start_y", "frame": 15, "value":  51 },
+				{ "sequence": "MySequence2_Transform", "name": "translate_start_y", "frame": 23, "value": 191 },
+				{ "sequence": "MySequence2_Transform", "name": "scale_start_x", "frame": 15, "value": 0.1 },
+				{ "sequence": "MySequence2_Transform", "name": "scale_start_x", "frame": 23, "value": 1.2 },
+				{ "sequence": "MySequence2_Transform", "name": "blend_alpha", "frame": 15, "value": 0.2 },
+				{ "sequence": "MySequence2_Transform", "name": "blend_alpha", "frame": 23, "value": 0.9 },
+				
+				{ "sequence": "MySequence2_Transform.transform", "name": "offset_x", "frame": 15, "value": 1017.6 },
+				{ "sequence": "MySequence2_Transform.transform", "name": "offset_x", "frame": 23, "value": 2937.6 },
+				{ "sequence": "MySequence2_Transform.transform", "name": "offset_y", "frame": 15, "value":  777.6 },
+				{ "sequence": "MySequence2_Transform.transform", "name": "offset_y", "frame": 23, "value": 1782.0 }
+				
+			]
+		},
+		{	"name": "test TRANSITION without color create transition with mirror_vertical_out_effect",
+			"super_efecto": {
+				"mirror_vertical_out_effect": true,
+				"initial_position_x": 21,
+				"position_x_animated": true,
+				"final_position_x": 121,
+				"initial_position_y": 51,
+				"position_y_animated": true,
+				"final_position_y": 191,
+				"initial_zoom": 0.1,
+				"zoom_animated": true,
+				"final_zoom": 1.2,
+				"initial_opacity": 0.2,
+				"opacity_animated": true,
+				"final_opacity": 0.9,				
+				"initial_offset_x": 53,
+				"offset_x_animated": true,
+				"final_offset_x": 153,
+				"initial_offset_y": 72,
+				"offset_y_animated": true,
+				"final_offset_y": 165
+			},
+			"sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0,
+					"transform" : {
+						"offset_x": 11,
+						"offset_y": 21
+					}
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 15,
+					"frame_final_end": 35,
+					"frame_offset_end": 0,
+					"transform" : {
+						"offset_x": 11,
+						"offset_y": 21
+					}
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence1_Transform",
+					"type": "TRANSFORM",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0,
+					"translate_start_x": 21,
+					"translate_start_y": -51,
+					"use_uniform_scale": true,
+					"scale_start_x": 0.1,
+					"blend_alpha": 0.2,
+					"use_translation": true,
+					"transform" : {
+						"offset_x": 1017.6,
+						"offset_y": -777.6
+					},
+					"input_1": {
+						"name": "MySequence1",
+						"type": "MOVIE",
+						"select": false
+					}
+				},
+				{
+					"name": "MySequence2_Transform",
+					"type": "TRANSFORM",
+					"frame_final_start": 15,
+					"frame_final_end": 35,
+					"frame_offset_end": 0,
+					"translate_start_x": 121,
+					"translate_start_y": 191,
+					"use_uniform_scale": true,
+					"scale_start_x": 1.2,
+					"blend_alpha": 0.9,
+					"use_translation": true,
+					"transform" : {
+						"offset_x": 2937.6,
+						"offset_y": 1782.0
+					},
+					"input_1": {
+						"name": "MySequence2",
+						"type": "MOVIE",
+						"select": false
+					}
+				}
+			],
+			"expected_calls": {
+				"new_effect": [
+					[
+						"MySequence1_Transform", "TRANSFORM", 0, 12, 23,
+						{ "name": "MySequence1" }
+					],
+					[
+						"MySequence2_Transform", "TRANSFORM", 0, 15, 35,
+						{ "name": "MySequence2" }
+					]
+				],
+				"sequences_keyframe_insert": [
+					[	
+						[ "translate_start_x", { "index": -1, "frame": 15 } ],
+						[ "translate_start_x", { "index": -1, "frame": 23 } ],
+						[ "translate_start_y", { "index": -1, "frame": 15 } ],
+						[ "translate_start_y", { "index": -1, "frame": 23 } ],
+						[ "scale_start_x", { "index": -1, "frame": 15 } ],
+						[ "scale_start_x", { "index": -1, "frame": 23 } ],
+						[ "blend_alpha", { "index": -1, "frame": 15 } ],
+						[ "blend_alpha", { "index": -1, "frame": 23 } ]
+					],
+					[	
+						[ "translate_start_x", { "index": -1, "frame": 15 } ],
+						[ "translate_start_x", { "index": -1, "frame": 23 } ],
+						[ "translate_start_y", { "index": -1, "frame": 15 } ],
+						[ "translate_start_y", { "index": -1, "frame": 23 } ],
+						[ "scale_start_x", { "index": -1, "frame": 15 } ],
+						[ "scale_start_x", { "index": -1, "frame": 23 } ],
+						[ "blend_alpha", { "index": -1, "frame": 15 } ],
+						[ "blend_alpha", { "index": -1, "frame": 23 } ]
+					]
+				],
+				"sequences_transform_keyframe_insert": [
+					[
+						[ "offset_x", { "index": -1, "frame": 15 } ],
+						[ "offset_x", { "index": -1, "frame": 23 } ],
+						[ "offset_y", { "index": -1, "frame": 15 } ],
+						[ "offset_y", { "index": -1, "frame": 23 } ]
+					],
+					[
+						[ "offset_x", { "index": -1, "frame": 15 } ],
+						[ "offset_x", { "index": -1, "frame": 23 } ],
+						[ "offset_y", { "index": -1, "frame": 15 } ],
+						[ "offset_y", { "index": -1, "frame": 23 } ]
+					]
+				]
+			},
+			"sequences_keyframe_insert_values": [
+				{ "sequence": "MySequence1_Transform", "name": "translate_start_x", "frame": 15, "value": 121 },
+				{ "sequence": "MySequence1_Transform", "name": "translate_start_x", "frame": 23, "value":  21 },
+				{ "sequence": "MySequence1_Transform", "name": "translate_start_y", "frame": 15, "value": -191 },
+				{ "sequence": "MySequence1_Transform", "name": "translate_start_y", "frame": 23, "value":  -51 },
+				{ "sequence": "MySequence1_Transform", "name": "scale_start_x", "frame": 15, "value": 1.2 },
+				{ "sequence": "MySequence1_Transform", "name": "scale_start_x", "frame": 23, "value": 0.1 },
+				{ "sequence": "MySequence1_Transform", "name": "blend_alpha", "frame": 15, "value": 0.9 },
+				{ "sequence": "MySequence1_Transform", "name": "blend_alpha", "frame": 23, "value": 0.2 },
+				
+				{ "sequence": "MySequence1_Transform.transform", "name": "offset_x", "frame": 15, "value": 2937.6 },
+				{ "sequence": "MySequence1_Transform.transform", "name": "offset_x", "frame": 23, "value": 1017.6 },
+				{ "sequence": "MySequence1_Transform.transform", "name": "offset_y", "frame": 15, "value": -1782.0 },
+				{ "sequence": "MySequence1_Transform.transform", "name": "offset_y", "frame": 23, "value":  -777.6 },
+				
+				{ "sequence": "MySequence2_Transform", "name": "translate_start_x", "frame": 15, "value":  21 },
+				{ "sequence": "MySequence2_Transform", "name": "translate_start_x", "frame": 23, "value": 121 },
+				{ "sequence": "MySequence2_Transform", "name": "translate_start_y", "frame": 15, "value":  51 },
+				{ "sequence": "MySequence2_Transform", "name": "translate_start_y", "frame": 23, "value": 191 },
+				{ "sequence": "MySequence2_Transform", "name": "scale_start_x", "frame": 15, "value": 0.1 },
+				{ "sequence": "MySequence2_Transform", "name": "scale_start_x", "frame": 23, "value": 1.2 },
+				{ "sequence": "MySequence2_Transform", "name": "blend_alpha", "frame": 15, "value": 0.2 },
+				{ "sequence": "MySequence2_Transform", "name": "blend_alpha", "frame": 23, "value": 0.9 },
+				
+				{ "sequence": "MySequence2_Transform.transform", "name": "offset_x", "frame": 15, "value": 1017.6 },
+				{ "sequence": "MySequence2_Transform.transform", "name": "offset_x", "frame": 23, "value": 2937.6 },
+				{ "sequence": "MySequence2_Transform.transform", "name": "offset_y", "frame": 15, "value":  777.6 },
+				{ "sequence": "MySequence2_Transform.transform", "name": "offset_y", "frame": 23, "value": 1782.0 }
+				
+			]
+		}
+	]
+}

@@ -1,0 +1,39 @@
+{
+	"common": {
+		"operator": { "operation_type": "" },
+		"super_efecto": { "effect_type": "no_effect", "effect_length": 50, "delay_image": 0 },
+		"expected_result": "FINISHED",
+		"expected_sequences": [],
+		"expected_calls": { "new_effect": null },
+		"expected_report": null
+	},
+	
+	"tests": [
+		{	"name": "test unselect children",
+			"sequences": [
+				{
+					"name": "MySequence",
+					"type": "TRANSFORM",
+					"frame_final_duration": 100,
+					"input_1": {
+						"name": "MyChildSequence1",
+						"input_1": { "name": "MyChildSequence2" }
+					}
+				},
+				{ "name": "MyChildSequence1" },
+				{ "name": "MyChildSequence2" }
+			],
+			"expected_sequences": [{
+				"name": "MySequence",
+				"type": "TRANSFORM",
+				"frame_final_duration": 100,
+				"select": true,
+				"input_1": {
+					"name": "MyChildSequence1",
+					"select": false,
+					"input_1": { "name": "MyChildSequence2", "select": false }
+				}
+			}]
+		}
+	]
+}

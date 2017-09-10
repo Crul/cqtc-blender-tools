@@ -1,0 +1,1252 @@
+{
+	"common": {
+		"operator": { "operation_type": "OUT" },
+		"super_efecto": {
+			"effect_type": "no_effect",
+			"effect_length": 50,
+			"delay_image": 0,
+			"apply_to_sound": false,
+			"reverse_out_effect": false,
+			"mirror_horizontal_out_effect": false,
+			"mirror_vertical_out_effect": false
+		},
+		"expected_result": "FINISHED",
+		"expected_calls": {
+			"new_effect": null
+		},
+		"expected_report": null
+	},
+	
+	"tests": [
+		{	"name": "test create OUT effect: do not apply delay frame_offset_start",
+			"super_efecto": { "delay_image": 10 },
+			"sequences": [
+				{
+					"name": "MySequence",
+					"type": "MOVIE",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"frame_offset_start": 25
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence",
+					"type": "MOVIE",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"frame_offset_start": 25
+				}
+			]
+		},
+		{	"name": "test create OUT effect: initial values",
+			"super_efecto": {
+				"initial_position_x": 21,
+				"initial_position_y": 31,
+				"initial_zoom": 0.41,
+				"initial_opacity": 0.51,
+				"initial_offset_x": 61,
+				"initial_offset_y": 71
+			},
+			"sequences": [
+				{
+					"name": "MySequence",
+					"type": "TRANSFORM",
+					"blend_type": "FOO",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"frame_offset_start": 25,
+					"transform" : {
+						"offset_x": 11,
+						"offset_y": 21
+					}
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence",
+					"type": "TRANSFORM",
+					"blend_type": "ALPHA_OVER",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"frame_offset_start": 25,
+					"translate_start_x": 21,
+					"translate_start_y": 31,
+					"use_uniform_scale": true,
+					"scale_start_x": 0.41,
+					"blend_alpha": 0.51,
+					"use_translation": true,
+					"transform" : {
+						"offset_x": 1182.2,
+						"offset_y":  787.8
+					}
+				}
+			]
+		},
+		{	"name": "test create OUT effect: tranform animation",
+			"super_efecto": {
+				"initial_position_x": 21,
+				"position_x_animated": true,
+				"final_position_x": 121,
+				"initial_position_y": 51,
+				"position_y_animated": true,
+				"final_position_y": 191,
+				"initial_zoom": 0.1,
+				"zoom_animated": true,
+				"final_zoom": 1.2,
+				"initial_opacity": 0.2,
+				"opacity_animated": true,
+				"final_opacity": 0.9,				
+				"initial_offset_x": 53,
+				"offset_x_animated": true,
+				"final_offset_x": 153,
+				"initial_offset_y": 72,
+				"offset_y_animated": true,
+				"final_offset_y": 165
+			},
+			"sequences": [
+				{
+					"name": "MySequence",
+					"type": "TRANSFORM",
+					"blend_type": "FOO",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"frame_final_start": 33,
+					"frame_final_end": 133,
+					"scale_start_x": 1.2,
+					"transform" : {
+						"offset_x": 11,
+						"offset_y": 21
+					}
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence",
+					"type": "TRANSFORM",
+					"blend_type": "ALPHA_OVER",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"translate_start_x": 121,
+					"translate_start_y": 191,
+					"scale_start_x": 1.2,
+					"blend_alpha": 0.9,
+					"transform" : {
+						"offset_x": 2948.6,
+						"offset_y": 1803.0
+					}
+				}
+			],
+			"expected_calls": {
+				"sequences_keyframe_insert": [
+					[	
+						[ "translate_start_x", { "index": -1, "frame": 83 } ],
+						[ "translate_start_x", { "index": -1, "frame": 133 } ],
+						[ "translate_start_y", { "index": -1, "frame": 83 } ],
+						[ "translate_start_y", { "index": -1, "frame": 133 } ],
+						[ "scale_start_x", { "index": -1, "frame": 83 } ],
+						[ "scale_start_x", { "index": -1, "frame": 133 } ],
+						[ "blend_alpha", { "index": -1, "frame": 83 } ],
+						[ "blend_alpha", { "index": -1, "frame": 133 } ]
+					]
+				],
+				"sequences_transform_keyframe_insert": [
+					[
+						[ "offset_x", { "index": -1, "frame": 83 } ],
+						[ "offset_x", { "index": -1, "frame": 133 } ],
+						[ "offset_y", { "index": -1, "frame": 83 } ],
+						[ "offset_y", { "index": -1, "frame": 133 } ]
+					]
+				]
+			},
+			"sequences_keyframe_insert_values": [
+				{ "sequence": "MySequence", "name": "translate_start_x", "frame":  83, "value":  21 },
+				{ "sequence": "MySequence", "name": "translate_start_x", "frame": 133, "value": 121 },
+				{ "sequence": "MySequence", "name": "translate_start_y", "frame":  83, "value":  51 },
+				{ "sequence": "MySequence", "name": "translate_start_y", "frame": 133, "value": 191 },
+				{ "sequence": "MySequence", "name": "scale_start_x", "frame":  83, "value": 0.1 },
+				{ "sequence": "MySequence", "name": "scale_start_x", "frame": 133, "value": 1.2 },
+				{ "sequence": "MySequence", "name": "blend_alpha", "frame":  83, "value": 0.2 },
+				{ "sequence": "MySequence", "name": "blend_alpha", "frame": 133, "value": 0.9 },
+				{ "sequence": "MySequence.transform", "name": "offset_x", "frame":  83, "value": 1028.6 },
+				{ "sequence": "MySequence.transform", "name": "offset_x", "frame": 133, "value": 2948.6 },
+				{ "sequence": "MySequence.transform", "name": "offset_y", "frame":  83, "value":  798.6 },
+				{ "sequence": "MySequence.transform", "name": "offset_y", "frame": 133, "value": 1803.0 }
+			]
+		},
+		{	"name": "test create OUT effect: add tranform strip from MOVIE",
+			"super_efecto": {
+				"initial_position_x": 21
+			},
+			"sequences": [
+				{
+					"name": "MySequence",
+					"type": "MOVIE",
+					"blend_type": "FOO",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"frame_final_start": 50,
+					"frame_final_end": 150
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence_Transform",
+					"type": "TRANSFORM",
+					"blend_type": "ALPHA_OVER",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"translate_start_x": 21,
+					"input_1": {
+						"name": "MySequence",
+						"type": "MOVIE",
+						"blend_type": "FOO",
+						"channel": 1,
+						"select": false,
+						"frame_final_duration": 100,
+						"frame_final_start": 50,
+						"frame_final_end": 150
+					}
+				}
+			],
+			"expected_calls": {
+				"new_effect": [
+					[ "MySequence_Transform", "TRANSFORM", 1, 50, 150, { "name": "MySequence" }]
+				]
+			}
+		},
+		{	"name": "test create OUT effect: add tranform strip on GAUSSIAN_BLUR",
+			"super_efecto": {
+				"initial_position_x": 21
+			},
+			"sequences": [
+				{
+					"name": "MyBlurSequence",
+					"type": "GAUSSIAN_BLUR",
+					"blend_type": "FOO",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"frame_final_start": 50,
+					"frame_final_end": 150,
+					"input_1": {
+						"name": "MySequence",
+						"type": "MOVIE"
+					}
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MyBlurSequence_Transform",
+					"type": "TRANSFORM",
+					"blend_type": "ALPHA_OVER",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"translate_start_x": 21,
+					"input_1": {
+						"name": "MyBlurSequence",
+						"type": "GAUSSIAN_BLUR",
+						"blend_type": "FOO",
+						"channel": 1,
+						"select": false,
+						"frame_final_duration": 100,
+						"frame_final_start": 50,
+						"frame_final_end": 150,
+						"input_1": {
+							"name": "MySequence",
+							"type": "MOVIE"
+						}
+					}
+				}
+			],
+			"expected_calls": {
+				"new_effect": [
+					[ "MyBlurSequence_Transform", "TRANSFORM", 1, 50, 150, { "name": "MyBlurSequence" }]
+				]
+			}
+		},
+		{	"name": "test create OUT effect: add effect on TRANSFORM strip with GAUSSIAN_BLUR child",
+			"super_efecto": {
+				"initial_position_x": 21
+			},
+			"sequences": [
+				{
+					"name": "MyTranformSequence",
+					"type": "TRANSFORM",
+					"blend_type": "ALPHA_OVER",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"input_1": {
+						"name": "MyBlurSequence",
+						"type": "GAUSSIAN_BLUR",
+						"blend_type": "FOO",
+						"channel": 1,
+						"select": false,
+						"frame_final_duration": 100,
+						"frame_final_start": 50,
+						"frame_final_end": 150,
+						"input_1": {
+							"name": "MySequence",
+							"type": "MOVIE"
+						}
+					}
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MyTranformSequence",
+					"type": "TRANSFORM",
+					"blend_type": "ALPHA_OVER",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"input_1": {
+						"name": "MyBlurSequence",
+						"type": "GAUSSIAN_BLUR",
+						"blend_type": "FOO",
+						"channel": 1,
+						"select": false,
+						"frame_final_duration": 100,
+						"frame_final_start": 50,
+						"frame_final_end": 150,
+						"input_1": {
+							"name": "MySequence",
+							"type": "MOVIE"
+						}
+					}
+				}
+			],
+			"expected_calls": {
+				"new_effect": []
+			}
+		},
+		{	"name": "test create OUT effect: add effect on GAUSSIAN_BLUR with TRANSFORM child",
+			"super_efecto": {
+				"initial_position_x": 21
+			},
+			"sequences": [
+				{
+					"name": "MyBlurSequence",
+					"type": "GAUSSIAN_BLUR",
+					"blend_type": "FOO",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"input_1": {
+						"name": "MyTranformSequence",
+						"type": "TRANSFORM",
+						"blend_type": "FOO",
+						"channel": 1,
+						"select": false,
+						"frame_final_duration": 100,
+						"frame_final_start": 50,
+						"frame_final_end": 150,
+						"input_1": {
+							"name": "MySequence",
+							"type": "MOVIE"
+						}
+					}
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MyBlurSequence",
+					"type": "GAUSSIAN_BLUR",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"input_1": {
+						"name": "MyTranformSequence",
+						"type": "TRANSFORM",
+						"channel": 1,
+						"select": false,
+						"frame_final_duration": 100,
+						"frame_final_start": 50,
+						"frame_final_end": 150,
+						"translate_start_x": 21,
+						"input_1": {
+							"name": "MySequence",
+							"type": "MOVIE"
+						}
+					}
+				}
+			],
+			"expected_calls": {
+				"new_effect": []
+			}
+		},
+		{	"name": "test create OUT effect: add blur initial values",
+			"super_efecto": {
+				"initial_blur_x": 11,
+				"initial_blur_y": 21
+			},
+			"sequences": [
+				{
+					"name": "MySequence",
+					"type": "MOVIE",
+					"blend_type": "FOO",
+					"channel": 1,
+					"select": true,
+					"frame_final_start": 50,
+					"frame_final_end": 150,
+					"frame_final_duration": 100
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence_Blur",
+					"type": "GAUSSIAN_BLUR",
+					"channel": 1,
+					"select": true,
+					"size_x": 11,
+					"size_y": 21,
+					"input_1": {
+						"name": "MySequence",
+						"type": "MOVIE",
+						"select": false
+					}
+				}
+			],
+			"expected_calls": {
+				"new_effect": [
+					[ "MySequence_Blur", "GAUSSIAN_BLUR", 1, 50, 150, { "name": "MySequence" }]
+				]
+			}
+		},
+		{	"name": "test create OUT effect: add blur animation",
+			"super_efecto": {
+				"initial_blur_x": 11,
+				"blur_x_animated": true,
+				"final_blur_x": 111,
+				"initial_blur_y": 21,
+				"blur_y_animated": true,
+				"final_blur_y": 121
+			},
+			"sequences": [
+				{
+					"name": "MySequence",
+					"type": "MOVIE",
+					"blend_type": "FOO",
+					"channel": 1,
+					"select": true,
+					"frame_final_start": 50,
+					"frame_final_end": 150,
+					"frame_final_duration": 100
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence_Blur",
+					"type": "GAUSSIAN_BLUR",
+					"channel": 1,
+					"select": true,
+					"size_x": 111,
+					"size_y": 121,
+					"input_1": {
+						"name": "MySequence",
+						"type": "MOVIE",
+						"select": false
+					}
+				}
+			],
+			"expected_calls": {
+				"new_effect": [
+					[ "MySequence_Blur", "GAUSSIAN_BLUR", 1, 50, 150, { "name": "MySequence" }]
+				],
+				"sequences_keyframe_insert": [
+					[	
+						[ "size_x", { "index": -1, "frame": 100 } ],
+						[ "size_x", { "index": -1, "frame": 150 } ],
+						[ "size_y", { "index": -1, "frame": 100 } ],
+						[ "size_y", { "index": -1, "frame": 150 } ]
+					]
+				]
+			},
+			"sequences_keyframe_insert_values": [
+				{ "sequence": "MySequence_Blur", "name": "size_x", "frame": 100, "value":  11 },
+				{ "sequence": "MySequence_Blur", "name": "size_x", "frame": 150, "value": 111 },
+				{ "sequence": "MySequence_Blur", "name": "size_y", "frame": 100, "value":  21 },
+				{ "sequence": "MySequence_Blur", "name": "size_y", "frame": 150, "value": 121 }
+			]
+		},
+		{	"name": "test create OUT effect: add blur on TRANSFORM strip",
+			"super_efecto": {
+				"initial_blur_x": 11,
+				"initial_blur_y": 21
+			},
+			"sequences": [
+				{
+					"name": "MyTransformSequence",
+					"type": "TRANSFORM",
+					"blend_type": "FOO",
+					"channel": 1,
+					"select": true,
+					"frame_final_start": 50,
+					"frame_final_end": 150,
+					"frame_final_duration": 100,
+					"frame_offset_start": 25,
+					"transform" : {
+						"offset_x": 11,
+						"offset_y": 21
+					}
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MyTransformSequence_Blur",
+					"type": "GAUSSIAN_BLUR",
+					"channel": 1,
+					"select": true,
+					"size_x": 11,
+					"size_y": 21,
+					"input_1": {
+						"name": "MyTransformSequence",
+						"type": "TRANSFORM",
+						"blend_type": "FOO",
+						"channel": 1,
+						"select": false,
+						"frame_final_duration": 100,
+						"frame_offset_start": 25,
+						"transform" : {
+							"offset_x": 11,
+							"offset_y": 21
+						}
+					}
+				}
+			],
+			"expected_calls": {
+				"new_effect": [
+					[ "MyTransformSequence_Blur", "GAUSSIAN_BLUR", 1, 50, 150, { "name": "MyTransformSequence" }]
+				]
+			}
+		},
+		{	"name": "test create OUT effect: add blur on TRANSFORM strip with GAUSSIAN_BLUR child",
+			"super_efecto": {
+				"initial_blur_x": 11,
+				"initial_blur_y": 21
+			},
+			"sequences": [
+				{
+					"name": "MyTranformSequence",
+					"type": "TRANSFORM",
+					"blend_type": "ALPHA_OVER",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"input_1": {
+						"name": "MyBlurSequence",
+						"type": "GAUSSIAN_BLUR",
+						"channel": 1,
+						"select": false,
+						"frame_final_duration": 100,
+						"frame_final_start": 50,
+						"frame_final_end": 150,
+						"input_1": {
+							"name": "MySequence",
+							"type": "MOVIE"
+						}
+					}
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MyTranformSequence",
+					"type": "TRANSFORM",
+					"blend_type": "ALPHA_OVER",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"input_1": {
+						"name": "MyBlurSequence",
+						"type": "GAUSSIAN_BLUR",
+						"channel": 1,
+						"select": false,
+						"frame_final_duration": 100,
+						"frame_final_start": 50,
+						"frame_final_end": 150,
+						"size_x": 11,
+						"size_y": 21,
+						"input_1": {
+							"name": "MySequence",
+							"type": "MOVIE"
+						}
+					}
+				}
+			],
+			"expected_calls": {
+				"new_effect": []
+			}
+		},
+		{	"name": "test create OUT effect: add blur on GAUSSIAN_BLUR strip with TRANSFORM child",
+			"super_efecto": {
+				"initial_blur_x": 11,
+				"initial_blur_y": 21
+			},
+			"sequences": [
+				{
+					"name": "MyBlurSequence",
+					"type": "GAUSSIAN_BLUR",
+					"blend_type": "ALPHA_OVER",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"frame_final_start": 50,
+					"frame_final_end": 150,
+					"input_1": {
+						"name": "MyTranformSequence",
+						"type": "TRANSFORM",
+						"channel": 1,
+						"select": false,
+						"frame_final_duration": 100,
+						"input_1": {
+							"name": "MySequence",
+							"type": "MOVIE"
+						}
+					}
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MyBlurSequence",
+					"type": "GAUSSIAN_BLUR",
+					"blend_type": "ALPHA_OVER",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"size_x": 11,
+					"size_y": 21,
+					"input_1": {
+						"name": "MyTranformSequence",
+						"type": "TRANSFORM",
+						"channel": 1,
+						"select": false,
+						"frame_final_duration": 100,
+						"input_1": {
+							"name": "MySequence",
+							"type": "MOVIE"
+						}
+					}
+				}
+			],
+			"expected_calls": {
+				"new_effect": []
+			}
+		},
+		{	"name": "test create OUT effect: add transform and blur",
+			"super_efecto": {
+				"initial_position_x": 11,
+				"initial_position_y": 21,
+				"initial_blur_x": 31,
+				"initial_blur_y": 41
+			},
+			"sequences": [
+				{
+					"name": "MySequence",
+					"type": "MOVIE",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"frame_final_start": 50,
+					"frame_final_end": 150
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence_Transform_Blur",
+					"type": "GAUSSIAN_BLUR",
+					"select": true,
+					"size_x": 31,
+					"size_y": 41,
+					"input_1": {						
+						"name": "MySequence_Transform",
+						"type": "TRANSFORM",
+						"blend_type": "ALPHA_OVER",
+						"select": false,
+						"frame_final_duration": 100,
+						"translate_start_x": 11,
+						"translate_start_y": 21,
+
+						"input_1": {
+							"name": "MySequence",
+							"type": "MOVIE"
+						}
+					}
+				}
+			],
+			"expected_calls": {
+				"new_effect": [
+					[ "MySequence_Transform", "TRANSFORM", 1, 50, 150, { "name": "MySequence" }],
+					[ "MySequence_Transform_Blur", "GAUSSIAN_BLUR", 1, 50, 150, { "name": "MySequence_Transform" }]
+				]
+			}
+		},
+		{	"name": "test create OUT effect: add transform and cross effect",
+			"super_efecto": {
+				"effect_type": "fade",
+				"initial_position_x": 11,
+				"initial_position_y": 21
+			},
+			"sequences": [
+				{
+					"name": "MySequence",
+					"type": "MOVIE",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"frame_final_start": 50,
+					"frame_final_end": 150
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence_Transform",
+					"type": "TRANSFORM",
+					"select": true,
+					"translate_start_x": 11,
+					"translate_start_y": 21,
+					"input_1": {		
+						"name": "MySequence",
+						"type": "MOVIE"
+					}
+				}
+			],
+			"expected_calls": {
+				"new_effect": [
+					[ "MySequence_Transform", "TRANSFORM", 1, 50, 150, { "name": "MySequence" }],
+					[ "MySequence_Color", "COLOR", 1, 100, { "frame_end": 150 } ],
+					[ 
+						"MySequence_Fundido", "CROSS", 1, 100,
+						{
+							"frame_end": 150,
+							"seq1": { "name": "MySequence_Transform" },
+							"seq2": { "name": "MySequence_Color" }
+						}
+					]
+				]
+			}
+		},
+		{	"name": "test create OUT effect: add transform, blur and cross effect",
+			"super_efecto": {
+				"effect_type": "fade",
+				"initial_position_x": 11,
+				"initial_position_y": 21,
+				"initial_blur_x": 31,
+				"initial_blur_y": 41
+			},
+			"sequences": [
+				{
+					"name": "MySequence",
+					"type": "MOVIE",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"frame_final_start": 50,
+					"frame_final_end": 150
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence_Transform_Blur",
+					"type": "GAUSSIAN_BLUR",
+					"select": true,
+					"size_x": 31,
+					"size_y": 41,
+					"input_1": {						
+						"name": "MySequence_Transform",
+						"type": "TRANSFORM",
+						"blend_type": "ALPHA_OVER",
+						"select": false,
+						"frame_final_duration": 100,
+						"translate_start_x": 11,
+						"translate_start_y": 21,
+						"input_1": {
+							"name": "MySequence",
+							"type": "MOVIE"
+						}
+					}
+				}
+			],
+			"expected_calls": {
+				"new_effect": [
+					[ "MySequence_Transform", "TRANSFORM", 1, 50, 150, { "name": "MySequence" }],
+					[ "MySequence_Transform_Blur", "GAUSSIAN_BLUR", 1, 50, 150, { "name": "MySequence_Transform" }],
+					[ "MySequence_Color", "COLOR", 1, 100, { "frame_end": 150 } ],
+					[ 
+						"MySequence_Fundido", "CROSS", 1, 100,
+						{
+							"frame_end": 150,
+							"seq1": { "name": "MySequence_Transform_Blur" },
+							"seq2": { "name": "MySequence_Color" }
+						}
+					]
+				]
+			}
+		},
+		{	"name": "test create OUT effect: apply volume to SOUND",
+			"super_efecto": { "apply_to_sound": true },
+			"sequences": [
+				{
+					"name": "MySequence",
+					"type": "MOVIE",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"frame_final_start": 50,
+					"frame_final_end": 150
+				},
+				{
+					"name": "MySoundSequence",
+					"type": "SOUND",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"frame_final_start": 50,
+					"frame_final_end": 150,
+					"volume": 0.5
+				}			
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence",
+					"type": "MOVIE",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"frame_final_start": 50,
+					"frame_final_end": 150
+				},
+				{
+					"name": "MySoundSequence",
+					"type": "SOUND",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"frame_final_start": 50,
+					"frame_final_end": 150,
+					"volume": 0
+				}			
+			],
+			"expected_calls": {
+				"new_effect": [],
+				"sequences_keyframe_insert": [
+					[],
+					[
+						[ "volume", { "index": -1, "frame": 100 } ],
+						[ "volume", { "index": -1, "frame": 150 } ]
+					
+					]
+				]
+			},
+			"sequences_keyframe_insert_values": [
+				{ "sequence": "MySoundSequence", "name": "volume", "frame": 100, "value": 1 },
+				{ "sequence": "MySoundSequence", "name": "volume", "frame": 150, "value": 0 }
+			]
+		},
+		{	"name": "test create OUT effect: apply volume to SCENE",
+			"super_efecto": { "apply_to_sound": true },
+			"sequences": [
+				{
+					"name": "MySequence",
+					"type": "MOVIE",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"frame_final_start": 50,
+					"frame_final_end": 150
+				},
+				{
+					"name": "MySceneSequence",
+					"type": "SCENE",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"frame_final_start": 50,
+					"frame_final_end": 150,
+					"scene": { "audio_volume": 0.5 }
+				}			
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence",
+					"type": "MOVIE",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"frame_final_start": 50,
+					"frame_final_end": 150
+				},
+				{
+					"name": "MySceneSequence",
+					"type": "SCENE",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"frame_final_start": 50,
+					"frame_final_end": 150,
+					"scene": { "audio_volume": 0 }
+					
+				}			
+			],
+			"expected_calls": {
+				"new_effect": [],
+				"sequences_keyframe_insert": [ [], [] ],
+				"sequences_scene_keyframe_insert": [
+					[],
+					[
+						[ "audio_volume", { "index": -1, "frame": 150 } ],
+						[ "audio_volume", { "index": -1, "frame": 200 } ]
+					]
+				]
+			},
+			"sequences_keyframe_insert_values": [
+				{ "sequence": "MySceneSequence.scene", "name": "audio_volume", "frame": 150, "value": 1 },
+				{ "sequence": "MySceneSequence.scene", "name": "audio_volume", "frame": 200, "value": 0 }
+			]
+		},
+		{	"name": "test create OUT effect: effect length in percentage",
+			"super_efecto": {
+				"effect_length": 99999,
+				"effect_length_type": "PERCENTAGE",
+				"effect_length_percentage": 88,
+				"initial_position_x": 21,
+				"position_x_animated": true,
+				"final_position_x": 121
+			},
+			"sequences": [
+				{
+					"name": "MySequence",
+					"type": "TRANSFORM",
+					"blend_type": "FOO",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"frame_final_start": 33,
+					"frame_final_end": 133,
+					"scale_start_x": 1.2,
+					"transform" : {
+						"offset_x": 11,
+						"offset_y": 21
+					}
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence",
+					"type": "TRANSFORM",
+					"blend_type": "ALPHA_OVER",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"translate_start_x": 121
+				}
+			],
+			"expected_calls": {
+				"sequences_keyframe_insert": [
+					[	
+						[ "translate_start_x", { "index": -1, "frame":  45 } ],
+						[ "translate_start_x", { "index": -1, "frame": 133 } ]
+					]
+				]
+			},
+			"sequences_keyframe_insert_values": [
+				{ "sequence": "MySequence", "name": "translate_start_x", "frame":  45, "value":  21 },
+				{ "sequence": "MySequence", "name": "translate_start_x", "frame": 133, "value": 121 }
+			]
+		},
+		{	"name": "test create OUT effect: apply reverse_out_effect",
+			"super_efecto": {
+				"delay_image": 9,
+				"reverse_out_effect": true,
+				"initial_position_x": 21,
+				"position_x_animated": true,
+				"final_position_x": 121,
+				"initial_position_y": 51,
+				"position_y_animated": true,
+				"final_position_y": 191,
+				"initial_zoom": 0.1,
+				"zoom_animated": true,
+				"final_zoom": 1.2,
+				"initial_opacity": 0.2,
+				"opacity_animated": true,
+				"final_opacity": 0.9,				
+				"initial_offset_x": 53,
+				"offset_x_animated": true,
+				"final_offset_x": 153,
+				"initial_offset_y": 72,
+				"offset_y_animated": true,
+				"final_offset_y": 165
+			},
+			"sequences": [
+				{
+					"name": "MySequence",
+					"type": "TRANSFORM",
+					"blend_type": "FOO",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"frame_final_start": 33,
+					"frame_final_end": 133,
+					"scale_start_x": 1.2,
+					"transform" : {
+						"offset_x": 11,
+						"offset_y": 21
+					}
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence",
+					"type": "TRANSFORM",
+					"blend_type": "ALPHA_OVER",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"translate_start_x": 21,
+					"translate_start_y": 51,
+					"scale_start_x": 0.1,
+					"blend_alpha": 0.2,
+					"transform" : {
+						"offset_x": 1028.6,
+						"offset_y": 798.6
+					}
+				}
+			],
+			"expected_calls": {
+				"sequences_keyframe_insert": [
+					[	
+						[ "translate_start_x", { "index": -1, "frame": 83 } ],
+						[ "translate_start_x", { "index": -1, "frame": 133 } ],
+						[ "translate_start_y", { "index": -1, "frame": 83 } ],
+						[ "translate_start_y", { "index": -1, "frame": 133 } ],
+						[ "scale_start_x", { "index": -1, "frame": 83 } ],
+						[ "scale_start_x", { "index": -1, "frame": 133 } ],
+						[ "blend_alpha", { "index": -1, "frame": 83 } ],
+						[ "blend_alpha", { "index": -1, "frame": 133 } ]
+					]
+				],
+				"sequences_transform_keyframe_insert": [
+					[
+						[ "offset_x", { "index": -1, "frame": 83 } ],
+						[ "offset_x", { "index": -1, "frame": 133 } ],
+						[ "offset_y", { "index": -1, "frame": 83 } ],
+						[ "offset_y", { "index": -1, "frame": 133 } ]
+					]
+				]
+			},
+			"sequences_keyframe_insert_values": [
+				{ "sequence": "MySequence", "name": "translate_start_x", "frame":  83, "value": 121 },
+				{ "sequence": "MySequence", "name": "translate_start_x", "frame": 133, "value":  21 },
+				{ "sequence": "MySequence", "name": "translate_start_y", "frame":  83, "value": 191 },
+				{ "sequence": "MySequence", "name": "translate_start_y", "frame": 133, "value":  51 },
+				{ "sequence": "MySequence", "name": "scale_start_x", "frame":  83, "value": 1.2 },
+				{ "sequence": "MySequence", "name": "scale_start_x", "frame": 133, "value": 0.1 },
+				{ "sequence": "MySequence", "name": "blend_alpha", "frame":  83, "value": 0.9 },
+				{ "sequence": "MySequence", "name": "blend_alpha", "frame": 133, "value": 0.2 },
+				{ "sequence": "MySequence.transform", "name": "offset_x", "frame":  83, "value": 2948.6 },
+				{ "sequence": "MySequence.transform", "name": "offset_x", "frame": 133, "value": 1028.6 },
+				{ "sequence": "MySequence.transform", "name": "offset_y", "frame":  83, "value": 1803.0 },
+				{ "sequence": "MySequence.transform", "name": "offset_y", "frame": 133, "value":  798.6 }
+			]
+		},
+		{	"name": "test create OUT effect: apply mirror_horizontal_out_effect",
+			"super_efecto": {
+				"delay_image": 9,
+				"mirror_horizontal_out_effect": true,
+				"initial_position_x": 21,
+				"position_x_animated": true,
+				"final_position_x": 121,
+				"initial_position_y": 51,
+				"position_y_animated": true,
+				"final_position_y": 191,
+				"initial_zoom": 0.1,
+				"zoom_animated": true,
+				"final_zoom": 1.2,
+				"initial_opacity": 0.2,
+				"opacity_animated": true,
+				"final_opacity": 0.9,				
+				"initial_offset_x": 53,
+				"offset_x_animated": true,
+				"final_offset_x": 153,
+				"initial_offset_y": 72,
+				"offset_y_animated": true,
+				"final_offset_y": 165
+			},
+			"sequences": [
+				{
+					"name": "MySequence",
+					"type": "TRANSFORM",
+					"blend_type": "FOO",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"frame_final_start": 33,
+					"frame_final_end": 133,
+					"scale_start_x": 1.2,
+					"transform" : {
+						"offset_x": 11,
+						"offset_y": 21
+					}
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence",
+					"type": "TRANSFORM",
+					"blend_type": "ALPHA_OVER",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"translate_start_x": -121,
+					"translate_start_y": 191,
+					"scale_start_x": 1.2,
+					"blend_alpha": 0.9,
+					"transform" : {
+						"offset_x": -2948.6,
+						"offset_y": 1803.0
+					}
+				}
+			],
+			"expected_calls": {
+				"sequences_keyframe_insert": [
+					[	
+						[ "translate_start_x", { "index": -1, "frame": 83 } ],
+						[ "translate_start_x", { "index": -1, "frame": 133 } ],
+						[ "translate_start_y", { "index": -1, "frame": 83 } ],
+						[ "translate_start_y", { "index": -1, "frame": 133 } ],
+						[ "scale_start_x", { "index": -1, "frame": 83 } ],
+						[ "scale_start_x", { "index": -1, "frame": 133 } ],
+						[ "blend_alpha", { "index": -1, "frame": 83 } ],
+						[ "blend_alpha", { "index": -1, "frame": 133 } ]
+					]
+				],
+				"sequences_transform_keyframe_insert": [
+					[
+						[ "offset_x", { "index": -1, "frame": 83 } ],
+						[ "offset_x", { "index": -1, "frame": 133 } ],
+						[ "offset_y", { "index": -1, "frame": 83 } ],
+						[ "offset_y", { "index": -1, "frame": 133 } ]
+					]
+				]
+			},
+			"sequences_keyframe_insert_values": [
+				{ "sequence": "MySequence", "name": "translate_start_x", "frame":  83, "value":  -21 },
+				{ "sequence": "MySequence", "name": "translate_start_x", "frame": 133, "value": -121 },
+				{ "sequence": "MySequence", "name": "translate_start_y", "frame":  83, "value":   51 },
+				{ "sequence": "MySequence", "name": "translate_start_y", "frame": 133, "value":  191 },
+				{ "sequence": "MySequence", "name": "scale_start_x", "frame":  83, "value": 0.1 },
+				{ "sequence": "MySequence", "name": "scale_start_x", "frame": 133, "value": 1.2 },
+				{ "sequence": "MySequence", "name": "blend_alpha", "frame":  83, "value": 0.2 },
+				{ "sequence": "MySequence", "name": "blend_alpha", "frame": 133, "value": 0.9 },
+				{ "sequence": "MySequence.transform", "name": "offset_x", "frame":  83, "value": -1028.6 },
+				{ "sequence": "MySequence.transform", "name": "offset_x", "frame": 133, "value": -2948.6 },
+				{ "sequence": "MySequence.transform", "name": "offset_y", "frame":  83, "value":   798.6 },
+				{ "sequence": "MySequence.transform", "name": "offset_y", "frame": 133, "value":  1803.0 }
+			]
+		},
+		{	"name": "test create OUT effect: do not apply mirror_vertical_out_effect",
+			"super_efecto": {
+				"delay_image": 9,
+				"mirror_vertical_out_effect": true,
+				"initial_position_x": 21,
+				"position_x_animated": true,
+				"final_position_x": 121,
+				"initial_position_y": 51,
+				"position_y_animated": true,
+				"final_position_y": 191,
+				"initial_zoom": 0.1,
+				"zoom_animated": true,
+				"final_zoom": 1.2,
+				"initial_opacity": 0.2,
+				"opacity_animated": true,
+				"final_opacity": 0.9,				
+				"initial_offset_x": 53,
+				"offset_x_animated": true,
+				"final_offset_x": 153,
+				"initial_offset_y": 72,
+				"offset_y_animated": true,
+				"final_offset_y": 165
+			},
+			"sequences": [
+				{
+					"name": "MySequence",
+					"type": "TRANSFORM",
+					"blend_type": "FOO",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"frame_final_start": 33,
+					"frame_final_end": 133,
+					"scale_start_x": 1.2,
+					"transform" : {
+						"offset_x": 11,
+						"offset_y": 21
+					}
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence",
+					"type": "TRANSFORM",
+					"blend_type": "ALPHA_OVER",
+					"channel": 1,
+					"select": true,
+					"frame_final_duration": 100,
+					"translate_start_x": 121,
+					"translate_start_y": -191,
+					"scale_start_x": 1.2,
+					"blend_alpha": 0.9,
+					"transform" : {
+						"offset_x": 2948.6,
+						"offset_y": -1803.0
+					}
+				}
+			],
+			"expected_calls": {
+				"sequences_keyframe_insert": [
+					[	
+						[ "translate_start_x", { "index": -1, "frame": 83 } ],
+						[ "translate_start_x", { "index": -1, "frame": 133 } ],
+						[ "translate_start_y", { "index": -1, "frame": 83 } ],
+						[ "translate_start_y", { "index": -1, "frame": 133 } ],
+						[ "scale_start_x", { "index": -1, "frame": 83 } ],
+						[ "scale_start_x", { "index": -1, "frame": 133 } ],
+						[ "blend_alpha", { "index": -1, "frame": 83 } ],
+						[ "blend_alpha", { "index": -1, "frame": 133 } ]
+					]
+				],
+				"sequences_transform_keyframe_insert": [
+					[
+						[ "offset_x", { "index": -1, "frame": 83 } ],
+						[ "offset_x", { "index": -1, "frame": 133 } ],
+						[ "offset_y", { "index": -1, "frame": 83 } ],
+						[ "offset_y", { "index": -1, "frame": 133 } ]
+					]
+				]
+			},
+			"sequences_keyframe_insert_values": [
+				{ "sequence": "MySequence", "name": "translate_start_x", "frame":  83, "value":   21 },
+				{ "sequence": "MySequence", "name": "translate_start_x", "frame": 133, "value":  121 },
+				{ "sequence": "MySequence", "name": "translate_start_y", "frame":  83, "value":  -51 },
+				{ "sequence": "MySequence", "name": "translate_start_y", "frame": 133, "value": -191 },
+				{ "sequence": "MySequence", "name": "scale_start_x", "frame":  83, "value": 0.1 },
+				{ "sequence": "MySequence", "name": "scale_start_x", "frame": 133, "value": 1.2 },
+				{ "sequence": "MySequence", "name": "blend_alpha", "frame":  83, "value": 0.2 },
+				{ "sequence": "MySequence", "name": "blend_alpha", "frame": 133, "value": 0.9 },
+				{ "sequence": "MySequence.transform", "name": "offset_x", "frame":  83, "value":  1028.6 },
+				{ "sequence": "MySequence.transform", "name": "offset_x", "frame": 133, "value":  2948.6 },
+				{ "sequence": "MySequence.transform", "name": "offset_y", "frame":  83, "value":  -798.6 },
+				{ "sequence": "MySequence.transform", "name": "offset_y", "frame": 133, "value": -1803.0 }
+			]
+		}
+	]
+}
