@@ -1,4 +1,3 @@
-import bpy
 from abc import ABCMeta
 
 

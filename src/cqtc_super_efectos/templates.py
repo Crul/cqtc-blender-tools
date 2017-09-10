@@ -1,4 +1,5 @@
-import bpy
+import bpy.props
+import bpy.types
 import os
 from . import path, pickle_utils
 

@@ -1,4 +1,5 @@
-import bpy
+import bpy.props
+import bpy.types
 from . import bpy_utils
 
 global_scale_x = 1920

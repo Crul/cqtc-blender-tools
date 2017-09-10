@@ -1,4 +1,4 @@
-import bpy
+import bpy.ops
 
 tmp_channel = 30
 max_channel = 20

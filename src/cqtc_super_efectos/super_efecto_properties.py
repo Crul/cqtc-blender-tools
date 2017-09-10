@@ -1,4 +1,6 @@
-import bpy
+import bpy.ops
+import bpy.props
+import bpy.types
 from .effects import *
 from . import templates
 

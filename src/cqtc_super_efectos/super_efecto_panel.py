@@ -1,4 +1,4 @@
-import bpy
+import bpy.types
 
 class SuperEfectoPanel(bpy.types.Panel):
 	bl_label = "Añadir Super Efectos"
