@@ -1,6 +1,6 @@
 import bpy
+from . import bpy_utils
 
-tmp_channel = 30
 global_scale_x = 1920
 global_scale_y = int(global_scale_x * (1080/1920))
 
@@ -18,8 +18,8 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 			return {"CANCELLED"}
 		
 		for sequence in context.selected_sequences.copy():
-			self.unselect_children(sequence)
-			self.align_image(context, sequence)
+			bpy_utils.unselect_children(sequence)
+			bpy_utils.align_image(context, sequence)
 					
 		if ("IN" in self.operation_type):
 			result = self.create_in_or_out_effect(context, "IN")
@@ -98,7 +98,7 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 			
 			if context.scene.super_efecto.apply_to_sound:
 				if sequence.type == "SOUND":
-					self.animate_volume(sequence, initial_volume, final_volume, start_frame, final_frame)
+					bpy_utils.animate_volume(sequence, initial_volume, final_volume, start_frame, final_frame)
 				elif sequence.type == "SCENE":
 					if is_in:
 						scene_volume_start_frame = 1
@@ -107,7 +107,7 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 						scene_volume_start_frame = sequence.scene.frame_end - effect_length
 						scene_volume_final_frame = sequence.scene.frame_end
 						
-					self.animate_volume(sequence, initial_volume, final_volume, scene_volume_start_frame, scene_volume_final_frame)
+					bpy_utils.animate_volume(sequence, initial_volume, final_volume, scene_volume_start_frame, scene_volume_final_frame)
 		
 			if sequence.type in effectable_types:
 				original_sequence = sequence
@@ -118,7 +118,7 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 				if is_in:
 					 color_final_frame += delay_image
 					 
-				channel = self.get_available_channel(context, start_frame, color_final_frame, sequence.channel)
+				channel = bpy_utils.get_available_channel(context, start_frame, color_final_frame, sequence.channel)
 				
 				color_strip = effect.create_color_strip(context, channel, start_frame, color_final_frame, original_sequence.name)
 				seq1 = color_strip if is_in else sequence
@@ -126,7 +126,7 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 				if is_in:
 					 original_sequence.frame_offset_start += delay_image
 					 
-				channel = self.get_available_channel(context, start_frame, final_frame, channel)
+				channel = bpy_utils.get_available_channel(context, start_frame, final_frame, channel)
 				effect_strip = effect.create_effect_strip(context, channel, start_frame, final_frame, seq1, seq2, original_sequence.name)
 			
 				original_sequence.select = False
@@ -200,8 +200,9 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 			return {"CANCELLED"}
 			
 		if seq1.frame_final_end == seq2.frame_final_start:
-			overlap_sucess = self.overlap_strips(context, seq1, seq2, seq1_sound, seq2_sound)
-			if not overlap_sucess:
+			error, error_msg = bpy_utils.overlap_strips(context, seq1, seq2, seq1_sound, seq2_sound)
+			if error:
+				self.report(error, error_msg)
 				return {"CANCELLED"}
 			
 		start_frame = seq2.frame_final_start
@@ -215,7 +216,7 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 		effect = context.scene.super_efecto.get_effect()
 		
 		max_channel = max([s.channel for s in context.selected_sequences])
-		channel = self.get_available_channel(context, start_frame, final_frame, max_channel)
+		channel = bpy_utils.get_available_channel(context, start_frame, final_frame, max_channel)
 		effect_strip = effect.create_effect_strip(context, channel, start_frame, final_frame, seq1, seq2)
 						
 		if context.scene.super_efecto.apply_to_sound:
@@ -261,10 +262,10 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 					
 			
 			if seq1_sound is not None:
-				self.animate_volume(seq1_sound, 1, 0, seq1_volume_start_frame, seq1_volume_final_frame)
+				bpy_utils.animate_volume(seq1_sound, 1, 0, seq1_volume_start_frame, seq1_volume_final_frame)
 			
 			if seq2_sound is not None:
-				self.animate_volume(seq2_sound, 0, 1, seq2_volume_start_frame, seq2_volume_final_frame)
+				bpy_utils.animate_volume(seq2_sound, 0, 1, seq2_volume_start_frame, seq2_volume_final_frame)
 		
 		return {"FINISHED"}
 	
@@ -288,17 +289,17 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 		seq2 = self.add_blur_strip(context, seq2, seq2.frame_final_start, final_frame, is_in=True)
 		seq2 = self.add_transform_strip(context, seq2, seq2.frame_final_start, final_frame, is_in=True)
 
-		color_channel = self.get_available_channel(context, start_frame, final_frame + delay_image, max(seq1.channel, seq2.channel))
+		color_channel = bpy_utils.get_available_channel(context, start_frame, final_frame + delay_image, max(seq1.channel, seq2.channel))
 		color_strip = effect.create_color_strip(context, color_channel, start_frame, final_frame + delay_image)
 		
-		channel = self.get_available_channel(context, start_frame, seq1.frame_final_end, color_channel)
+		channel = bpy_utils.get_available_channel(context, start_frame, seq1.frame_final_end, color_channel)
 		if context.scene.super_efecto.reverse_out_effect:	
 			reversed_effect = context.scene.super_efecto.get_reversed_effect(effect)
 			effect_strip = reversed_effect.create_effect_strip(context, channel, start_frame, seq1.frame_final_end, seq1, color_strip)
 		else:
 			effect_strip = effect.create_effect_strip(context, channel, start_frame, seq1.frame_final_end, seq1, color_strip)
 		
-		channel = self.get_available_channel(context, seq2.frame_final_start, final_frame + delay_image, color_channel)
+		channel = bpy_utils.get_available_channel(context, seq2.frame_final_start, final_frame + delay_image, color_channel)
 		effect_strip = effect.create_effect_strip(context, channel, seq2.frame_final_start, final_frame + delay_image, color_strip, seq2)
 		
 		seq2.frame_offset_start += delay_image
@@ -306,19 +307,19 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 		if context.scene.super_efecto.apply_to_sound:
 			if seq1_sound is not None:
 				if seq1_sound.type == "SOUND":
-					self.animate_volume(seq1_sound, 1, 0, start_frame, seq1_sound.frame_final_end)
+					bpy_utils.animate_volume(seq1_sound, 1, 0, start_frame, seq1_sound.frame_final_end)
 				elif seq1_sound.type == "SCENE":
 					scene_volume_start_frame = seq1_sound.scene.frame_end - half_effect_length
 					scene_volume_final_frame = seq1_sound.scene.frame_end
-					self.animate_volume(seq1_sound, 1, 0, scene_volume_start_frame, scene_volume_final_frame)
+					bpy_utils.animate_volume(seq1_sound, 1, 0, scene_volume_start_frame, scene_volume_final_frame)
 				
 			if seq2_sound is not None:
 				if seq2_sound.type == "SOUND":
-					self.animate_volume(seq2_sound, 0, 1, seq2_sound.frame_final_start, final_frame)
+					bpy_utils.animate_volume(seq2_sound, 0, 1, seq2_sound.frame_final_start, final_frame)
 				elif seq2_sound.type == "SCENE":
 					scene_volume_start_frame = 1
 					scene_volume_final_frame = half_effect_length + 1
-					self.animate_volume(seq2_sound, 0, 1, scene_volume_start_frame, scene_volume_final_frame)
+					bpy_utils.animate_volume(seq2_sound, 0, 1, scene_volume_start_frame, scene_volume_final_frame)
 				
 		return {"FINISHED"}
 	
@@ -328,7 +329,7 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 		if not is_transform_required:
 			return sequence
 
-		selected_keyframes = self.deselect_selected_keyframe_points(context)
+		selected_keyframes = bpy_utils.deselect_selected_keyframe_points(context)
 		(sequence, sequence_to_return) = self.create_or_get_existing_effect_strip(sequence, context, "TRANSFORM", "_Transform")
 		
 		sequence.use_uniform_scale = True
@@ -349,8 +350,8 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 		]
 		self.set_animatable_properties(context, animatable_properties_info, is_in, start_frame, final_frame)
 		
-		self.set_interpolation_type(context)
-		self.select_keyframe_points(context, selected_keyframes)
+		bpy_utils.set_interpolation_type(context)
+		bpy_utils.select_keyframe_points(context, selected_keyframes)
 		
 		return sequence_to_return
 	
@@ -360,14 +361,14 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 		if not is_blur_required:
 			return sequence
 		
-		selected_keyframes = self.deselect_selected_keyframe_points(context)
+		selected_keyframes = bpy_utils.deselect_selected_keyframe_points(context)
 		(sequence, sequence_to_return) = self.create_or_get_existing_effect_strip(sequence, context, "GAUSSIAN_BLUR", "_Blur")
 
 		animatable_properties_info = [ (sequence, "size_x", "blur_x", {}), (sequence, "size_y", "blur_y", {}) ]
 		self.set_animatable_properties(context, animatable_properties_info, is_in, start_frame, final_frame)
 		
-		self.set_interpolation_type(context)
-		self.select_keyframe_points(context, selected_keyframes)
+		bpy_utils.set_interpolation_type(context)
+		bpy_utils.select_keyframe_points(context, selected_keyframes)
 		
 		return sequence_to_return
 		
@@ -388,7 +389,7 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 			
 		else:
 			original_sequence = sequence
-			channel = self.get_available_channel(context, original_sequence.frame_final_start, original_sequence.frame_final_end, original_sequence.channel)
+			channel = bpy_utils.get_available_channel(context, original_sequence.frame_final_start, original_sequence.frame_final_end, original_sequence.channel)
 			sequence = context.scene.sequence_editor.sequences.new_effect(
 					original_sequence.name + effect_name_suffix,
 					effect_type,
@@ -466,168 +467,3 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 			setattr(obj, seq_attr, -getattr(obj, seq_attr))
 			
 		obj.keyframe_insert(seq_attr, index=-1, frame=end_frame)
-	
-	
-	def overlap_strips(self, context, seq1, seq2, seq1_sound, seq2_sound):
-		effect_length = context.scene.super_efecto.effect_length
-		
-		while(seq1.type in ["TRANSFORM","CROSS","GAUSSIAN_BLUR"]):
-			seq1 = seq1.input_1
-		
-		while(seq2.type in ["TRANSFORM","CROSS","GAUSSIAN_BLUR"]):
-			seq2 = seq2.input_1
-		
-		if seq1.type in ["MOVIE","SCENE"]:
-			not_enough_data_after_seq1 = (seq1.frame_offset_end < effect_length)
-			if not_enough_data_after_seq1:
-				self.report({"ERROR"}, "No hay suficientes datos después del final en la tira " + seq1.name )
-				return False
-		
-		if seq2.type in ["MOVIE","SCENE"]:
-			not_enough_data_before_seq2 = (seq2.frame_offset_start < effect_length)
-			if not_enough_data_before_seq2:
-				self.report({"ERROR"}, "No hay suficientes datos antes del comianzo en la tira " + seq2.name )
-				return False
-		
-		seq1_channel = seq1.channel
-		seq1.channel = tmp_channel
-		seq1.channel = self.get_available_channel(context, seq1.frame_final_start, seq1.frame_final_end + effect_length, seq1_channel)
-		seq1.frame_final_end += effect_length
-		
-		if seq1_sound is not None:
-			seq1_sound_channel = seq1_sound.channel
-			seq1_sound.channel = tmp_channel
-			seq1_sound.channel = self.get_available_channel(context, seq1.frame_final_start, seq1.frame_final_end + effect_length, seq1_sound_channel)
-			seq1_sound.frame_final_end += effect_length
-
-		seq2_channel = seq2.channel
-		seq2.channel = tmp_channel
-		seq2.channel = self.get_available_channel(context, seq2.frame_final_start - effect_length, seq2.frame_final_end, seq2_channel)
-		seq2.frame_final_start -= effect_length
-		
-		if seq2_sound is not None:
-			seq2_sound_channel = seq2_sound.channel
-			seq2_sound.channel = tmp_channel
-			seq2_sound.channel = self.get_available_channel(context, seq2.frame_final_start - effect_length, seq2.frame_final_end, seq2_sound_channel)
-			seq2_sound.frame_final_start -= effect_length
-		
-		return True
-	
-	
-	def animate_volume(self, seq_sound, initial_volume, final_volume, initial_frame, final_frame):
-		if (hasattr(seq_sound, "volume")):
-			seq_sound.volume = initial_volume
-			seq_sound.keyframe_insert("volume", index=-1, frame=initial_frame)
-			
-			seq_sound.volume = final_volume
-			seq_sound.keyframe_insert("volume", index=-1, frame=final_frame)
-		else:
-			seq_sound.scene.audio_volume = initial_volume
-			seq_sound.scene.keyframe_insert("audio_volume", index=-1, frame=initial_frame)
-			
-			seq_sound.scene.audio_volume = final_volume
-			seq_sound.scene.keyframe_insert("audio_volume", index=-1, frame=final_frame)
-		
-	
-	def unselect_children(self, sequence):
-		if 'input_1' not in dir(sequence) or sequence.input_1 is None:
-			return
-			
-		self.unselect_children(sequence.input_1)
-		sequence.input_1.select = False
-	
-	
-	def align_image(self, context, sequence):
-		if sequence.type != "IMAGE" or len(sequence.elements) == 0:
-			return
-			
-		image_element = sequence.elements[0]
-		if image_element.orig_width == context.scene.render.resolution_x and image_element.orig_height == context.scene.render.resolution_y:
-			return
-	
-		image_alignment = context.scene.super_efecto.image_alignment
-		image_alignment_margin = context.scene.super_efecto.image_alignment_margin
-		
-		sequence.use_translation = True
-		sequence.blend_type = 'ALPHA_OVER'
-		sequence.transform.offset_x = (context.scene.render.resolution_x/2 - image_element.orig_width/2)
-		sequence.transform.offset_y = (context.scene.render.resolution_y/2 - image_element.orig_height/2)
-			
-		if "bottom" in image_alignment:
-			sequence.transform.offset_y = image_alignment_margin
-			
-		if "top" in image_alignment:
-			sequence.transform.offset_y = context.scene.render.resolution_y - image_element.orig_height - image_alignment_margin
-			
-		if "left" in image_alignment:
-			sequence.transform.offset_x = image_alignment_margin
-			
-		if "right" in image_alignment:
-			sequence.transform.offset_x = context.scene.render.resolution_x - image_element.orig_width - image_alignment_margin
-
-	
-	def get_available_channel(self, context, start_frame, final_frame, start_channel=1):
-		max_channel = 20
-		for channel in range(start_channel, max_channel):
-			is_channel_available = True
-			for sequence in context.scene.sequence_editor.sequences:
-				is_sequence_in_channel_and_interval = (sequence.channel == channel \
-					and sequence.frame_final_start < final_frame \
-					and sequence.frame_final_end > start_frame)
-					
-				if is_sequence_in_channel_and_interval:
-					is_channel_available = False
-					break
-					
-			if is_channel_available:
-				return channel
-				
-		return max_channel
-		
-		
-	def deselect_selected_keyframe_points(self, context):
-		if context.scene.animation_data is None:
-			context.scene.animation_data_create()
-		
-		selected_keyframes = []
-		if context.scene.animation_data.action is None:
-			return selected_keyframes
-		
-		for i, fcurve in context.scene.animation_data.action.fcurves.items():
-			for j, keyframe_point in fcurve.keyframe_points.items():
-				if keyframe_point.select_control_point:
-					keyframe_point.select_control_point = False
-					selected_keyframes.append(keyframe_point)
-
-		return selected_keyframes
-
-		
-	def select_keyframe_points(self, context, selected_keyframes):
-		if context.scene.animation_data.action is None:
-			return
-			
-		for i, fcurve in context.scene.animation_data.action.fcurves.items():
-			for j, keyframe_point in fcurve.keyframe_points.items():
-				if keyframe_point in selected_keyframes:
-					keyframe_point.select_control_point = True
-
-		
-	def set_interpolation_type(self, context):
-		if context.scene.animation_data.action is None:
-			return
-		
-		old_area_type = context.area.type
-		context.area.type = 'GRAPH_EDITOR'
-		context.scene.update()
-
-		try:
-			if context.scene.super_efecto.constant_speed:
-				bpy.ops.graph.interpolation_type(type='LINEAR')
-			else:
-				bpy.ops.graph.interpolation_type(type='BEZIER')
-		except: 
-			pass
-			
-		context.area.type = old_area_type
-		context.scene.update()
-		
