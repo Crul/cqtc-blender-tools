@@ -26,24 +26,24 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 			bpy_utils.align_image(context, sequence)
 					
 		if ("IN" in self.operation_type):
-			result = self.create_in_or_out_effect(context, "IN")
+			result = self.__create_in_or_out_effect(context, "IN")
 		
 		if "CANCELLED" in result:
 			return result
 		
 		if ("OUT" in self.operation_type):
-			result = self.create_in_or_out_effect(context, "OUT")
+			result = self.__create_in_or_out_effect(context, "OUT")
 		
 		if "CANCELLED" in result:
 			return result
 		
 		if (self.operation_type == "TRANSITION"):
-			result = self.create_transition(context)
+			result = self.__create_transition(context)
 		
 		return result
 	
 	
-	def create_in_or_out_effect(self, context, in_or_out):
+	def __create_in_or_out_effect(self, context, in_or_out):
 		is_in = (in_or_out == "IN")
 
 		selected_not_sound_sequences = [s for s in context.selected_sequences if s.type in effectable_strip_types]
@@ -84,12 +84,12 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 		
 		selected_sequences = context.selected_sequences.copy()			
 		for sequence in selected_sequences:
-			self.create_in_or_out_strip_effect(context, effect, is_in, sequence)
+			self.__create_in_or_out_strip_effect(context, effect, is_in, sequence)
 			
 		return {"FINISHED"}
 	
 
-	def create_in_or_out_strip_effect(self, context, effect, is_in, sequence):
+	def __create_in_or_out_strip_effect(self, context, effect, is_in, sequence):
 
 		delay_image = context.scene.super_efecto.delay_image
 		effect_length = context.scene.super_efecto.effect_length \
@@ -105,12 +105,12 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 			final_frame = sequence.frame_final_end
 		
 		if context.scene.super_efecto.apply_to_sound:
-			self.apply_effect_sound_transition(sequence, start_frame, final_frame, effect_length, is_in)
+			self.__apply_effect_sound_transition(sequence, start_frame, final_frame, effect_length, is_in)
 	
 		if sequence.type in effectable_strip_types:
 			original_sequence = sequence
-			sequence = self.add_transform_strip(context, sequence, start_frame, final_frame, is_in)
-			sequence = self.add_blur_strip(context, sequence, start_frame, final_frame, is_in)
+			sequence = self.__add_transform_strip(context, sequence, start_frame, final_frame, is_in)
+			sequence = self.__add_blur_strip(context, sequence, start_frame, final_frame, is_in)
 			
 			color_final_frame = final_frame
 			if is_in:
@@ -131,7 +131,7 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 			sequence.select = True
 	
 	
-	def create_transition(self, context):		
+	def __create_transition(self, context):		
 		selected_not_sound_sequences = [s for s in context.selected_sequences if s.type in transitionable_strip_types]
 		if len(selected_not_sound_sequences) != 2:
 			self.report({"ERROR"}, "Debes seleccionar dos (y SOLO dos) strips que no sean de sonido" )
@@ -166,16 +166,16 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 		seq1 = strip_tmp_1 if is_seq1_before_seq2 else strip_tmp_2
 		seq2 = strip_tmp_2 if is_seq1_before_seq2 else strip_tmp_1
 		
-		(seq1_sound, seq2_sound) = self.get_transition_sound_sequences(context, seq1, seq2)
+		(seq1_sound, seq2_sound) = self.__get_transition_sound_sequences(context, seq1, seq2)
 			
 		if context.scene.super_efecto.add_color_to_transition:
-			return self.create_transition_with_color(context, seq1, seq2, seq1_sound, seq2_sound)
+			return self.__create_transition_with_color(context, seq1, seq2, seq1_sound, seq2_sound)
 			
 		else:
-			return self.create_transition_without_color(context, seq1, seq2, seq1_sound, seq2_sound)
+			return self.__create_transition_without_color(context, seq1, seq2, seq1_sound, seq2_sound)
 	
 	
-	def create_transition_without_color(self, context, seq1, seq2, seq1_sound, seq2_sound):
+	def __create_transition_without_color(self, context, seq1, seq2, seq1_sound, seq2_sound):
 		if seq1.frame_final_end < seq2.frame_final_start:
 			self.report({"ERROR"}, "Para añadir una transición sin color intermedio las tiras deben solaparse o ser consecutivas" )
 			return {"CANCELLED"}
@@ -189,10 +189,10 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 		start_frame = seq2.frame_final_start
 		final_frame = seq1.frame_final_end
 			
-		seq1 = self.add_blur_strip(context, seq1, start_frame, final_frame, is_in=False)
-		seq1 = self.add_transform_strip(context, seq1, start_frame, final_frame, is_in=False)
-		seq2 = self.add_blur_strip(context, seq2, start_frame, final_frame, is_in=True)
-		seq2 = self.add_transform_strip(context, seq2, start_frame, final_frame, is_in=True)
+		seq1 = self.__add_blur_strip(context, seq1, start_frame, final_frame, is_in=False)
+		seq1 = self.__add_transform_strip(context, seq1, start_frame, final_frame, is_in=False)
+		seq2 = self.__add_blur_strip(context, seq2, start_frame, final_frame, is_in=True)
+		seq2 = self.__add_transform_strip(context, seq2, start_frame, final_frame, is_in=True)
 		
 		effect = context.scene.super_efecto.get_effect()
 		
@@ -201,12 +201,12 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 		effect_strip = effect.create_effect_strip(context, channel, start_frame, final_frame, seq1, seq2)
 						
 		if context.scene.super_efecto.apply_to_sound:
-			self.apply_overlapped_sound_transition(context, seq1_sound, seq2_sound, start_frame, final_frame)
+			self.__apply_overlapped_sound_transition(context, seq1_sound, seq2_sound, start_frame, final_frame)
 		
 		return {"FINISHED"}
 	
 	
-	def create_transition_with_color(self, context, seq1, seq2, seq1_sound, seq2_sound):
+	def __create_transition_with_color(self, context, seq1, seq2, seq1_sound, seq2_sound):
 	
 		effect_length = context.scene.super_efecto.effect_length
 		half_effect_length = int(effect_length / 2)
@@ -220,10 +220,10 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 		delay_image = context.scene.super_efecto.delay_image
 		effect = context.scene.super_efecto.get_effect()
 
-		seq1 = self.add_blur_strip(context, seq1, start_frame, seq1.frame_final_end, is_in=False)
-		seq1 = self.add_transform_strip(context, seq1, start_frame, seq1.frame_final_end, is_in=False)
-		seq2 = self.add_blur_strip(context, seq2, seq2.frame_final_start, final_frame, is_in=True)
-		seq2 = self.add_transform_strip(context, seq2, seq2.frame_final_start, final_frame, is_in=True)
+		seq1 = self.__add_blur_strip(context, seq1, start_frame, seq1.frame_final_end, is_in=False)
+		seq1 = self.__add_transform_strip(context, seq1, start_frame, seq1.frame_final_end, is_in=False)
+		seq2 = self.__add_blur_strip(context, seq2, seq2.frame_final_start, final_frame, is_in=True)
+		seq2 = self.__add_transform_strip(context, seq2, seq2.frame_final_start, final_frame, is_in=True)
 
 		color_channel = bpy_utils.get_available_channel(context, start_frame, final_frame + delay_image, max(seq1.channel, seq2.channel))
 		color_strip = effect.create_color_strip(context, color_channel, start_frame, final_frame + delay_image)
@@ -240,18 +240,18 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 		seq2.frame_offset_start += delay_image
 		
 		if context.scene.super_efecto.apply_to_sound:
-			self.apply_consecutive_sound_transition(seq1_sound, seq2_sound, start_frame, final_frame, half_effect_length)
+			self.__apply_consecutive_sound_transition(seq1_sound, seq2_sound, start_frame, final_frame, half_effect_length)
 		
 		return {"FINISHED"}
 	
 	
-	def add_transform_strip(self, context, sequence, start_frame, final_frame, is_in):
+	def __add_transform_strip(self, context, sequence, start_frame, final_frame, is_in):
 		is_transform_required = context.scene.super_efecto.is_transform_required()
 		if not is_transform_required:
 			return sequence
 
 		selected_keyframes = bpy_utils.deselect_selected_keyframe_points(context)
-		(sequence, sequence_to_return) = self.create_or_get_existing_effect_strip(sequence, context, "TRANSFORM", "_Transform")
+		(sequence, sequence_to_return) = self.__create_or_get_existing_effect_strip(sequence, context, "TRANSFORM", "_Transform")
 		
 		sequence.use_uniform_scale = True
 		sequence.use_translation = True
@@ -269,7 +269,7 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 			(sequence.transform, "offset_x", "offset_x", {"is_horizontal_mirrorable": True, "get_value_fn": get_offset_x_fn }),
 			(sequence.transform, "offset_y", "offset_y", {"is_vertical_mirrorable": True, "get_value_fn": get_offset_y_fn })
 		]
-		self.set_animatable_properties(context, animatable_properties_info, is_in, start_frame, final_frame)
+		self.__set_animatable_properties(context, animatable_properties_info, is_in, start_frame, final_frame)
 		
 		bpy_utils.set_interpolation_type(context)
 		bpy_utils.select_keyframe_points(context, selected_keyframes)
@@ -277,16 +277,16 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 		return sequence_to_return
 	
 	
-	def add_blur_strip(self, context, sequence, start_frame, final_frame, is_in):
+	def __add_blur_strip(self, context, sequence, start_frame, final_frame, is_in):
 		is_blur_required = context.scene.super_efecto.is_blur_required()
 		if not is_blur_required:
 			return sequence
 		
 		selected_keyframes = bpy_utils.deselect_selected_keyframe_points(context)
-		(sequence, sequence_to_return) = self.create_or_get_existing_effect_strip(sequence, context, "GAUSSIAN_BLUR", "_Blur")
+		(sequence, sequence_to_return) = self.__create_or_get_existing_effect_strip(sequence, context, "GAUSSIAN_BLUR", "_Blur")
 
 		animatable_properties_info = [ (sequence, "size_x", "blur_x", {}), (sequence, "size_y", "blur_y", {}) ]
-		self.set_animatable_properties(context, animatable_properties_info, is_in, start_frame, final_frame)
+		self.__set_animatable_properties(context, animatable_properties_info, is_in, start_frame, final_frame)
 		
 		bpy_utils.set_interpolation_type(context)
 		bpy_utils.select_keyframe_points(context, selected_keyframes)
@@ -294,7 +294,7 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 		return sequence_to_return
 	
 		
-	def apply_effect_sound_transition(self, seq_sound, start_frame, final_frame, effect_length, is_in):
+	def __apply_effect_sound_transition(self, seq_sound, start_frame, final_frame, effect_length, is_in):
 		initial_volume = 0 if is_in else 1
 		final_volume = 1 if is_in else 0
 			
@@ -315,7 +315,7 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 			bpy_utils.animate_volume(seq_sound, initial_volume, final_volume, volume_start_frame, volume_final_frame)
 	
 	
-	def apply_consecutive_sound_transition(self, seq1_sound, seq2_sound, start_frame, final_frame, half_effect_length):
+	def __apply_consecutive_sound_transition(self, seq1_sound, seq2_sound, start_frame, final_frame, half_effect_length):
 		if seq1_sound is not None:
 			if seq1_sound.type == "SOUND":
 				seq1_volume_start_frame = start_frame
@@ -337,7 +337,7 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 			bpy_utils.animate_volume(seq2_sound, 0, 1, seq2_volume_start_frame, seq2_volume_final_frame)
 	
 	
-	def apply_overlapped_sound_transition(self, context, seq1_sound, seq2_sound, start_frame, final_frame):
+	def __apply_overlapped_sound_transition(self, context, seq1_sound, seq2_sound, start_frame, final_frame):
 		if context.scene.super_efecto.overlap_sound:
 		
 			effect_length = (final_frame - start_frame)
@@ -386,7 +386,7 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 			bpy_utils.animate_volume(seq2_sound, 0, 1, seq2_volume_start_frame, seq2_volume_final_frame)
 	
 	
-	def create_or_get_existing_effect_strip(self, sequence, context, effect_type, effect_name_suffix):
+	def __create_or_get_existing_effect_strip(self, sequence, context, effect_type, effect_name_suffix):
 		sequence.blend_type = "ALPHA_OVER"
 		
 		is_effect_strip = (sequence.type == effect_type)
@@ -419,7 +419,7 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 		return sequence, sequence_to_return
 
 
-	def get_transition_sound_sequences(self, context, seq1, seq2):
+	def __get_transition_sound_sequences(self, context, seq1, seq2):
 		seq1_sound = None
 		seq2_sound = None
 		selected_soundable_sequences = [s for s in context.selected_sequences if s.type in ["SOUND", "SCENE"] ]
@@ -435,7 +435,7 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 		return (seq1_sound, seq2_sound)
 	
 	
-	def set_animatable_properties(self, context, animatable_properties_info, is_in, start_frame, final_frame):
+	def __set_animatable_properties(self, context, animatable_properties_info, is_in, start_frame, final_frame):
 		delay_image = context.scene.super_efecto.delay_image
 		if is_in:
 			start_frame += delay_image
@@ -446,7 +446,7 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 			is_vertical_mirrorable = "is_vertical_mirrorable" in options
 			get_value_fn = options["get_value_fn"] if "get_value_fn" in options else lambda value : value
 			
-			self.set_animatable_property(context,
+			self.__set_animatable_property(context,
 				obj,
 				seq_attr,
 				super_efecto_prop,
@@ -458,7 +458,7 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 				get_value_fn=get_value_fn)
 		
 		
-	def set_animatable_property(self,
+	def __set_animatable_property(self,
 		context,
 		obj,
 		seq_attr,
