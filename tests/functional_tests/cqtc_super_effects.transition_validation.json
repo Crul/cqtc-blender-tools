@@ -1,0 +1,154 @@
+{
+	"common": {
+		"operator": { "operation_type": "TRANSITION" },
+		"super_effect": { "add_color_to_transition": false, "effect_type": "no_effect", "effect_length": 90, "delay_image": 0 },
+		"expected_result": "CANCELLED",
+		"expected_sequences": [],
+		"expected_calls": { "new_effect": null },
+		"expected_report": null
+	},
+	
+	"tests": [
+		{	"name": "test TRANSITION no sequence selected",
+			"sequences": [],
+			"expected_report": [ "ERROR", "Debes seleccionar dos (y SOLO dos) strips que no sean de sonido" ]
+		},
+		{	"name": "test TRANSITION not enough transitionable type sequence selected",
+			"sequences": [
+				{ "name": "MySequence1", "type": "MOVIE" },
+				{ "name": "MySequence2", "type": "SOUND" }
+			],
+			"expected_report": [ "ERROR", "Debes seleccionar dos (y SOLO dos) strips que no sean de sonido" ],
+			"expected_sequences": [
+				{ "name": "MySequence1", "type": "MOVIE" },
+				{ "name": "MySequence2", "type": "SOUND" }
+			]
+		},
+		{	"name": "test TRANSITION more than 2 sequences selected",
+			"sequences": [
+				{ "name": "MySequence1", "type": "MOVIE" },
+				{ "name": "MySequence2", "type": "MOVIE" },
+				{ "name": "MySequence3", "type": "MOVIE" }
+			],
+			"expected_report": [ "ERROR", "Debes seleccionar dos (y SOLO dos) strips que no sean de sonido" ],
+			"expected_sequences": [
+				{ "name": "MySequence1", "type": "MOVIE" },
+				{ "name": "MySequence2", "type": "MOVIE" },
+				{ "name": "MySequence3", "type": "MOVIE" }
+			]
+		},
+		{	"name": "test TRANSITION more than 2 SOUND sequences selected",
+			"sequences": [
+				{ "name": "MySequence1", "type": "MOVIE" },
+				{ "name": "MySequence2", "type": "MOVIE" },
+				{ "name": "MySoundSequence1", "type": "SOUND" },
+				{ "name": "MySoundSequence2", "type": "SOUND" },
+				{ "name": "MySoundSequence3", "type": "SOUND" }
+			],
+			"expected_report": [ "ERROR", "Puedes seleccionar dos strips de sonido como máximo" ],
+			"expected_sequences": [
+				{ "name": "MySequence1", "type": "MOVIE" },
+				{ "name": "MySequence2", "type": "MOVIE" },
+				{ "name": "MySoundSequence1", "type": "SOUND" },
+				{ "name": "MySoundSequence2", "type": "SOUND" },
+				{ "name": "MySoundSequence3", "type": "SOUND" }
+			]
+		},
+		{	"name": "test TRANSITION wrong SOUND sequence",
+			"sequences": [
+				{ "name": "MySequence1", "type": "MOVIE", "frame_final_start": 112, "frame_final_end": 134 },
+				{ "name": "MySequence2", "type": "MOVIE", "frame_final_start": 112, "frame_final_end": 134 },
+				{ "name": "MySoundSequence1", "type": "SOUND", "frame_final_start": 12, "frame_final_end": 34 }
+			],
+			"expected_report": [ "ERROR", "La strip de sonido MySoundSequence1 no corresponde con ninguna strip de imagen, vídeo" ],
+			"expected_sequences": [
+				{ "name": "MySequence1", "type": "MOVIE", "frame_final_start": 112, "frame_final_end": 134 },
+				{ "name": "MySequence2", "type": "MOVIE", "frame_final_start": 112, "frame_final_end": 134 },
+				{ "name": "MySoundSequence1", "type": "SOUND", "frame_final_start": 12, "frame_final_end": 34 }
+			]
+		},
+		{	"name": "test TRANSITION effect length type percentage not allowed",
+			"super_effect": { "effect_length_type": "PERCENTAGE" },
+			"sequences": [
+				{ "name": "MySequence1", "type": "MOVIE", "frame_final_start": 12, "frame_final_end": 34 },
+				{ "name": "MySequence2", "type": "MOVIE", "frame_final_start": 112, "frame_final_end": 134 },
+				{ "name": "MySoundSequence1", "type": "SOUND", "frame_final_start": 12, "frame_final_end": 34 }
+			],
+			"expected_report": [ "ERROR", "No se puede añadir una transición con una duración de tipo porcentaje" ],
+			"expected_sequences": [
+				{ "name": "MySequence1", "type": "MOVIE", "frame_final_start": 12, "frame_final_end": 34 },
+				{ "name": "MySequence2", "type": "MOVIE", "frame_final_start": 112, "frame_final_end": 134 },
+				{ "name": "MySoundSequence1", "type": "SOUND", "frame_final_start": 12, "frame_final_end": 34 }
+			]
+		},
+		{	"name": "test TRANSITION sequences in same position",
+			"sequences": [
+				{ "name": "MySequence1", "type": "MOVIE", "frame_final_start": 12, "frame_final_end": 34 },
+				{ "name": "MySequence2", "type": "MOVIE", "frame_final_start": 12, "frame_final_end": 34 }
+			],
+			"expected_report": [ "ERROR", "Para añadir una transición las tiras no pueden estar en la misma posición" ],
+			"expected_sequences": [
+				{ "name": "MySequence1", "type": "MOVIE", "frame_final_start": 12, "frame_final_end": 34 },
+				{ "name": "MySequence2", "type": "MOVIE", "frame_final_start": 12, "frame_final_end": 34 }
+			]
+		},
+		{	"name": "test TRANSITION sequences not overlapped or consecutives",
+			"sequences": [
+				{ "name": "MySequence1", "type": "MOVIE", "frame_final_start": 12, "frame_final_end": 34 },
+				{ "name": "MySequence2", "type": "MOVIE", "frame_final_start": 45, "frame_final_end": 67 }
+			],
+			"expected_report": [ "ERROR", "Para añadir una transición sin color intermedio las tiras deben solaparse o ser consecutivas" ],
+			"expected_sequences": [
+				{ "name": "MySequence1", "type": "MOVIE", "frame_final_start": 12, "frame_final_end": 34 },
+				{ "name": "MySequence2", "type": "MOVIE", "frame_final_start": 45, "frame_final_end": 67 }
+			]
+		},
+		{	"name": "test TRANSITION not overlappable strips",
+			"sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 23,
+					"frame_final_end": 45,
+					"frame_offset_end": 0
+				}
+			],
+			"expected_report": [ "ERROR", "No hay suficientes datos después del final en la tira MySequence1" ],
+			"expected_sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 23,
+					"frame_final_end": 45,
+					"frame_offset_end": 0
+				}
+			]
+		},
+		{	"name": "test TRANSITION with color and sequences overlapped",
+			"super_effect": { "add_color_to_transition": true },
+			"sequences": [
+				{ "name": "MySequence1", "type": "MOVIE", "frame_final_start": 12, "frame_final_end": 34 },
+				{ "name": "MySequence2", "type": "MOVIE", "frame_final_start": 23, "frame_final_end": 45 }
+			],
+			"expected_report": [ "ERROR", "Para añadir una transición con color intermedio las tiras no pueden solaparse" ],
+			"expected_sequences": [
+				{ "name": "MySequence1", "type": "MOVIE", "frame_final_start": 12, "frame_final_end": 34 },
+				{ "name": "MySequence2", "type": "MOVIE", "frame_final_start": 23, "frame_final_end": 45 }
+			]
+		}
+	]
+}

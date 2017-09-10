@@ -1,0 +1,61 @@
+{
+	"common": {
+		"operator": { "operation_type": "IN" },
+		"super_effect": { "effect_type": "no_effect", "effect_length": 50, "delay_image": 0 },
+		"expected_result": "CANCELLED",
+		"expected_sequences": [],
+		"expected_calls": { "new_effect": null },
+		"expected_report": null
+	},
+	
+	"tests": [
+		{	"name": "test OUT no sequence selected",
+			"sequences": [],
+			"expected_report": [ "ERROR", "Debes seleccionar al menos una strip que no sea de tipo sonido" ]
+		},
+		{	"name": "test OUT no effetcable type sequence selected",
+			"sequences": [
+				{"name": "MySequence1", "type": "SOUND" },
+				{"name": "MySequence2", "type": "FOO" }
+			],
+			"expected_report": [ "ERROR", "Debes seleccionar al menos una strip que no sea de tipo sonido" ],
+			"expected_sequences": [
+				{"name": "MySequence1", "type": "SOUND" },
+				{"name": "MySequence2", "type": "FOO" }
+			]
+		},
+		{	"name": "test OUT too short sequence selected",
+			"sequences": [
+				{"name": "MySequence1", "type": "MOVIE", "frame_final_duration": 40 }
+			],
+			"expected_report": [ "ERROR", "La strip MySequence1 es más corta de lo necesario para añdir el efecto" ],
+			"expected_sequences": [
+				{"name": "MySequence1", "type": "MOVIE", "frame_final_duration": 40 }
+			]
+		},
+		{	"name": "test OUT too many sound sequences selected",
+			"sequences": [
+				{"name": "MySequence1", "type": "MOVIE", "frame_final_duration": 60 },
+				{"name": "MySequenceSound1", "type": "SOUND" },
+				{"name": "MySequenceSound2", "type": "SOUND" }
+			],
+			"expected_report": [ "ERROR", "No puedes seleccionar más strips de sonido que strips de imagen, vídeo o transform" ],
+			"expected_sequences": [
+				{"name": "MySequence1", "type": "MOVIE", "frame_final_duration": 60 },
+				{"name": "MySequenceSound1", "type": "SOUND" },
+				{"name": "MySequenceSound2", "type": "SOUND" }
+			]
+		},
+		{	"name": "test OUT incorrect sound sequence selected",
+			"sequences": [
+				{"name": "MySequence", "type": "MOVIE", "frame_final_start": 30, "frame_final_end": 50, "frame_final_duration": 60 },
+				{"name": "MySequenceSound", "type": "SOUND", "frame_final_start": 10, "frame_final_end": 20 }
+			],
+			"expected_report": [ "ERROR", "La strip de sonido MySequenceSound no corresponde con ninguna strip de imagen, vídeo o transform" ],
+			"expected_sequences": [
+				{"name": "MySequence", "type": "MOVIE", "frame_final_start": 30, "frame_final_end": 50, "frame_final_duration": 60 },
+				{"name": "MySequenceSound", "type": "SOUND", "frame_final_start": 10, "frame_final_end": 20 }
+			]
+		}
+	]
+}

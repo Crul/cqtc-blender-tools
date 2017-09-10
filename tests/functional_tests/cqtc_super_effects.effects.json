@@ -1,0 +1,746 @@
+{
+	"common": {
+		"operator": { "operation_type": "TRANSITION" },
+		"super_effect": {
+			"add_color_to_transition": true,
+			"effect_length": 16,
+			"delay_image": 0,
+			"apply_to_sound": false,
+			"reverse_out_effect": true
+		},
+		"expected_result": "FINISHED",
+		"expected_calls": { "new_effect": null },
+		"expected_report": null
+	},
+	
+	"tests": [
+		{	"name": "test FADE effect",
+			"super_effect": { "effect_type": "fade" },
+			"sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 45,
+					"frame_final_end": 67,
+					"frame_offset_end": 0
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 45,
+					"frame_final_end": 67,
+					"frame_offset_end": 0
+				}
+			],
+			"expected_calls": {
+				"new_effect": [
+					[ "Color", "COLOR", 0, 15, { "frame_end": 53 } ],
+					[
+						"Fundido", "CROSS", 0, 15,
+						{
+							"seq1": { "name": "MySequence1" },
+							"seq2": { "name": "Color" },
+							"frame_end": 23
+						}
+					],
+					[
+						"Fundido", "CROSS", 0, 45,
+						{
+							"seq1": { "name": "Color" },
+							"seq2": { "name": "MySequence2" },
+							"frame_end": 53
+						}
+					]
+				]
+			}
+		},
+		{	"name": "test IRIS IN effect",
+			"super_effect": { "effect_type": "iris_in" },
+			"sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 45,
+					"frame_final_end": 67,
+					"frame_offset_end": 0
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 45,
+					"frame_final_end": 67,
+					"frame_offset_end": 0
+				}
+			],
+			"expected_calls": {
+				"new_effect": [
+					[ "Color", "COLOR", 0, 15, { "frame_end": 53 } ],
+					[
+						"Cortinilla circular pequeña > grande", "WIPE", 0, 15,
+						{
+							"seq1": { "name": "MySequence1" },
+							"seq2": { "name": "Color" },
+							"frame_end": 23
+						}
+					],
+					[
+						"Cortinilla circular grande > pequeña", "WIPE", 0, 45,
+						{
+							"seq1": { "name": "Color" },
+							"seq2": { "name": "MySequence2" },
+							"frame_end": 53
+						}
+					]
+				]
+			}
+		},
+		{	"name": "test IRIS OUT effect",
+			"super_effect": { "effect_type": "iris_out" },
+			"sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 45,
+					"frame_final_end": 67,
+					"frame_offset_end": 0
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 45,
+					"frame_final_end": 67,
+					"frame_offset_end": 0
+				}
+			],
+			"expected_calls": {
+				"new_effect": [
+					[ "Color", "COLOR", 0, 15, { "frame_end": 53 } ],
+					[
+						"Cortinilla circular grande > pequeña", "WIPE", 0, 15,
+						{
+							"seq1": { "name": "MySequence1" },
+							"seq2": { "name": "Color" },
+							"frame_end": 23
+						}
+					],
+					[
+						"Cortinilla circular pequeña > grande", "WIPE", 0, 45,
+						{
+							"seq1": { "name": "Color" },
+							"seq2": { "name": "MySequence2" },
+							"frame_end": 53
+						}
+					]
+				]
+			}
+		},
+		{	"name": "test CLOCK effect",
+			"super_effect": { "effect_type": "clock" },
+			"sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 45,
+					"frame_final_end": 67,
+					"frame_offset_end": 0
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 45,
+					"frame_final_end": 67,
+					"frame_offset_end": 0
+				}
+			],
+			"expected_calls": {
+				"new_effect": [
+					[ "Color", "COLOR", 0, 15, { "frame_end": 53 } ],
+					[
+						"Cortinilla en forma de reloj (sentido anti-horario)", "WIPE", 0, 15,
+						{
+							"seq1": { "name": "MySequence1" },
+							"seq2": { "name": "Color" },
+							"frame_end": 23
+						}
+					],
+					[
+						"Cortinilla en forma de reloj (sentido horario)", "WIPE", 0, 45,
+						{
+							"seq1": { "name": "Color" },
+							"seq2": { "name": "MySequence2" },
+							"frame_end": 53
+						}
+					]
+				]
+			}
+		},
+		{	"name": "test CLOCK ANTI effect",
+			"super_effect": { "effect_type": "clock_anti" },
+			"sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 45,
+					"frame_final_end": 67,
+					"frame_offset_end": 0
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 45,
+					"frame_final_end": 67,
+					"frame_offset_end": 0
+				}
+			],
+			"expected_calls": {
+				"new_effect": [
+					[ "Color", "COLOR", 0, 15, { "frame_end": 53 } ],
+					[
+						"Cortinilla en forma de reloj (sentido horario)", "WIPE", 0, 15,
+						{
+							"seq1": { "name": "MySequence1" },
+							"seq2": { "name": "Color" },
+							"frame_end": 23
+						}
+					],
+					[
+						"Cortinilla en forma de reloj (sentido anti-horario)", "WIPE", 0, 45,
+						{
+							"seq1": { "name": "Color" },
+							"seq2": { "name": "MySequence2" },
+							"frame_end": 53
+						}
+					]
+				]
+			}
+		},
+		{	"name": "test SLIDE DOWN effect",
+			"super_effect": { "effect_type": "slide_down" },
+			"sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 45,
+					"frame_final_end": 67,
+					"frame_offset_end": 0
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 45,
+					"frame_final_end": 67,
+					"frame_offset_end": 0
+				}
+			],
+			"expected_calls": {
+				"new_effect": [
+					[ "Color", "COLOR", 0, 15, { "frame_end": 53 } ],
+					[
+						"Cortinilla hacia arriba", "WIPE", 0, 15,
+						{
+							"seq1": { "name": "MySequence1" },
+							"seq2": { "name": "Color" },
+							"frame_end": 23
+						}
+					],
+					[
+						"Cortinilla hacia abajo", "WIPE", 0, 45,
+						{
+							"seq1": { "name": "Color" },
+							"seq2": { "name": "MySequence2" },
+							"frame_end": 53
+						}
+					]
+				]
+			}
+		},
+		{	"name": "test SLIDE UP effect",
+			"super_effect": { "effect_type": "slide_up" },
+			"sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 45,
+					"frame_final_end": 67,
+					"frame_offset_end": 0
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 45,
+					"frame_final_end": 67,
+					"frame_offset_end": 0
+				}
+			],
+			"expected_calls": {
+				"new_effect": [
+					[ "Color", "COLOR", 0, 15, { "frame_end": 53 } ],
+					[
+						"Cortinilla hacia abajo", "WIPE", 0, 15,
+						{
+							"seq1": { "name": "MySequence1" },
+							"seq2": { "name": "Color" },
+							"frame_end": 23
+						}
+					],
+					[
+						"Cortinilla hacia arriba", "WIPE", 0, 45,
+						{
+							"seq1": { "name": "Color" },
+							"seq2": { "name": "MySequence2" },
+							"frame_end": 53
+						}
+					]
+				]
+			}
+		},
+		{	"name": "test SLIDE RIGHT effect",
+			"super_effect": { "effect_type": "slide_right" },
+			"sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 45,
+					"frame_final_end": 67,
+					"frame_offset_end": 0
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 45,
+					"frame_final_end": 67,
+					"frame_offset_end": 0
+				}
+			],
+			"expected_calls": {
+				"new_effect": [
+					[ "Color", "COLOR", 0, 15, { "frame_end": 53 } ],
+					[
+						"Cortinilla hacia la izquierda", "WIPE", 0, 15,
+						{
+							"seq1": { "name": "MySequence1" },
+							"seq2": { "name": "Color" },
+							"frame_end": 23
+						}
+					],
+					[
+						"Cortinilla hacia la derecha", "WIPE", 0, 45,
+						{
+							"seq1": { "name": "Color" },
+							"seq2": { "name": "MySequence2" },
+							"frame_end": 53
+						}
+					]
+				]
+			}
+		},
+		{	"name": "test SLIDE LEFT effect",
+			"super_effect": { "effect_type": "slide_left" },
+			"sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 45,
+					"frame_final_end": 67,
+					"frame_offset_end": 0
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 45,
+					"frame_final_end": 67,
+					"frame_offset_end": 0
+				}
+			],
+			"expected_calls": {
+				"new_effect": [
+					[ "Color", "COLOR", 0, 15, { "frame_end": 53 } ],
+					[
+						"Cortinilla hacia la derecha", "WIPE", 0, 15,
+						{
+							"seq1": { "name": "MySequence1" },
+							"seq2": { "name": "Color" },
+							"frame_end": 23
+						}
+					],
+					[
+						"Cortinilla hacia la izquierda", "WIPE", 0, 45,
+						{
+							"seq1": { "name": "Color" },
+							"seq2": { "name": "MySequence2" },
+							"frame_end": 53
+						}
+					]
+				]
+			}
+		},
+		{	"name": "test DOUBLE HORIZONTAL SLIDE OPEN effect",
+			"super_effect": { "effect_type": "double_horizontal_slide_open" },
+			"sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 45,
+					"frame_final_end": 67,
+					"frame_offset_end": 0
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 45,
+					"frame_final_end": 67,
+					"frame_offset_end": 0
+				}
+			],
+			"expected_calls": {
+				"new_effect": [
+					[ "Color", "COLOR", 0, 15, { "frame_end": 53 } ],
+					[
+						"Doble cortinilla horizontal cerrándose", "WIPE", 0, 15,
+						{
+							"seq1": { "name": "MySequence1" },
+							"seq2": { "name": "Color" },
+							"frame_end": 23
+						}
+					],
+					[
+						"Doble cortinilla horizontal abriéndose", "WIPE", 0, 45,
+						{
+							"seq1": { "name": "Color" },
+							"seq2": { "name": "MySequence2" },
+							"frame_end": 53
+						}
+					]
+				]
+			}
+		},
+		{	"name": "test DOUBLE HORIZONTAL SLIDE CLOSE effect",
+			"super_effect": { "effect_type": "double_horizontal_slide_close" },
+			"sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 45,
+					"frame_final_end": 67,
+					"frame_offset_end": 0
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 45,
+					"frame_final_end": 67,
+					"frame_offset_end": 0
+				}
+			],
+			"expected_calls": {
+				"new_effect": [
+					[ "Color", "COLOR", 0, 15, { "frame_end": 53 } ],
+					[
+						"Doble cortinilla horizontal abriéndose", "WIPE", 0, 15,
+						{
+							"seq1": { "name": "MySequence1" },
+							"seq2": { "name": "Color" },
+							"frame_end": 23
+						}
+					],
+					[
+						"Doble cortinilla horizontal cerrándose", "WIPE", 0, 45,
+						{
+							"seq1": { "name": "Color" },
+							"seq2": { "name": "MySequence2" },
+							"frame_end": 53
+						}
+					]
+				]
+			}
+		},
+		{	"name": "test DOUBLE VERTICAL SLIDE OPEN effect",
+			"super_effect": { "effect_type": "double_vertical_slide_open" },
+			"sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 45,
+					"frame_final_end": 67,
+					"frame_offset_end": 0
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 45,
+					"frame_final_end": 67,
+					"frame_offset_end": 0
+				}
+			],
+			"expected_calls": {
+				"new_effect": [
+					[ "Color", "COLOR", 0, 15, { "frame_end": 53 } ],
+					[
+						"Doble cortinilla vertical cerrándose", "WIPE", 0, 15,
+						{
+							"seq1": { "name": "MySequence1" },
+							"seq2": { "name": "Color" },
+							"frame_end": 23
+						}
+					],
+					[
+						"Doble cortinilla vertical abriéndose", "WIPE", 0, 45,
+						{
+							"seq1": { "name": "Color" },
+							"seq2": { "name": "MySequence2" },
+							"frame_end": 53
+						}
+					]
+				]
+			}
+		},
+		{	"name": "test DOUBLE VERTICAL SLIDE CLOSE effect",
+			"super_effect": { "effect_type": "double_vertical_slide_close" },
+			"sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 45,
+					"frame_final_end": 67,
+					"frame_offset_end": 0
+				}
+			],
+			"expected_sequences": [
+				{
+					"name": "MySequence1",
+					"type": "MOVIE",
+					"frame_final_start": 12,
+					"frame_final_end": 23,
+					"frame_offset_end": 0
+				},
+				{
+					"name": "MySequence2",
+					"type": "MOVIE",
+					"frame_final_start": 45,
+					"frame_final_end": 67,
+					"frame_offset_end": 0
+				}
+			],
+			"expected_calls": {
+				"new_effect": [
+					[ "Color", "COLOR", 0, 15, { "frame_end": 53 } ],
+					[
+						"Doble cortinilla vertical abriéndose", "WIPE", 0, 15,
+						{
+							"seq1": { "name": "MySequence1" },
+							"seq2": { "name": "Color" },
+							"frame_end": 23
+						}
+					],
+					[
+						"Doble cortinilla vertical cerrándose", "WIPE", 0, 45,
+						{
+							"seq1": { "name": "Color" },
+							"seq2": { "name": "MySequence2" },
+							"frame_end": 53
+						}
+					]
+				]
+			}
+		}
+	]
+}
