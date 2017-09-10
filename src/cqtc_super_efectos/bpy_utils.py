@@ -77,12 +77,12 @@ def overlap_strips(context, seq1, seq2, seq1_sound, seq2_sound):
 	if seq1.type in ["MOVIE","SCENE"]:
 		not_enough_data_after_seq1 = (seq1.frame_offset_end < effect_length)
 		if not_enough_data_after_seq1:
-			return ({"ERROR"}, "No hay suficientes datos después del final en la tira " + seq1.name )
+			return ({"ERROR"}, "No hay suficientes datos después del final en la tira " + seq1.name)
 	
 	if seq2.type in ["MOVIE","SCENE"]:
 		not_enough_data_before_seq2 = (seq2.frame_offset_start < effect_length)
 		if not_enough_data_before_seq2:
-			return ({"ERROR"}, "No hay suficientes datos antes del comianzo en la tira " + seq2.name )
+			return ({"ERROR"}, "No hay suficientes datos antes del comianzo en la tira " + seq2.name)
 	
 	seq1_channel = seq1.channel
 	seq1.channel = tmp_channel
@@ -105,8 +105,6 @@ def overlap_strips(context, seq1, seq2, seq1_sound, seq2_sound):
 		seq2_sound.channel = tmp_channel
 		seq2_sound.channel = get_available_channel(context, seq2.frame_final_start - effect_length, seq2.frame_final_end, seq2_sound_channel)
 		seq2_sound.frame_final_start -= effect_length
-	
-	return None
 
 
 def set_interpolation_type(context):

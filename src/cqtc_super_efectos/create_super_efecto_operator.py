@@ -16,40 +16,42 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 	def execute(self, context):
 		result = {"FINISHED"}
 		
-		is_effect_length_percentage_over_limit = (self.operation_type == "IN_OUT" and context.scene.super_efecto.effect_length_type == "PERCENTAGE" and context.scene.super_efecto.effect_length_percentage > 50)
-		if is_effect_length_percentage_over_limit:
-			self.report({"ERROR"}, "No se puede crear un efecto de Entrada y Salida con más del 50% de porcentage de duración" )
-			return {"CANCELLED"}
+		error = self.__validate_global(context)
+		if error:
+			return self.__return_error(error)
 		
 		for sequence in context.selected_sequences.copy():
 			bpy_utils.unselect_children(sequence)
 			bpy_utils.align_image(context, sequence)
-					
-		if ("IN" in self.operation_type):
-			result = self.__create_in_or_out_effect(context, "IN")
 		
-		if "CANCELLED" in result:
-			return result
-		
-		if ("OUT" in self.operation_type):
-			result = self.__create_in_or_out_effect(context, "OUT")
-		
-		if "CANCELLED" in result:
-			return result
+		for in_or_out in ["IN", "OUT"]:
+			if (in_or_out in self.operation_type):
+				error = self.__create_in_or_out_effect(context, in_or_out)
+				if error:
+					return self.__return_error(error)
 		
 		if (self.operation_type == "TRANSITION"):
-			result = self.__create_transition(context)
+			error = self.__create_transition(context)
+			if error:
+				return self.__return_error(error)
 		
 		return result
-	
-	
-	def __create_in_or_out_effect(self, context, in_or_out):
-		is_in = (in_or_out == "IN")
+
+
+	def __validate_global(self, context):
+		is_effect_length_percentage_over_limit = (self.operation_type == "IN_OUT" 
+			and context.scene.super_efecto.effect_length_type == "PERCENTAGE"
+			and context.scene.super_efecto.effect_length_percentage > 50)
+		
+		if is_effect_length_percentage_over_limit:
+			return ({"ERROR"}, "No se puede crear un efecto de Entrada y Salida con más del 50% de porcentage de duración" )
+
+
+	def __validate_in_or_out_effect(self, context, is_in):
 
 		selected_not_sound_sequences = [s for s in context.selected_sequences if s.type in effectable_strip_types]
 		if len(selected_not_sound_sequences) == 0:
-			self.report({"ERROR"}, "Debes seleccionar al menos una strip que no sea de tipo sonido" )
-			return {"CANCELLED"}
+			return ({"ERROR"}, "Debes seleccionar al menos una strip que no sea de tipo sonido" )
 		
 		effect_length = context.scene.super_efecto.effect_length
 		delay_image = context.scene.super_efecto.delay_image
@@ -60,14 +62,12 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 				
 			for sequence in selected_not_sound_sequences:
 				if sequence.frame_final_duration < min_length:
-					self.report({"ERROR"}, "La strip " + sequence.name + " es más corta de lo necesario para añdir el efecto")
-					return {"CANCELLED"}
+					return ({"ERROR"}, "La strip " + sequence.name + " es más corta de lo necesario para añdir el efecto")
 			
 		selected_sound_capable_sequences = [s for s in context.selected_sequences if s.type in sound_capable_strip_types]
 		selected_sound_sequences = [s for s in context.selected_sequences if s.type == "SOUND"]
 		if len(selected_sound_sequences) > len(selected_sound_capable_sequences):
-			self.report({"ERROR"}, "No puedes seleccionar más strips de sonido que strips de imagen, vídeo o transform" )
-			return {"CANCELLED"}
+			return ({"ERROR"}, "No puedes seleccionar más strips de sonido que strips de imagen, vídeo o transform" )
 
 		for selected_sound_sequence in selected_sound_sequences:
 			not_sound_sequence_matches = [ nss for nss in selected_sound_capable_sequences \
@@ -75,9 +75,55 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 					or nss.frame_final_end == selected_sound_sequence.frame_final_end)]
 					
 			if len(not_sound_sequence_matches) == 0:
-				self.report({"ERROR"}, "La strip de sonido " + selected_sound_sequence.name + " no corresponde con ninguna strip de imagen, vídeo o transform" )
-				return {"CANCELLED"}
+				return ({"ERROR"}, "La strip de sonido " + selected_sound_sequence.name + " no corresponde con ninguna strip de imagen, vídeo o transform" )
+	
+
+	def __validate_transition(self, context):
+		selected_not_sound_sequences = [s for s in context.selected_sequences if s.type in transitionable_strip_types]
+		if len(selected_not_sound_sequences) != 2:
+			return ({"ERROR"}, "Debes seleccionar dos (y SOLO dos) strips que no sean de sonido" )
+			
+		selected_sound_sequences = [s for s in context.selected_sequences if s.type == "SOUND"]
+		if len(selected_sound_sequences) > 2:
+			return ({"ERROR"}, "Puedes seleccionar dos strips de sonido como máximo" )
+			
+		for selected_sound_sequence in selected_sound_sequences:
+			selected_sound_capable_sequences = [s for s in context.selected_sequences if s.type in sound_capable_strip_types]
+			not_sound_sequence_matches = [ nss for nss in selected_sound_capable_sequences \
+				if (nss.frame_final_start == selected_sound_sequence.frame_final_start \
+					and nss.frame_final_end == selected_sound_sequence.frame_final_end)]
+					
+			if len(not_sound_sequence_matches) == 0:
+				return ({"ERROR"}, "La strip de sonido " + selected_sound_sequence.name + " no corresponde con ninguna strip de imagen, vídeo" )
+			
+		if context.scene.super_efecto.effect_length_type == "PERCENTAGE":
+			return ({"ERROR"}, "No se puede añadir una transición con una duración de tipo porcentaje" )
 		
+		strip_tmp_1 = selected_not_sound_sequences[0]
+		strip_tmp_2 = selected_not_sound_sequences[1]
+		if (strip_tmp_1.frame_final_start == strip_tmp_2.frame_final_start and strip_tmp_1.frame_final_end == strip_tmp_2.frame_final_end):
+			return ({"ERROR"}, "Para añadir una transición las tiras no pueden estar en la misma posición" )
+
+	
+	def __validate_transition_without_color(self, context, seq1, seq2, seq1_sound, seq2_sound):
+		if seq1.frame_final_end < seq2.frame_final_start:
+			return ({"ERROR"}, "Para añadir una transición sin color intermedio las tiras deben solaparse o ser consecutivas" )
+			
+		if seq1.frame_final_end == seq2.frame_final_start:
+			return bpy_utils.overlap_strips(context, seq1, seq2, seq1_sound, seq2_sound)
+
+
+	def __validate_transition_with_color(self, seq1, seq2):
+		if seq1.frame_final_end > seq2.frame_final_start:
+			return ({"ERROR"}, "Para añadir una transición con color intermedio las tiras no pueden solaparse" )
+
+
+	def __create_in_or_out_effect(self, context, in_or_out):
+		is_in = (in_or_out == "IN")
+		error = self.__validate_in_or_out_effect(context, is_in)
+		if error:
+			return error
+
 		effect = context.scene.super_efecto.get_effect()
 		if (not is_in) and context.scene.super_efecto.reverse_out_effect:
 			effect = context.scene.super_efecto.get_reversed_effect(effect)
@@ -85,8 +131,6 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 		selected_sequences = context.selected_sequences.copy()			
 		for sequence in selected_sequences:
 			self.__create_in_or_out_strip_effect(context, effect, is_in, sequence)
-			
-		return {"FINISHED"}
 	
 
 	def __create_in_or_out_strip_effect(self, context, effect, is_in, sequence):
@@ -131,36 +175,14 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 			sequence.select = True
 	
 	
-	def __create_transition(self, context):		
+	def __create_transition(self, context):
+		error = self.__validate_transition(context)
+		if error:
+			return error
+
 		selected_not_sound_sequences = [s for s in context.selected_sequences if s.type in transitionable_strip_types]
-		if len(selected_not_sound_sequences) != 2:
-			self.report({"ERROR"}, "Debes seleccionar dos (y SOLO dos) strips que no sean de sonido" )
-			return {"CANCELLED"}
-			
-		selected_sound_sequences = [s for s in context.selected_sequences if s.type == "SOUND"]
-		if len(selected_sound_sequences) > 2:
-			self.report({"ERROR"}, "Puedes seleccionar dos strips de sonido como máximo" )
-			return {"CANCELLED"}
-			
-		for selected_sound_sequence in selected_sound_sequences:
-			selected_sound_capable_sequences = [s for s in context.selected_sequences if s.type in sound_capable_strip_types]
-			not_sound_sequence_matches = [ nss for nss in selected_sound_capable_sequences \
-				if (nss.frame_final_start == selected_sound_sequence.frame_final_start \
-					and nss.frame_final_end == selected_sound_sequence.frame_final_end)]
-					
-			if len(not_sound_sequence_matches) == 0:
-				self.report({"ERROR"}, "La strip de sonido " + selected_sound_sequence.name + " no corresponde con ninguna strip de imagen, vídeo" )
-				return {"CANCELLED"}
-			
-		if context.scene.super_efecto.effect_length_type == "PERCENTAGE":
-			self.report({"ERROR"}, "No se puede añadir una transición con una duración de tipo porcentaje" )
-			return {"CANCELLED"}
-		
 		strip_tmp_1 = selected_not_sound_sequences[0]
 		strip_tmp_2 = selected_not_sound_sequences[1]
-		if (strip_tmp_1.frame_final_start == strip_tmp_2.frame_final_start and strip_tmp_1.frame_final_end == strip_tmp_2.frame_final_end):
-			self.report({"ERROR"}, "Para añadir una transición las tiras no pueden estar en la misma posición" )
-			return {"CANCELLED"}
 		
 		is_seq1_before_seq2 = (strip_tmp_1.frame_final_start < strip_tmp_2.frame_final_start)
 		seq1 = strip_tmp_1 if is_seq1_before_seq2 else strip_tmp_2
@@ -176,15 +198,9 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 	
 	
 	def __create_transition_without_color(self, context, seq1, seq2, seq1_sound, seq2_sound):
-		if seq1.frame_final_end < seq2.frame_final_start:
-			self.report({"ERROR"}, "Para añadir una transición sin color intermedio las tiras deben solaparse o ser consecutivas" )
-			return {"CANCELLED"}
-			
-		if seq1.frame_final_end == seq2.frame_final_start:
-			error, error_msg = bpy_utils.overlap_strips(context, seq1, seq2, seq1_sound, seq2_sound)
-			if error:
-				self.report(error, error_msg)
-				return {"CANCELLED"}
+		error = self.__validate_transition_without_color(context, seq1, seq2, seq1_sound, seq2_sound)
+		if error:
+			return error
 			
 		start_frame = seq2.frame_final_start
 		final_frame = seq1.frame_final_end
@@ -202,18 +218,15 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 						
 		if context.scene.super_efecto.apply_to_sound:
 			self.__apply_overlapped_sound_transition(context, seq1_sound, seq2_sound, start_frame, final_frame)
-		
-		return {"FINISHED"}
 	
 	
 	def __create_transition_with_color(self, context, seq1, seq2, seq1_sound, seq2_sound):
+		error = self.__validate_transition_with_color(seq1, seq2)
+		if error:
+			return error
 	
 		effect_length = context.scene.super_efecto.effect_length
 		half_effect_length = int(effect_length / 2)
-		
-		if seq1.frame_final_end > seq2.frame_final_start:
-			self.report({"ERROR"}, "Para añadir una transición con color intermedio las tiras no pueden solaparse" )
-			return {"CANCELLED"}
 		
 		start_frame = seq1.frame_final_end - half_effect_length
 		final_frame = seq2.frame_final_start + half_effect_length
@@ -241,8 +254,6 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 		
 		if context.scene.super_efecto.apply_to_sound:
 			self.__apply_consecutive_sound_transition(seq1_sound, seq2_sound, start_frame, final_frame, half_effect_length)
-		
-		return {"FINISHED"}
 	
 	
 	def __add_transform_strip(self, context, sequence, start_frame, final_frame, is_in):
@@ -496,3 +507,9 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 			setattr(obj, seq_attr, -getattr(obj, seq_attr))
 			
 		obj.keyframe_insert(seq_attr, index=-1, frame=end_frame)
+
+
+	def __return_error(self, error):
+		(error_result, error_msg) = error
+		self.report(error_result, error_msg)
+		return {"CANCELLED"}
