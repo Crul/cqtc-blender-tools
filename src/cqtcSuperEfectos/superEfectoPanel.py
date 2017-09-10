@@ -38,79 +38,15 @@ class SuperEfectoPanel(bpy.types.Panel):
 			
 			layout.row().prop(context.scene.super_efecto, "color")
 			layout.row().prop(context.scene.super_efecto, "delay_image")
+			self.draw_animatable_prop(context, "position_x")
+			self.draw_animatable_prop(context, "position_y")
+			self.draw_animatable_prop(context, "zoom")
+			self.draw_animatable_prop(context, "opacity")			
+			self.draw_animatable_prop(context, "offset_x")
+			self.draw_animatable_prop(context, "offset_y")
+			self.draw_animatable_prop(context, "blur_x")
+			self.draw_animatable_prop(context, "blur_y")
 			
-			split = layout.split(percentage=0.475)
-			split.column().prop(context.scene.super_efecto, "initial_position_x")
-			if context.scene.super_efecto.position_x_animated:
-				split = split.column().split(percentage=0.047619)
-				split.column().prop(context.scene.super_efecto, "position_x_animated", text="")
-				split.column().prop(context.scene.super_efecto, "final_position_x")
-			else:
-				split.column().prop(context.scene.super_efecto, "position_x_animated")
-			
-			split = layout.split(percentage=0.475)
-			split.column().prop(context.scene.super_efecto, "initial_position_y")
-			if context.scene.super_efecto.position_y_animated:
-				split = split.column().split(percentage=0.047619)
-				split.column().prop(context.scene.super_efecto, "position_y_animated", text="")
-				split.column().prop(context.scene.super_efecto, "final_position_y")
-			else:
-				split.column().prop(context.scene.super_efecto, "position_y_animated")
-			
-			split = layout.split(percentage=0.475)
-			split.column().prop(context.scene.super_efecto, "initial_zoom")
-			if context.scene.super_efecto.zoom_animated:
-				split = split.column().split(percentage=0.047619)
-				split.column().prop(context.scene.super_efecto, "zoom_animated", text="")
-				split.column().prop(context.scene.super_efecto, "final_zoom")
-			else:
-				split.column().prop(context.scene.super_efecto, "zoom_animated")
-				
-			split = layout.split(percentage=0.475)
-			split.column().prop(context.scene.super_efecto, "initial_opacity")
-			if context.scene.super_efecto.opacity_animated:
-				split = split.column().split(percentage=0.047619)
-				split.column().prop(context.scene.super_efecto, "opacity_animated", text="")
-				split.column().prop(context.scene.super_efecto, "final_opacity")
-			else:
-				split.column().prop(context.scene.super_efecto, "opacity_animated")
-		
-			split = layout.split(percentage=0.475)
-			split.column().prop(context.scene.super_efecto, "initial_offset_x")
-			if context.scene.super_efecto.offset_x_animated:
-				split = split.column().split(percentage=0.047619)
-				split.column().prop(context.scene.super_efecto, "offset_x_animated", text="")
-				split.column().prop(context.scene.super_efecto, "final_offset_x")
-			else:
-				split.column().prop(context.scene.super_efecto, "offset_x_animated")
-			
-			split = layout.split(percentage=0.475)
-			split.column().prop(context.scene.super_efecto, "initial_offset_y")
-			if context.scene.super_efecto.offset_y_animated:
-				split = split.column().split(percentage=0.047619)
-				split.column().prop(context.scene.super_efecto, "offset_y_animated", text="")
-				split.column().prop(context.scene.super_efecto, "final_offset_y")
-			else:
-				split.column().prop(context.scene.super_efecto, "offset_y_animated")
-
-			split = layout.split(percentage=0.475)
-			split.column().prop(context.scene.super_efecto, "initial_blur_x")
-			if context.scene.super_efecto.blur_x_animated:
-				split = split.column().split(percentage=0.047619)
-				split.column().prop(context.scene.super_efecto, "blur_x_animated", text="")
-				split.column().prop(context.scene.super_efecto, "final_blur_x")
-			else:
-				split.column().prop(context.scene.super_efecto, "blur_x_animated")
-			
-			split = layout.split(percentage=0.475)
-			split.column().prop(context.scene.super_efecto, "initial_blur_y")
-			if context.scene.super_efecto.blur_y_animated:
-				split = split.column().split(percentage=0.047619)
-				split.column().prop(context.scene.super_efecto, "blur_y_animated", text="")
-				split.column().prop(context.scene.super_efecto, "final_blur_y")
-			else:
-				split.column().prop(context.scene.super_efecto, "blur_y_animated")
-
 			layout.row().prop(context.scene.super_efecto, "constant_speed")
 			layout.row().prop(context.scene.super_efecto, "reverse_out_effect")
 			layout.row().prop(context.scene.super_efecto, "mirror_horizontal_out_effect")
@@ -141,6 +77,11 @@ class SuperEfectoPanel(bpy.types.Panel):
 		create_out_operator = row.operator("super_efecto.create", text=">< Transición")
 		create_out_operator.operation_type = "TRANSITION"
 		
+		self.draw_template_panel(context)
+	
+
+	def draw_template_panel(self, context):
+		layout = self.layout
 		row = layout.row()
 		row.scale_y = 1.5
 		row.prop(context.scene.super_efecto, "template_expanded",
@@ -148,38 +89,54 @@ class SuperEfectoPanel(bpy.types.Panel):
 			icon_only=False
 		)
 	
-		if context.scene.super_efecto.template_expanded:
-			borrar_btn_width = 0.05
-			
-			split = layout.row().split(percentage=0.80)
-			
-			split_1 = split.column().split(percentage=borrar_btn_width)			
-			split_1.column().operator("super_efecto.remove_template", text="X")
-			
-			
-			split_2 = split_1.split(percentage=0.25)
-			split_2.column().label("Plantillas")
-			split_2.column().prop(context.scene.super_efecto, "template", text="")
-			split.column().operator("super_efecto.load_template", text="Cargar")
-						
-			split = layout.row().split(percentage=0.80)
-			split_3 = split.column().split(percentage=borrar_btn_width)
-			split_3.column()
-			
-			split_4 = split_3.split(percentage=0.25)
-			split_4.column().label("Nombre")
-			
-			split_5 = split_4.split(align=True, percentage=0.90)
-			split_5.column(align=True).prop(context.scene.super_efecto, "new_template_name", text="")
-			clear_template_name_operator = split_5.column(align=True).operator("super_efecto.set_template_name", text="X")
-			clear_template_name_operator.action = 'CLEAR'
-			load_template_name_operator = split_5.column(align=True).operator("super_efecto.set_template_name", text="↓")
-			load_template_name_operator.action = 'LOAD'
-			
-			
-			split.column().operator("super_efecto.add_template", text="Guardar")
-			
-			if len([tmpl for tmpl in context.scene.super_efecto.template_data if tmpl["name"] == context.scene.super_efecto.new_template_name ]) > 0:
-				split = layout.row().split(percentage=0.30)
-				split.column()
-				split.column().prop(context.scene.super_efecto, "override_template")
+		if not context.scene.super_efecto.template_expanded:
+			return
+		
+		borrar_btn_width = 0.05
+		
+		split = layout.row().split(percentage=0.80)
+		
+		split_1 = split.column().split(percentage=borrar_btn_width)			
+		split_1.column().operator("super_efecto.remove_template", text="X")
+		
+		
+		split_2 = split_1.split(percentage=0.25)
+		split_2.column().label("Plantillas")
+		split_2.column().prop(context.scene.super_efecto, "template", text="")
+		split.column().operator("super_efecto.load_template", text="Cargar")
+					
+		split = layout.row().split(percentage=0.80)
+		split_3 = split.column().split(percentage=borrar_btn_width)
+		split_3.column()
+		
+		split_4 = split_3.split(percentage=0.25)
+		split_4.column().label("Nombre")
+		
+		split_5 = split_4.split(align=True, percentage=0.90)
+		split_5.column(align=True).prop(context.scene.super_efecto, "new_template_name", text="")
+		clear_template_name_operator = split_5.column(align=True).operator("super_efecto.set_template_name", text="X")
+		clear_template_name_operator.action = 'CLEAR'
+		load_template_name_operator = split_5.column(align=True).operator("super_efecto.set_template_name", text="↓")
+		load_template_name_operator.action = 'LOAD'
+		
+		split.column().operator("super_efecto.add_template", text="Guardar")
+		
+		if len([tmpl for tmpl in context.scene.super_efecto.template_data if tmpl["name"] == context.scene.super_efecto.new_template_name ]) > 0:
+			split = layout.row().split(percentage=0.30)
+			split.column()
+			split.column().prop(context.scene.super_efecto, "override_template")
+	
+	
+	def draw_animatable_prop(self, context, prop_name):
+		layout = self.layout
+		split = layout.split(percentage=0.475)
+		split.column().prop(context.scene.super_efecto, "initial_%s" % prop_name)
+		is_animated_prop_name = "%s_animated" % prop_name
+		
+		if getattr(context.scene.super_efecto, is_animated_prop_name):
+			split = split.column().split(percentage=0.047619)
+			split.column().prop(context.scene.super_efecto, is_animated_prop_name, text="")
+			split.column().prop(context.scene.super_efecto, "final_%s" % prop_name)
+		else:
+			split.column().prop(context.scene.super_efecto, is_animated_prop_name)
+	
