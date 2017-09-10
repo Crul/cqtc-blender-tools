@@ -126,13 +126,13 @@ class SuperEfectoProperties(bpy.types.PropertyGroup):
 	template_data = templates.load_templates()
 	template_options = [ (tmpl["name"], tmpl["name"], "Plantilla personalizada") for tmpl in template_data ]
 	
-	def getEffect(self):
+	def get_effect(self):
 		return [e for e in effect_list if e.effect_key == self.effect_type][0]
 	
-	def getReversedEffect(self, effect):
+	def get_reversed_effect(self, effect):
 		return [e for e in effect_list if e.effect_key == effect.reversed_effect][0]
 	
-	def isTransformRequired(self):
+	def is_transform_required(self):
 		return ( \
 			self.initial_position_x != 0 or \
 			self.final_position_x != 0 or \
@@ -153,7 +153,7 @@ class SuperEfectoProperties(bpy.types.PropertyGroup):
 			self.final_offset_y != 0 or \
 			self.offset_y_animated)
 	
-	def isBlurRequired(self):
+	def is_blur_required(self):
 		return ( \
 			self.initial_blur_x != 0 or \
 			self.final_blur_x != 0 or \
@@ -162,8 +162,7 @@ class SuperEfectoProperties(bpy.types.PropertyGroup):
 			self.final_blur_y != 0 or \
 			self.blur_y_animated)
 	
-	
-	def toDict(self):
+	def to_dict(self):
 		return {
 			"effect_type": self.effect_type,                               
 			"effect_length_type": self.effect_length_type,
@@ -206,8 +205,7 @@ class SuperEfectoProperties(bpy.types.PropertyGroup):
 			"image_alignment_margin": self.image_alignment_margin,
 		}
 		
-	
-	def fromDict(self, tmpl):
+	def from_dict(self, tmpl):
 		self.effect_type = tmpl["effect_type"]
 		self.effect_length_type = tmpl["effect_length_type"] if ("effect_length_type" in tmpl) else "FRAMES" # TODO
 		self.effect_length = tmpl["effect_length"]

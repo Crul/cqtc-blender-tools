@@ -18,7 +18,7 @@ class AddSuperEfectoTemplateOperator(bpy.types.Operator):
 			self.report({'ERROR'}, 'Debe indicar el nombre de la plantilla.')
 			return {'CANCELLED'}
 			
-		new_template_data = context.scene.super_efecto.toDict()
+		new_template_data = context.scene.super_efecto.to_dict()
 		new_template_data['name'] = new_template_name
 		old_template = [tmpl for tmpl in context.scene.super_efecto.template_data if tmpl["name"] == new_template_name]
 		if len(old_template) == 0:
@@ -55,7 +55,7 @@ class LoadSuperEfectoTemplateOperator(bpy.types.Operator):
 		
 		for tmpl in context.scene.super_efecto.template_data:
 			if tmpl["name"] == template:
-				context.scene.super_efecto.fromDict(tmpl)
+				context.scene.super_efecto.from_dict(tmpl)
 				
 		return {'FINISHED'}
 

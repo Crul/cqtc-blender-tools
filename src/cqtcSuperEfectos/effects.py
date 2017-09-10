@@ -21,16 +21,16 @@ class SuperEffect:
 			self.reversed_effect = reversed_effect
 	
 	
-	def getNamePrefix(self, name_prefix):
+	def get_name_prefix(self, name_prefix):
 		if (name_prefix != ""):
 			name_prefix += "_"
 			
 		return name_prefix
 	
 	
-	def createColorStrip(self, context, channel, start_frame, final_frame, name_prefix=""):
+	def create_color_strip(self, context, channel, start_frame, final_frame, name_prefix=""):
 		color_strip = context.scene.sequence_editor.sequences \
-			.new_effect(self.getNamePrefix(name_prefix) + "Color", \
+			.new_effect(self.get_name_prefix(name_prefix) + "Color", \
 						"COLOR", \
 						channel, \
 						start_frame, \
@@ -43,9 +43,9 @@ class SuperEffect:
 		return color_strip
 	
 	
-	def createEffectStrip(self, context, channel, start_frame, final_frame, seq1, seq2, name_prefix=""):
+	def create_effect_strip(self, context, channel, start_frame, final_frame, seq1, seq2, name_prefix=""):
 		effect_strip = context.scene.sequence_editor.sequences \
-			.new_effect(self.getNamePrefix(name_prefix) + self.name, \
+			.new_effect(self.get_name_prefix(name_prefix) + self.name, \
 						self.effect_name, 
 						channel, \
 						start_frame, \
@@ -56,10 +56,10 @@ class SuperEffect:
 		effect_strip.select = False
 		effect_strip.blend_type = 'ALPHA_OVER'
 		
-		return self.customizeEffectStrip(effect_strip)
+		return self.customize_effect_strip(effect_strip)
 	
 		
-	def customizeEffectStrip(self, effect_strip):
+	def customize_effect_strip(self, effect_strip):
 		return effect_strip
 
 class NoEffect(SuperEffect):
@@ -67,10 +67,10 @@ class NoEffect(SuperEffect):
 	def __init__(self, effect_key):
 		super().__init__(effect_key, "", "Sin efecto", "Sin efecto")
 	
-	def createEffectStrip(self, context, channel, start_frame, final_frame, seq1, seq2, name_prefix=""):
+	def create_effect_strip(self, context, channel, start_frame, final_frame, seq1, seq2, name_prefix=""):
 		return (seq1 if seq1 is not None else seq2)
 		
-	def createColorStrip(self, context, channel, start_frame, final_frame, name_prefix=""):
+	def create_color_strip(self, context, channel, start_frame, final_frame, name_prefix=""):
 		return None
 		
 class FadeEffect(SuperEffect):
@@ -88,7 +88,7 @@ class WipeEffect(SuperEffect):
 		self.transition_type = transition_type
 		self.direction = direction
 	
-	def customizeEffectStrip(self, effect_strip):
+	def customize_effect_strip(self, effect_strip):
 		effect_strip.transition_type = self.transition_type
 		effect_strip.direction = self.direction
 	
@@ -96,8 +96,8 @@ class WipeEffect(SuperEffect):
 	
 class RotatedWipeEffect(WipeEffect):
 
-	def customizeEffectStrip(self, effect_strip):
-		effect_strip = super().customizeEffectStrip(effect_strip)
+	def customize_effect_strip(self, effect_strip):
+		effect_strip = super().customize_effect_strip(effect_strip)
 		effect_strip.angle = 1.5708 # radians ?
 	
 		return effect_strip
@@ -158,8 +158,8 @@ class SlideRightEffect(RotatedWipeEffect):
 		reversed_effect = "slide_left"
 		super().__init__(effect_key, "SINGLE", "IN", name, description, reversed_effect)
 		
-	def customizeEffectStrip(self, effect_strip):
-		effect_strip = super().customizeEffectStrip(effect_strip)
+	def customize_effect_strip(self, effect_strip):
+		effect_strip = super().customize_effect_strip(effect_strip)
 		effect_strip.angle = 1.5708 # radians ?
 	
 		return effect_strip
