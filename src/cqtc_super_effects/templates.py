@@ -1,12 +1,13 @@
 import bpy.props
 import os
+import cqtc_path
+import cqtc_pickle
 from cqtc_operator import CqtcOperator
-from . import path, pickle_utils
 
 template_filename = "plantillas_super_efectos"
-template_fullpath = os.path.join(path.addons_path, "%s.pickle" % template_filename )
+template_fullpath = os.path.join(cqtc_path.addons_path, "%s.pickle" % template_filename )
 def load_templates():
-	return pickle_utils.load_pickle(template_fullpath)
+	return cqtc_pickle.load_pickle(template_fullpath)
 
 class AddSuperEffectTemplateOperator(CqtcOperator):
 	bl_idname = "super_effect.add_template"
@@ -34,7 +35,7 @@ class AddSuperEffectTemplateOperator(CqtcOperator):
 				
 		context.scene.super_effect.template = new_template_name
 		
-		pickle_utils.save_pickle(template_fullpath, context.scene.super_effect.template_data)
+		cqtc_pickle.save_pickle(template_fullpath, context.scene.super_effect.template_data)
 		
 		context.scene.super_effect.new_template_name = ""
 		context.scene.super_effect.override_template = False
@@ -88,7 +89,7 @@ class RemoveSuperEffectTemplateOperator(CqtcOperator):
 			if tmpl["name"] == template:
 				context.scene.super_effect.template_data.remove(tmpl)
 		
-		pickle_utils.save_pickle(template_fullpath, context.scene.super_effect.template_data)
+		cqtc_pickle.save_pickle(template_fullpath, context.scene.super_effect.template_data)
 		
 		return {"FINISHED"}
 	
