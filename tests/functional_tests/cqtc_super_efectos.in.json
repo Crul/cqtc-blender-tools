@@ -211,7 +211,6 @@
 					"input_1": {
 						"name": "MySequence",
 						"type": "MOVIE",
-						"blend_type": "FOO",
 						"channel": 1,
 						"select": false,
 						"frame_final_duration": 100,
@@ -259,7 +258,6 @@
 					"input_1": {
 						"name": "MyBlurSequence",
 						"type": "GAUSSIAN_BLUR",
-						"blend_type": "FOO",
 						"channel": 1,
 						"select": false,
 						"frame_final_duration": 100,
@@ -516,12 +514,12 @@
 					"type": "GAUSSIAN_BLUR",
 					"channel": 1,
 					"select": true,
+					"blend_type": "ALPHA_OVER",
 					"size_x": 11,
 					"size_y": 21,
 					"input_1": {
 						"name": "MyTransformSequence",
 						"type": "TRANSFORM",
-						"blend_type": "FOO",
 						"channel": 1,
 						"select": false,
 						"frame_final_duration": 100,

@@ -321,225 +321,151 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 					self.animateVolume(seq2_sound, 0, 1, scene_volume_start_frame, scene_volume_final_frame)
 				
 		return {"FINISHED"}
-		
+	
 	
 	def addTransformStrip(self, context, sequence, start_frame, final_frame, is_in):
 		is_transform_required = context.scene.super_efecto.isTransformRequired()
 		if not is_transform_required:
 			return sequence
-		
-		if context.scene.animation_data is None:
-			context.scene.animation_data_create()
-		
+
 		selected_keyframes = self.deselect_selected_keyframe_points(context)
-						
-		return_original_sequence = False		
-		is_transform = (sequence.type == "TRANSFORM")
-		if not is_transform:
-			is_child_transform = ("input_1" in dir(sequence) and sequence.input_1 is not None and sequence.input_1.type == "TRANSFORM")
-			
-			if is_child_transform:
-				return_original_sequence = True
-				original_sequence = sequence
-				sequence = sequence.input_1
-				
-			else:
-				original_sequence = sequence
-				channel = self.getAvailableChannel(context, original_sequence.frame_final_start, original_sequence.frame_final_end, original_sequence.channel)
-				sequence = context.scene.sequence_editor.sequences.new_effect( \
-						original_sequence.name + '_Transform', \
-						'TRANSFORM', \
-						channel, \
-						original_sequence.frame_final_start, \
-						original_sequence.frame_final_end, \
-						original_sequence)
-				
-				original_sequence.select = False
-		
-		sequence.blend_type = 'ALPHA_OVER'
-				
-		delay_image = context.scene.super_efecto.delay_image
-		tranform_start_frame = start_frame
-		tranform_end_frame = final_frame
-		if is_in:
-			tranform_start_frame += delay_image
-			tranform_end_frame += delay_image
-			
-		is_reversed =  ((not is_in) and context.scene.super_efecto.reverse_out_effect)
-		is_horizontal_mirrored = ((not is_in) and context.scene.super_efecto.mirror_horizontal_out_effect)
-		is_vertical_mirrored = ((not is_in) and context.scene.super_efecto.mirror_vertical_out_effect)
-		sequence.translate_start_x = context.scene.super_efecto.initial_position_x
-		if context.scene.super_efecto.position_x_animated:
-			if is_reversed:
-				sequence.translate_start_x = context.scene.super_efecto.final_position_x
-			
-			if is_horizontal_mirrored:
-				sequence.translate_start_x *= -1
-			
-			sequence.keyframe_insert("translate_start_x", index=-1, frame=tranform_start_frame)
-			
-			sequence.translate_start_x = context.scene.super_efecto.final_position_x \
-				if not is_reversed else context.scene.super_efecto.initial_position_x
-				
-			if is_horizontal_mirrored:
-				sequence.translate_start_x *= -1
-			
-			sequence.keyframe_insert("translate_start_x", index=-1, frame=tranform_end_frame)
-		
-		sequence.translate_start_y = context.scene.super_efecto.initial_position_y		
-		if context.scene.super_efecto.position_y_animated:
-			if is_reversed:
-				sequence.translate_start_y = context.scene.super_efecto.final_position_y
-			
-			if is_vertical_mirrored:
-				sequence.translate_start_y *= -1
-				
-			sequence.keyframe_insert("translate_start_y", index=-1, frame=tranform_start_frame)
-			
-			sequence.translate_start_y = context.scene.super_efecto.final_position_y \
-				if not is_reversed else context.scene.super_efecto.initial_position_y
-			
-			if is_vertical_mirrored:
-				sequence.translate_start_y *= -1
-			
-			sequence.keyframe_insert("translate_start_y", index=-1, frame=tranform_end_frame)
+		(sequence, sequence_to_return) = self.create_or_get_existing_effect_strip(sequence, context, "TRANSFORM", "_Transform")
 		
 		sequence.use_uniform_scale = True
-		sequence.scale_start_x = context.scene.super_efecto.initial_zoom			
-		if context.scene.super_efecto.zoom_animated:
-			if is_reversed:
-				sequence.scale_start_x = context.scene.super_efecto.final_zoom
-				
-			sequence.keyframe_insert("scale_start_x", index=-1, frame=tranform_start_frame)
-			sequence.scale_start_x = context.scene.super_efecto.final_zoom \
-				if not is_reversed else context.scene.super_efecto.initial_zoom
-			sequence.keyframe_insert("scale_start_x", index=-1, frame=tranform_end_frame)
-		
-		sequence.blend_alpha = context.scene.super_efecto.initial_opacity
-		if context.scene.super_efecto.opacity_animated:
-			if is_reversed:
-				sequence.blend_alpha = context.scene.super_efecto.final_opacity
-				
-			sequence.keyframe_insert("blend_alpha", index=-1, frame=tranform_start_frame)
-			sequence.blend_alpha = context.scene.super_efecto.final_opacity \
-				if not is_reversed else context.scene.super_efecto.initial_opacity
-			sequence.keyframe_insert("blend_alpha", index=-1, frame=tranform_end_frame)
-					
 		sequence.use_translation = True
-		original_offset_x = sequence.transform.offset_x
-		sequence.transform.offset_x = original_offset_x + (global_scale_x * context.scene.super_efecto.initial_offset_x / 100)
-		if context.scene.super_efecto.offset_x_animated:
-			if is_reversed:
-				sequence.transform.offset_x = original_offset_x + (global_scale_x * context.scene.super_efecto.final_offset_x / 100)
-			
-			if is_horizontal_mirrored:
-				sequence.transform.offset_x *= -1
-
-			sequence.transform.keyframe_insert("offset_x", index=-1, frame=tranform_start_frame)
-			
-			sequence.transform.offset_x = original_offset_x + (global_scale_x * \
-				(context.scene.super_efecto.final_offset_x if not is_reversed else context.scene.super_efecto.initial_offset_x) / 100)
-				
-			if is_horizontal_mirrored:
-				sequence.transform.offset_x *= -1
-				
-			sequence.transform.keyframe_insert("offset_x", index=-1, frame=tranform_end_frame)
 		
+		original_offset_x = sequence.transform.offset_x
+		get_offset_x_fn = lambda value : (original_offset_x + (global_scale_x * value / 100))
 		original_offset_y = sequence.transform.offset_y
-		sequence.transform.offset_y = original_offset_y + (global_scale_y * context.scene.super_efecto.initial_offset_y / 100)
-		if context.scene.super_efecto.offset_y_animated:
-			if is_reversed:
-				sequence.transform.offset_y = original_offset_y + (global_scale_y * context.scene.super_efecto.final_offset_y / 100)
-			
-			if is_vertical_mirrored:
-				sequence.transform.offset_y *= -1
-				
-			sequence.transform.keyframe_insert("offset_y", index=-1, frame=tranform_start_frame)
-			
-			sequence.transform.offset_y = original_offset_y + (global_scale_y * \
-				(context.scene.super_efecto.final_offset_y if not is_reversed else context.scene.super_efecto.initial_offset_y) / 100)
-				
-			if is_vertical_mirrored:
-				sequence.transform.offset_y *= -1
-				
-			sequence.transform.keyframe_insert("offset_y", index=-1, frame=tranform_end_frame)
+		get_offset_y_fn = lambda value : (original_offset_y + (global_scale_y * value / 100))
+		
+		animatable_properties_info = [
+			(sequence, "translate_start_x", "position_x", {"is_horizontal_mirrorable"}),
+			(sequence, "translate_start_y", "position_y", {"is_vertical_mirrorable"}),
+			(sequence, "scale_start_x", "zoom", {}),
+			(sequence, "blend_alpha", "opacity", {}),
+			(sequence.transform, "offset_x", "offset_x", {"is_horizontal_mirrorable": True, "get_value_fn": get_offset_x_fn }),
+			(sequence.transform, "offset_y", "offset_y", {"is_vertical_mirrorable": True, "get_value_fn": get_offset_y_fn })
+		]
+		self.set_animatable_properties(context, animatable_properties_info, is_in, start_frame, final_frame)
 		
 		self.set_interpolation_type(context)
 		self.reselect_keyframe_points(context, selected_keyframes)
-						
-		return original_sequence if return_original_sequence else sequence
 		
-						
+		return sequence_to_return
+	
+	
 	def addBlurStrip(self, context, sequence, start_frame, final_frame, is_in):
 		is_blur_required = context.scene.super_efecto.isBlurRequired()
 		if not is_blur_required:
 			return sequence
 		
 		selected_keyframes = self.deselect_selected_keyframe_points(context)
-			
-		return_original_sequence = False		
-		is_gaussian_blur = (sequence.type == "GAUSSIAN_BLUR")
-		if not is_gaussian_blur:
-			is_child_gaussian_blur = ("input_1" in dir(sequence) and sequence.input_1 is not None and sequence.input_1.type == "GAUSSIAN_BLUR")
-			
-			if is_child_gaussian_blur:
-				return_original_sequence = True
-				original_sequence = sequence
-				sequence = sequence.input_1
-				
-			else:
-				original_sequence = sequence
-				channel = self.getAvailableChannel(context, original_sequence.frame_final_start, original_sequence.frame_final_end, original_sequence.channel)
-				sequence = context.scene.sequence_editor.sequences.new_effect( \
-						original_sequence.name + '_Blur', \
-						'GAUSSIAN_BLUR', \
-						channel, \
-						original_sequence.frame_final_start, \
-						original_sequence.frame_final_end, \
-						original_sequence)
-						
-				original_sequence.select = False
-		
-		sequence.blend_type = 'ALPHA_OVER'
+		(sequence, sequence_to_return) = self.create_or_get_existing_effect_strip(sequence, context, "GAUSSIAN_BLUR", "_Blur")
 
-		delay_image = context.scene.super_efecto.delay_image
-		tranform_start_frame = start_frame
-		tranform_end_frame = final_frame
-		if is_in:
-			tranform_start_frame += delay_image
-			tranform_end_frame += delay_image
-			
-		is_reversed =  ((not is_in) and context.scene.super_efecto.reverse_out_effect)
-		sequence.size_x = context.scene.super_efecto.initial_blur_x
-		if context.scene.super_efecto.blur_x_animated:
-			if is_reversed:
-				sequence.size_x = context.scene.super_efecto.final_blur_x
-			
-			sequence.keyframe_insert("size_x", index=-1, frame=tranform_start_frame)
-			
-			sequence.size_x = context.scene.super_efecto.final_blur_x \
-				if not is_reversed else context.scene.super_efecto.initial_blur_x
-				
-			sequence.keyframe_insert("size_x", index=-1, frame=tranform_end_frame)
+		animatable_properties_info = [ (sequence, "size_x", "blur_x", {}), (sequence, "size_y", "blur_y", {}) ]
+		self.set_animatable_properties(context, animatable_properties_info, is_in, start_frame, final_frame)
 		
-		sequence.size_y = context.scene.super_efecto.initial_blur_y		
-		if context.scene.super_efecto.blur_y_animated:
-			if is_reversed:
-				sequence.size_y = context.scene.super_efecto.final_blur_y
-			
-			sequence.keyframe_insert("size_y", index=-1, frame=tranform_start_frame)
-			
-			sequence.size_y = context.scene.super_efecto.final_blur_y \
-				if not is_reversed else context.scene.super_efecto.initial_blur_y
-			
-			sequence.keyframe_insert("size_y", index=-1, frame=tranform_end_frame)
-				
 		self.set_interpolation_type(context)
 		self.reselect_keyframe_points(context, selected_keyframes)
-						
-		return original_sequence if return_original_sequence else sequence
+		
+		return sequence_to_return
 		
 		
+	def create_or_get_existing_effect_strip(self, sequence, context, effect_type, effect_name_suffix):
+		sequence.blend_type = 'ALPHA_OVER'
+		
+		is_gaussian_blur = (sequence.type == effect_type)
+		if is_gaussian_blur:
+			return sequence, sequence
+	
+		is_child_gaussian_blur = ("input_1" in dir(sequence) and sequence.input_1 is not None and sequence.input_1.type ==effect_type)
+		if is_child_gaussian_blur:
+			sequence_to_return = sequence
+			sequence = sequence.input_1
+			
+		else:
+			original_sequence = sequence
+			channel = self.getAvailableChannel(context, original_sequence.frame_final_start, original_sequence.frame_final_end, original_sequence.channel)
+			sequence = context.scene.sequence_editor.sequences.new_effect( \
+					original_sequence.name + effect_name_suffix, \
+					effect_type, \
+					channel, \
+					original_sequence.frame_final_start, \
+					original_sequence.frame_final_end, \
+					original_sequence)
+			
+			sequence.blend_type = 'ALPHA_OVER'
+			
+			original_sequence.select = False
+			sequence_to_return = sequence
+			
+		return sequence, sequence_to_return
+
+	
+	def set_animatable_properties(self, context, animatable_properties_info, is_in, start_frame, final_frame):
+		delay_image = context.scene.super_efecto.delay_image
+		if is_in:
+			start_frame += delay_image
+			final_frame += delay_image
+		
+		for obj, seq_attr, super_efecto_prop, options in animatable_properties_info:
+			is_horizontal_mirrorable = "is_horizontal_mirrorable" in options
+			is_vertical_mirrorable = "is_vertical_mirrorable" in options
+			get_value_fn = options["get_value_fn"] if "get_value_fn" in options else lambda value : value
+			
+			self.set_animatable_property(context,
+				obj,
+				seq_attr,
+				super_efecto_prop,
+				start_frame,
+				final_frame,
+				is_in,
+				is_horizontal_mirrorable=is_horizontal_mirrorable,
+				is_vertical_mirrorable=is_vertical_mirrorable,
+				get_value_fn=get_value_fn)
+		
+		
+	def set_animatable_property(self,
+		context,
+		obj,
+		seq_attr,
+		super_efecto_prop,
+		start_frame,
+		end_frame,
+		is_in,
+		is_vertical_mirrorable=False,
+		is_horizontal_mirrorable=False,
+		get_value_fn=lambda value : value
+	):
+		initial_value = get_value_fn(getattr(context.scene.super_efecto, "initial_%s" % super_efecto_prop))
+		final_value = get_value_fn(getattr(context.scene.super_efecto, "final_%s" % super_efecto_prop))
+		is_animated_value = getattr(context.scene.super_efecto, "%s_animated" % super_efecto_prop)
+		
+		setattr(obj, seq_attr, initial_value)		
+		if not is_animated_value:
+			return
+	
+		is_reversed =  ((not is_in) and context.scene.super_efecto.reverse_out_effect)
+		is_horizontal_mirrored = (is_horizontal_mirrorable and (not is_in) and context.scene.super_efecto.mirror_horizontal_out_effect)
+		is_vertical_mirrored = (is_vertical_mirrorable and(not is_in) and context.scene.super_efecto.mirror_vertical_out_effect)
+		
+		if is_reversed:
+			setattr(obj, seq_attr, final_value)
+
+		if is_horizontal_mirrored or is_vertical_mirrored:
+			setattr(obj, seq_attr, -getattr(obj, seq_attr))
+			
+		obj.keyframe_insert(seq_attr, index=-1, frame=start_frame)
+		
+		setattr(obj, seq_attr, final_value if not is_reversed else initial_value)
+		
+		if is_horizontal_mirrored or is_vertical_mirrored:
+			setattr(obj, seq_attr, -getattr(obj, seq_attr))
+			
+		obj.keyframe_insert(seq_attr, index=-1, frame=end_frame)
+	
+	
 	def overlapStrips(self, context, seq1, seq2, seq1_sound, seq2_sound):
 		effect_length = context.scene.super_efecto.effect_length
 		
