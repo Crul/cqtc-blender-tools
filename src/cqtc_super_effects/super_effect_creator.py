@@ -151,7 +151,7 @@ class SuperEffectCreator():
 			if is_in:
 				 color_final_frame += delay_image
 				 
-			channel = bpy_utils.get_available_channel(context, start_frame, color_final_frame, sequence.channel)
+			channel = bpy_utils.get_available_channel_in_position(context, start_frame, color_final_frame, sequence.channel)
 			color_strip = effect.create_color_strip(context, channel, start_frame, color_final_frame, original_sequence.name)
 			
 			seq1 = color_strip if is_in else sequence
@@ -159,7 +159,7 @@ class SuperEffectCreator():
 			if is_in:
 				 original_sequence.frame_offset_start += delay_image
 				 
-			channel = bpy_utils.get_available_channel(context, start_frame, final_frame, channel)
+			channel = bpy_utils.get_available_channel_in_position(context, start_frame, final_frame, channel)
 			effect_strip = effect.create_effect_strip(context, channel, start_frame, final_frame, seq1, seq2, original_sequence.name)
 		
 			original_sequence.select = False
@@ -204,7 +204,7 @@ class SuperEffectCreator():
 		effect = context.scene.super_effect.get_effect()
 		
 		max_channel = max([s.channel for s in context.selected_sequences])
-		channel = bpy_utils.get_available_channel(context, start_frame, final_frame, max_channel)
+		channel = bpy_utils.get_available_channel_in_position(context, start_frame, final_frame, max_channel)
 		effect_strip = effect.create_effect_strip(context, channel, start_frame, final_frame, seq1, seq2)
 						
 		if context.scene.super_effect.apply_to_sound:
@@ -229,16 +229,16 @@ class SuperEffectCreator():
 		seq2 = self.__add_blur_strip(context, seq2, seq2.frame_final_start, final_frame, is_in=True)
 		seq2 = self.__add_transform_strip(context, seq2, seq2.frame_final_start, final_frame, is_in=True)
 
-		color_channel = bpy_utils.get_available_channel(context, start_frame, final_frame + delay_image, max(seq1.channel, seq2.channel))
+		color_channel = bpy_utils.get_available_channel_in_position(context, start_frame, final_frame + delay_image, max(seq1.channel, seq2.channel))
 		color_strip = effect.create_color_strip(context, color_channel, start_frame, final_frame + delay_image)
 		
 		seq1_effect = effect if not context.scene.super_effect.reverse_out_effect \
 			else context.scene.super_effect.get_reversed_effect(effect)
 		
-		channel = bpy_utils.get_available_channel(context, start_frame, seq1.frame_final_end, color_channel)
+		channel = bpy_utils.get_available_channel_in_position(context, start_frame, seq1.frame_final_end, color_channel)
 		effect_strip = seq1_effect.create_effect_strip(context, channel, start_frame, seq1.frame_final_end, seq1, color_strip)
 		
-		channel = bpy_utils.get_available_channel(context, seq2.frame_final_start, final_frame + delay_image, color_channel)
+		channel = bpy_utils.get_available_channel_in_position(context, seq2.frame_final_start, final_frame + delay_image, color_channel)
 		effect_strip = effect.create_effect_strip(context, channel, seq2.frame_final_start, final_frame + delay_image, color_strip, seq2)
 		
 		seq2.frame_offset_start += delay_image
@@ -404,7 +404,7 @@ class SuperEffectCreator():
 			
 		else:
 			original_sequence = sequence
-			channel = bpy_utils.get_available_channel(context, original_sequence.frame_final_start, original_sequence.frame_final_end, original_sequence.channel)
+			channel = bpy_utils.get_available_channel_in_position(context, original_sequence.frame_final_start, original_sequence.frame_final_end, original_sequence.channel)
 			sequence = context.scene.sequence_editor.sequences.new_effect(
 					original_sequence.name + effect_name_suffix,
 					effect_type,
