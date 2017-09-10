@@ -1,4 +1,4 @@
-from . import bpy_utils
+import bpy_utils
 
 global_scale_x = 1920
 global_scale_y = int(global_scale_x * (1080/1920))		
