@@ -17,7 +17,7 @@ def register():
 	blender_addon.register()
 
 def unregister():
-	blender_addon.register()
+	blender_addon.unregister()
 
 if __name__ == "__main__":
 	register()

@@ -1,4 +1,6 @@
-import bpy
+import bpy.props
+import bpy.types
+import bpy.utils
 from .super_effect_panel import SuperEffectPanel
 from .super_effect_properties import SuperEffectProperties
 from .templates import AddSuperEffectTemplateOperator, LoadSuperEffectTemplateOperator, SetSuperEffectTemplateNameOperator, RemoveSuperEffectTemplateOperator
