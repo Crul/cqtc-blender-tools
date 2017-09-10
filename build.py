@@ -9,7 +9,7 @@ build_path = r"build"
 if not os.path.exists(build_path):
     os.makedirs(build_path)
 
-addons = ["cqtcSuperEfectos"]
+addons = ["cqtc_super_efectos"]
 for addon in addons:
 	output_fullpath = os.path.join(build_path, ("%s.zip" % addon))
 	if os.path.exists(output_fullpath):

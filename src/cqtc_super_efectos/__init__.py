@@ -9,15 +9,15 @@ bl_info = {
  
 if "bpy" in locals():
 	import imp
-	imp.reload(createSuperEfectoOperator)
-	imp.reload(superEfectoPanel)
-	imp.reload(superEfectoProperties)
+	imp.reload(create_super_efecto_operator)
+	imp.reload(super_efecto_panel)
+	imp.reload(super_efecto_properties)
 	imp.reload(templates)
 else:
-	from .superEfectoPanel import SuperEfectoPanel
-	from .superEfectoProperties import SuperEfectoProperties
+	from .super_efecto_panel import SuperEfectoPanel
+	from .super_efecto_properties import SuperEfectoProperties
 	from .templates import AddSuperEfectoTemplateOperator, LoadSuperEfectoTemplateOperator, SetSuperEfectoTemplateNameOperator, RemoveSuperEfectoTemplateOperator
-	from .createSuperEfectoOperator import CreateSuperEfectoOperator
+	from .create_super_efecto_operator import CreateSuperEfectoOperator
 	
  
 import bpy

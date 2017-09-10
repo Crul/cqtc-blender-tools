@@ -5,7 +5,7 @@ import pytest
 import warnings
 
 import bpy
-import cqtcSuperEfectos
+import cqtc_super_efectos
 
 test_definition_path = "./tests/functional_tests"
 test_definition_file_pattern = "cqtc_super_efectos.%s.json"
@@ -84,9 +84,9 @@ class TestCqtcSuperEfectosFunctional():
 	selected_keyframe_points_on_interpolation_type_call = []
 	
 	def setup_method(self, method):
-		self.cqtc_super_efectos_operator = cqtcSuperEfectos.CreateSuperEfectoOperator()
+		self.cqtc_super_efectos_operator = cqtc_super_efectos.CreateSuperEfectoOperator()
 		self.cqtc_super_efectos_operator.report = mock.MagicMock()
-		self.super_efecto_properties = cqtcSuperEfectos.SuperEfectoProperties()
+		self.super_efecto_properties = cqtc_super_efectos.SuperEfectoProperties()
 		self.mock_selected_sequences_array = [];
 		self.keyframe_insert_calls = []
 		
