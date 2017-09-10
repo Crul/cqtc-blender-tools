@@ -1,19 +1,18 @@
 import bpy.props
-import bpy.types
+from cqtc_operator import CqtcOperator
 import bpy_utils
 
-class ChangeStripsChannelOperator(bpy.types.Operator):
+class ChangeStripsChannelOperator(CqtcOperator):
 	bl_idname = "cqtc_tools_channel.change"
 	bl_label = "Cambiar canal de las secuencias"
 	up_or_down =  bpy.props.BoolProperty(default=True)
-			
+	
 	def execute(self, context):
 		if len(context.selected_sequences) == 0:
-			self.report({"ERROR"}, "No hay strips seleccionadas" )
-			return {"CANCELLED"}
+			return self.return_error("No hay strips seleccionadas")
 		
-		selected_sequences = sorted(context.selected_sequences, \
-			key=lambda s : s.channel, \
+		selected_sequences = sorted(context.selected_sequences,
+			key=lambda s : s.channel,
 			reverse=self.up_or_down)
 		
 		for sequence in selected_sequences:

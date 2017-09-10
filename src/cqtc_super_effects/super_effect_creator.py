@@ -35,14 +35,14 @@ class SuperEffectCreator():
 			and context.scene.super_effect.effect_length_percentage > 50)
 		
 		if is_effect_length_percentage_over_limit:
-			return ({"ERROR"}, "No se puede crear un efecto de Entrada y Salida con más del 50% de porcentage de duración" )
+			return "No se puede crear un efecto de Entrada y Salida con más del 50% de porcentage de duración"
 	
 	
 	def __validate_in_or_out_effect(self, context, is_in):
 
 		selected_not_sound_sequences = [s for s in context.selected_sequences if s.type in effectable_strip_types]
 		if len(selected_not_sound_sequences) == 0:
-			return ({"ERROR"}, "Debes seleccionar al menos una strip que no sea de tipo sonido" )
+			return "Debes seleccionar al menos una strip que no sea de tipo sonido"
 		
 		effect_length = context.scene.super_effect.effect_length
 		delay_image = context.scene.super_effect.delay_image
@@ -53,12 +53,12 @@ class SuperEffectCreator():
 				
 			for sequence in selected_not_sound_sequences:
 				if sequence.frame_final_duration < min_length:
-					return ({"ERROR"}, "La strip " + sequence.name + " es más corta de lo necesario para añdir el efecto")
+					return "La strip " + sequence.name + " es más corta de lo necesario para añdir el efecto"
 			
 		selected_sound_capable_sequences = [s for s in context.selected_sequences if s.type in sound_capable_strip_types]
 		selected_sound_sequences = [s for s in context.selected_sequences if s.type == "SOUND"]
 		if len(selected_sound_sequences) > len(selected_sound_capable_sequences):
-			return ({"ERROR"}, "No puedes seleccionar más strips de sonido que strips de imagen, vídeo o transform" )
+			return "No puedes seleccionar más strips de sonido que strips de imagen, vídeo o transform"
 
 		for selected_sound_sequence in selected_sound_sequences:
 			not_sound_sequence_matches = [ nss for nss in selected_sound_capable_sequences \
@@ -66,17 +66,17 @@ class SuperEffectCreator():
 					or nss.frame_final_end == selected_sound_sequence.frame_final_end)]
 					
 			if len(not_sound_sequence_matches) == 0:
-				return ({"ERROR"}, "La strip de sonido " + selected_sound_sequence.name + " no corresponde con ninguna strip de imagen, vídeo o transform" )
+				return "La strip de sonido " + selected_sound_sequence.name + " no corresponde con ninguna strip de imagen, vídeo o transform"
 	
 	
 	def __validate_transition(self, context):
 		selected_not_sound_sequences = [s for s in context.selected_sequences if s.type in transitionable_strip_types]
 		if len(selected_not_sound_sequences) != 2:
-			return ({"ERROR"}, "Debes seleccionar dos (y SOLO dos) strips que no sean de sonido" )
+			return "Debes seleccionar dos (y SOLO dos) strips que no sean de sonido"
 			
 		selected_sound_sequences = [s for s in context.selected_sequences if s.type == "SOUND"]
 		if len(selected_sound_sequences) > 2:
-			return ({"ERROR"}, "Puedes seleccionar dos strips de sonido como máximo" )
+			return "Puedes seleccionar dos strips de sonido como máximo"
 			
 		for selected_sound_sequence in selected_sound_sequences:
 			selected_sound_capable_sequences = [s for s in context.selected_sequences if s.type in sound_capable_strip_types]
@@ -85,20 +85,20 @@ class SuperEffectCreator():
 					and nss.frame_final_end == selected_sound_sequence.frame_final_end)]
 					
 			if len(not_sound_sequence_matches) == 0:
-				return ({"ERROR"}, "La strip de sonido " + selected_sound_sequence.name + " no corresponde con ninguna strip de imagen, vídeo" )
+				return "La strip de sonido " + selected_sound_sequence.name + " no corresponde con ninguna strip de imagen, vídeo"
 			
 		if context.scene.super_effect.effect_length_type == "PERCENTAGE":
-			return ({"ERROR"}, "No se puede añadir una transición con una duración de tipo porcentaje" )
+			return "No se puede añadir una transición con una duración de tipo porcentaje"
 		
 		strip_tmp_1 = selected_not_sound_sequences[0]
 		strip_tmp_2 = selected_not_sound_sequences[1]
 		if (strip_tmp_1.frame_final_start == strip_tmp_2.frame_final_start and strip_tmp_1.frame_final_end == strip_tmp_2.frame_final_end):
-			return ({"ERROR"}, "Para añadir una transición las tiras no pueden estar en la misma posición" )
+			return "Para añadir una transición las tiras no pueden estar en la misma posición"
 	
 	
 	def __validate_transition_without_color(self, context, seq1, seq2, seq1_sound, seq2_sound):
 		if seq1.frame_final_end < seq2.frame_final_start:
-			return ({"ERROR"}, "Para añadir una transición sin color intermedio las tiras deben solaparse o ser consecutivas" )
+			return "Para añadir una transición sin color intermedio las tiras deben solaparse o ser consecutivas"
 			
 		if seq1.frame_final_end == seq2.frame_final_start:
 			return bpy_utils.overlap_strips(context, seq1, seq2, seq1_sound, seq2_sound)
@@ -106,7 +106,7 @@ class SuperEffectCreator():
 	
 	def __validate_transition_with_color(self, seq1, seq2):
 		if seq1.frame_final_end > seq2.frame_final_start:
-			return ({"ERROR"}, "Para añadir una transición con color intermedio las tiras no pueden solaparse" )
+			return "Para añadir una transición con color intermedio las tiras no pueden solaparse"
 	
 	
 	def __create_in_or_out_effect(self, context, in_or_out):
