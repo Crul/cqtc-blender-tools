@@ -115,9 +115,9 @@ class SuperEfectoPanel(bpy.types.Panel):
 		split_5 = split_4.split(align=True, percentage=0.90)
 		split_5.column(align=True).prop(context.scene.super_efecto, "new_template_name", text="")
 		clear_template_name_operator = split_5.column(align=True).operator("super_efecto.set_template_name", text="X")
-		clear_template_name_operator.action = 'CLEAR'
+		clear_template_name_operator.action = "CLEAR"
 		load_template_name_operator = split_5.column(align=True).operator("super_efecto.set_template_name", text="↓")
-		load_template_name_operator.action = 'LOAD'
+		load_template_name_operator.action = "LOAD"
 		
 		split.column().operator("super_efecto.add_template", text="Guardar")
 		

@@ -24,7 +24,7 @@ effect_list = [
 def get_super_efecto_template_options(scene, context):
 	return sorted(context.scene.super_efecto.template_options, key=lambda opt: opt[0].lower())
 	
-def load_plantilla(self, context):
+def load_template(self, context):
 	bpy.ops.super_efecto.load_template()
 	
 class SuperEfectoProperties(bpy.types.PropertyGroup):
@@ -43,13 +43,13 @@ class SuperEfectoProperties(bpy.types.PropertyGroup):
 			description = "Tipo de duración de la transición (frames o %)",
 			default = "FRAMES",
 			items = [
-				('FRAMES', 'En Frames', 'Duración medida en frames'),
-				('PERCENTAGE', 'En Porcentaje', 'Duración medida en porcentaje de la tira')
+				("FRAMES", "En Frames", "Duración medida en frames"),
+				("PERCENTAGE", "En Porcentaje", "Duración medida en porcentaje de la tira")
 			]
 		)
 		
 	effect_length = bpy.props.IntProperty(name="Duración del efecto", default=22, min=1, max=10000, step=5)
-	effect_length_percentage = bpy.props.FloatProperty(name="Duración del efecto (%)", default=10, min=1, max=100, step=5, subtype='PERCENTAGE')
+	effect_length_percentage = bpy.props.FloatProperty(name="Duración del efecto (%)", default=10, min=1, max=100, step=5, subtype="PERCENTAGE")
 	
 	apply_to_sound = bpy.props.BoolProperty(name="Aplicar al sonido", default=True)
 	overlap_sound = bpy.props.BoolProperty(name="Superponer el sonido", default=False)
@@ -71,9 +71,9 @@ class SuperEfectoProperties(bpy.types.PropertyGroup):
 	zoom_animated = bpy.props.BoolProperty(name="Animar Zoom", default=False)
 	final_zoom = bpy.props.FloatProperty(name="Zoom Final", default=1, min=0, max=100, step=1)
 	
-	initial_opacity = bpy.props.FloatProperty(name="Opacidad Inicial", default=1, min=0, max=1, step=0.1, subtype='FACTOR')
+	initial_opacity = bpy.props.FloatProperty(name="Opacidad Inicial", default=1, min=0, max=1, step=0.1, subtype="FACTOR")
 	opacity_animated = bpy.props.BoolProperty(name="Animar Opacidad", default=False)
-	final_opacity = bpy.props.FloatProperty(name="Opacidad Final", default=1, min=0, max=1, step=0.1, subtype='FACTOR')
+	final_opacity = bpy.props.FloatProperty(name="Opacidad Final", default=1, min=0, max=1, step=0.1, subtype="FACTOR")
 	
 	initial_offset_x = bpy.props.FloatProperty(name="Offset X Inicial", default=0, min=-1000, max=1000, step=5)
 	offset_x_animated = bpy.props.BoolProperty(name="Animar Offset X", default=False)
@@ -119,10 +119,10 @@ class SuperEfectoProperties(bpy.types.PropertyGroup):
 			name = "Plantillas",
 			description = "Plantillas guardadas por el usuario",
 			items = get_super_efecto_template_options,
-			update = load_plantilla
+			update = load_template
 		)
 	
-	new_template_name = bpy.props.StringProperty(name='Nombre', description='Nombre para la nueva plantilla')
+	new_template_name = bpy.props.StringProperty(name="Nombre", description="Nombre para la nueva plantilla")
 	override_template = bpy.props.BoolProperty(name="Sobreescribir Plantilla", default=False)
 	
 	template_data = templates.load_templates()

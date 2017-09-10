@@ -29,7 +29,7 @@ def load_tests():
 		with open(test_file_path, encoding="utf-8") as file:
 			json_data = json.loads(file.read())
 			if "TODO" in json_data:
-				pending_tests = "\n   - ".join([''] + json_data["TODO"])
+				pending_tests = "\n   - ".join([""] + json_data["TODO"])
 				warning_msg = "\n\n > pending %i '%s' tests: %s\n" % (len(json_data["TODO"]), test_definition, pending_tests)
 				warnings.warn(warning_msg)
 				
@@ -327,7 +327,7 @@ class TestCqtcSuperEfectosFunctional():
 			elif "type" in sequence_data and sequence_data["type"] == "SCENE":
 				mock_sequence = bpy.types.VolumeSceneSequence()
 				mock_sequence.scene.keyframe_insert = mock.MagicMock()
-				mock_sequence.scene.keyframe_insert.side_effect = self.get_keyframe_insert_fake_fn(mock_sequence, 'scene')
+				mock_sequence.scene.keyframe_insert.side_effect = self.get_keyframe_insert_fake_fn(mock_sequence, "scene")
 			else:
 				mock_sequence = bpy.types.Sequence()
 				
@@ -336,7 +336,7 @@ class TestCqtcSuperEfectosFunctional():
 			mock_sequence.keyframe_insert.side_effect = self.get_keyframe_insert_fake_fn(mock_sequence)
 				
 			mock_sequence.transform.keyframe_insert = mock.MagicMock()
-			mock_sequence.transform.keyframe_insert.side_effect = self.get_keyframe_insert_fake_fn(mock_sequence, 'transform')
+			mock_sequence.transform.keyframe_insert.side_effect = self.get_keyframe_insert_fake_fn(mock_sequence, "transform")
 			
 			mock_sequence.elements = []
 			if "elements" in sequence_data:
@@ -346,8 +346,8 @@ class TestCqtcSuperEfectosFunctional():
 					mock_sequence.elements.append(mock_element)
 			
 			if "input_1" in sequence_data:
-				if type(sequence_data['input_1']) is bpy.types.Sequence:
-					mock_sequence.input_1 = sequence_data['input_1']
+				if type(sequence_data["input_1"]) is bpy.types.Sequence:
+					mock_sequence.input_1 = sequence_data["input_1"]
 				else:
 					mock_sequence.input_1 = self.create_mock_sequence(sequence_array, sequence_data["input_1"])
 			

@@ -5,7 +5,7 @@ class AnimationData():
 	action = AnimationDataAction()
 
 class Area:
-	type = ''
+	type = ""
 
 class Render:
 	resolution_x = 1920
@@ -70,8 +70,8 @@ class SequenceTransform:
 
 class Sequence:
 	select = True
-	name = ''
-	type = ''
+	name = ""
+	type = ""
 	elements = []
 	transform = None
 	input_1 = None

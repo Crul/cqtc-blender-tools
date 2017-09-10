@@ -15,7 +15,7 @@ def align_image(context, sequence):
 	image_alignment_margin = context.scene.super_efecto.image_alignment_margin
 	
 	sequence.use_translation = True
-	sequence.blend_type = 'ALPHA_OVER'
+	sequence.blend_type = "ALPHA_OVER"
 	sequence.transform.offset_x = (context.scene.render.resolution_x/2 - image_element.orig_width/2)
 	sequence.transform.offset_y = (context.scene.render.resolution_y/2 - image_element.orig_height/2)
 		
@@ -114,14 +114,14 @@ def set_interpolation_type(context):
 		return
 	
 	old_area_type = context.area.type
-	context.area.type = 'GRAPH_EDITOR'
+	context.area.type = "GRAPH_EDITOR"
 	context.scene.update()
 
 	try:
 		if context.scene.super_efecto.constant_speed:
-			bpy.ops.graph.interpolation_type(type='LINEAR')
+			bpy.ops.graph.interpolation_type(type="LINEAR")
 		else:
-			bpy.ops.graph.interpolation_type(type='BEZIER')
+			bpy.ops.graph.interpolation_type(type="BEZIER")
 	except: 
 		pass
 		
@@ -130,7 +130,7 @@ def set_interpolation_type(context):
 
 
 def unselect_children(sequence):
-	if 'input_1' not in dir(sequence) or sequence.input_1 is None:
+	if "input_1" not in dir(sequence) or sequence.input_1 is None:
 		return
 		
 	unselect_children(sequence.input_1)

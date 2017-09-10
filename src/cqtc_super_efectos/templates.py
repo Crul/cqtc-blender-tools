@@ -3,7 +3,7 @@ import bpy.types
 import os
 from . import path, pickle_utils
 
-template_filename = 'plantillas_super_efectos'
+template_filename = "plantillas_super_efectos"
 template_fullpath = os.path.join(path.addons_path, "%s.pickle" % template_filename )
 def load_templates():
 	return pickle_utils.load_pickle(template_fullpath)
@@ -11,16 +11,16 @@ def load_templates():
 class AddSuperEfectoTemplateOperator(bpy.types.Operator):
 	bl_idname = "super_efecto.add_template"
 	bl_label = "Añadir Plantilla"
-	bl_options = {'REGISTER', 'UNDO'}
+	bl_options = {"REGISTER", "UNDO"}
 
 	def execute(self, context):
 		new_template_name = context.scene.super_efecto.new_template_name
-		if new_template_name == '':
-			self.report({'ERROR'}, 'Debe indicar el nombre de la plantilla.')
-			return {'CANCELLED'}
+		if new_template_name == "":
+			self.report({"ERROR"}, "Debe indicar el nombre de la plantilla.")
+			return {"CANCELLED"}
 			
 		new_template_data = context.scene.super_efecto.to_dict()
-		new_template_data['name'] = new_template_name
+		new_template_data["name"] = new_template_name
 		old_template = [tmpl for tmpl in context.scene.super_efecto.template_data if tmpl["name"] == new_template_name]
 		if len(old_template) == 0:
 			new_template_option = (new_template_name, new_template_name, "Plantilla personalizada")
@@ -28,8 +28,8 @@ class AddSuperEfectoTemplateOperator(bpy.types.Operator):
 			context.scene.super_efecto.template_data.append(new_template_data)
 		else:
 			if not context.scene.super_efecto.override_template and len(old_template) > 0:
-				self.report({'ERROR'}, 'Ya existe una plantilla llamada "' + new_template_name + '"')
-				return {'CANCELLED'}
+				self.report({"ERROR"}, "Ya existe una plantilla llamada "" + new_template_name + """)
+				return {"CANCELLED"}
 			
 			old_template_index = next(index for (index, tmpl) in enumerate(context.scene.super_efecto.template_data) if tmpl["name"] == new_template_name)
 			context.scene.super_efecto.template_data[old_template_index] = new_template_data
@@ -38,48 +38,48 @@ class AddSuperEfectoTemplateOperator(bpy.types.Operator):
 		
 		pickle_utils.save_pickle(template_fullpath, context.scene.super_efecto.template_data)
 		
-		context.scene.super_efecto.new_template_name = ''
+		context.scene.super_efecto.new_template_name = ""
 		context.scene.super_efecto.override_template = False
 	
-		return {'FINISHED'}
+		return {"FINISHED"}
 
 class LoadSuperEfectoTemplateOperator(bpy.types.Operator):
 	bl_idname = "super_efecto.load_template"
 	bl_label = "Cargar Plantilla"
-	bl_options = {'REGISTER', 'UNDO'}
+	bl_options = {"REGISTER", "UNDO"}
 
 	def execute(self, context):
 		template = context.scene.super_efecto.template
 		if template is None or template == "":
-			self.report({'ERROR'}, 'Debe seleccionar una plantilla.')
-			return {'CANCELLED'}
+			self.report({"ERROR"}, "Debe seleccionar una plantilla.")
+			return {"CANCELLED"}
 		
 		for tmpl in context.scene.super_efecto.template_data:
 			if tmpl["name"] == template:
 				context.scene.super_efecto.from_dict(tmpl)
 				
-		return {'FINISHED'}
+		return {"FINISHED"}
 
 class SetSuperEfectoTemplateNameOperator(bpy.types.Operator):
 	bl_idname = "super_efecto.set_template_name"
 	bl_label = "Poner nombre a la nueva plantilla"
-	bl_options = {'REGISTER', 'UNDO'}
+	bl_options = {"REGISTER", "UNDO"}
 	
 	action =  bpy.props.StringProperty()
 
 	def execute(self, context):
 		template = context.scene.super_efecto.template
-		if self.action.upper() == 'CLEAR':
-			context.scene.super_efecto.new_template_name = ''
-		elif self.action.upper() == 'LOAD':
+		if self.action.upper() == "CLEAR":
+			context.scene.super_efecto.new_template_name = ""
+		elif self.action.upper() == "LOAD":
 			context.scene.super_efecto.new_template_name = template
 				
-		return {'FINISHED'}
+		return {"FINISHED"}
 
 class RemoveSuperEfectoTemplateOperator(bpy.types.Operator):
 	bl_idname = "super_efecto.remove_template"
 	bl_label = "¿Estás seguro de que quieres borrar la plantilla seleccionada?"
-	bl_options = {'REGISTER', 'UNDO'}
+	bl_options = {"REGISTER", "UNDO"}
 
 	def execute(self, context):
 		template = context.scene.super_efecto.template
@@ -93,13 +93,13 @@ class RemoveSuperEfectoTemplateOperator(bpy.types.Operator):
 		
 		pickle_utils.save_pickle(template_fullpath, context.scene.super_efecto.template_data)
 		
-		return {'FINISHED'}
+		return {"FINISHED"}
 	
 	def invoke(self, context, event):
 		template = context.scene.super_efecto.template
 		if template is None or template == "":
-			self.report({'ERROR'}, 'Debe seleccionar una plantilla.')
-			return {'CANCELLED'}
+			self.report({"ERROR"}, "Debe seleccionar una plantilla.")
+			return {"CANCELLED"}
 		
 		return context.window_manager.invoke_confirm(self, event)
 

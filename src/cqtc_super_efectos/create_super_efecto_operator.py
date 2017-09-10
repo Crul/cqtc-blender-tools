@@ -375,12 +375,12 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 		
 		
 	def create_or_get_existing_effect_strip(self, sequence, context, effect_type, effect_name_suffix):
-		sequence.blend_type = 'ALPHA_OVER'
+		sequence.blend_type = "ALPHA_OVER"
 		
 		is_effect_strip = (sequence.type == effect_type)
 		if is_effect_strip:
 			return sequence, sequence
-	
+		
 		is_effect_strip_child = (("input_1" in dir(sequence))
 			and (sequence.input_1 is not None and sequence.input_1.type == effect_type))
 		
@@ -399,7 +399,7 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 					original_sequence.frame_final_end,
 					original_sequence)
 			
-			sequence.blend_type = 'ALPHA_OVER'
+			sequence.blend_type = "ALPHA_OVER"
 			
 			original_sequence.select = False
 			sequence_to_return = sequence
