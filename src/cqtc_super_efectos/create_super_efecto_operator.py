@@ -350,7 +350,7 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 		self.set_animatable_properties(context, animatable_properties_info, is_in, start_frame, final_frame)
 		
 		self.set_interpolation_type(context)
-		self.reselect_keyframe_points(context, selected_keyframes)
+		self.select_keyframe_points(context, selected_keyframes)
 		
 		return sequence_to_return
 	
@@ -367,7 +367,7 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 		self.set_animatable_properties(context, animatable_properties_info, is_in, start_frame, final_frame)
 		
 		self.set_interpolation_type(context)
-		self.reselect_keyframe_points(context, selected_keyframes)
+		self.select_keyframe_points(context, selected_keyframes)
 		
 		return sequence_to_return
 		
@@ -595,18 +595,18 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 			for j, keyframe_point in fcurve.keyframe_points.items():
 				if keyframe_point.select_control_point:
 					keyframe_point.select_control_point = False
-					selected_keyframes.append((i, j))
+					selected_keyframes.append(keyframe_point)
 
 		return selected_keyframes
 
 		
-	def reselect_keyframe_points(self, context, selected_keyframes):
+	def select_keyframe_points(self, context, selected_keyframes):
 		if context.scene.animation_data.action is None:
 			return
 			
 		for i, fcurve in context.scene.animation_data.action.fcurves.items():
 			for j, keyframe_point in fcurve.keyframe_points.items():
-				if (i, j) in selected_keyframes:
+				if keyframe_point in selected_keyframes:
 					keyframe_point.select_control_point = True
 
 		
