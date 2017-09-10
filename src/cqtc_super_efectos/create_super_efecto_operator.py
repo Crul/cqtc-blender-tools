@@ -3,7 +3,10 @@ import bpy.types
 from . import bpy_utils
 
 global_scale_x = 1920
-global_scale_y = int(global_scale_x * (1080/1920))
+global_scale_y = int(global_scale_x * (1080/1920))		
+effectable_strip_types = ["COLOR","IMAGE","MOVIE","SCENE","TRANSFORM","CROSS","GAUSSIAN_BLUR"]
+transitionable_strip_types = ["COLOR","IMAGE","MOVIE","SCENE","TRANSFORM","CROSS","GAUSSIAN_BLUR"]
+sound_capable_strip_types = ["COLOR","IMAGE","MOVIE","TRANSFORM","CROSS","GAUSSIAN_BLUR"]
 
 class CreateSuperEfectoOperator(bpy.types.Operator):
 	bl_idname = "super_efecto.create"
@@ -42,9 +45,8 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 	
 	def create_in_or_out_effect(self, context, in_or_out):
 		is_in = (in_or_out == "IN")
-		
-		effectable_types = ["COLOR","IMAGE","MOVIE","SCENE","TRANSFORM","CROSS","GAUSSIAN_BLUR"]
-		selected_not_sound_sequences = [s for s in context.selected_sequences if s.type in effectable_types]
+
+		selected_not_sound_sequences = [s for s in context.selected_sequences if s.type in effectable_strip_types]
 		if len(selected_not_sound_sequences) == 0:
 			self.report({"ERROR"}, "Debes seleccionar al menos una strip que no sea de tipo sonido" )
 			return {"CANCELLED"}
@@ -61,7 +63,7 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 					self.report({"ERROR"}, "La strip " + sequence.name + " es más corta de lo necesario para añdir el efecto")
 					return {"CANCELLED"}
 			
-		selected_sound_capable_sequences = [s for s in context.selected_sequences if s.type in ["COLOR","IMAGE","MOVIE","TRANSFORM","CROSS","GAUSSIAN_BLUR"]]
+		selected_sound_capable_sequences = [s for s in context.selected_sequences if s.type in sound_capable_strip_types]
 		selected_sound_sequences = [s for s in context.selected_sequences if s.type == "SOUND"]
 		if len(selected_sound_sequences) > len(selected_sound_capable_sequences):
 			self.report({"ERROR"}, "No puedes seleccionar más strips de sonido que strips de imagen, vídeo o transform" )
@@ -76,70 +78,61 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 				self.report({"ERROR"}, "La strip de sonido " + selected_sound_sequence.name + " no corresponde con ninguna strip de imagen, vídeo o transform" )
 				return {"CANCELLED"}
 		
-		initial_volume = 0 if is_in else 1
-		final_volume = 1 if is_in else 0
-			
 		effect = context.scene.super_efecto.get_effect()
 		if (not is_in) and context.scene.super_efecto.reverse_out_effect:
 			effect = context.scene.super_efecto.get_reversed_effect(effect)
 		
 		selected_sequences = context.selected_sequences.copy()			
 		for sequence in selected_sequences:
-		
-			if context.scene.super_efecto.effect_length_type == "PERCENTAGE":
-				effect_length = int(context.scene.super_efecto.effect_length_percentage * sequence.frame_final_duration / 100)
-			
-			if is_in:
-				start_frame = sequence.frame_final_start
-				final_frame = sequence.frame_final_start + effect_length
-					
-			else:
-				start_frame = sequence.frame_final_end - effect_length
-				final_frame = sequence.frame_final_end
-			
-			if context.scene.super_efecto.apply_to_sound:
-				if sequence.type == "SOUND":
-					bpy_utils.animate_volume(sequence, initial_volume, final_volume, start_frame, final_frame)
-				elif sequence.type == "SCENE":
-					if is_in:
-						scene_volume_start_frame = 1
-						scene_volume_final_frame = effect_length + 1
-					else:
-						scene_volume_start_frame = sequence.scene.frame_end - effect_length
-						scene_volume_final_frame = sequence.scene.frame_end
-						
-					bpy_utils.animate_volume(sequence, initial_volume, final_volume, scene_volume_start_frame, scene_volume_final_frame)
-		
-			if sequence.type in effectable_types:
-				original_sequence = sequence
-				sequence = self.add_transform_strip(context, sequence, start_frame, final_frame, is_in)
-				sequence = self.add_blur_strip(context, sequence, start_frame, final_frame, is_in)
-				
-				color_final_frame = final_frame
-				if is_in:
-					 color_final_frame += delay_image
-					 
-				channel = bpy_utils.get_available_channel(context, start_frame, color_final_frame, sequence.channel)
-				
-				color_strip = effect.create_color_strip(context, channel, start_frame, color_final_frame, original_sequence.name)
-				seq1 = color_strip if is_in else sequence
-				seq2 = sequence if is_in else color_strip
-				if is_in:
-					 original_sequence.frame_offset_start += delay_image
-					 
-				channel = bpy_utils.get_available_channel(context, start_frame, final_frame, channel)
-				effect_strip = effect.create_effect_strip(context, channel, start_frame, final_frame, seq1, seq2, original_sequence.name)
-			
-				original_sequence.select = False
-				sequence.select = True
-				
+			self.create_in_or_out_strip_effect(context, effect, is_in, sequence)
 			
 		return {"FINISHED"}
 	
+
+	def create_in_or_out_strip_effect(self, context, effect, is_in, sequence):
+
+		delay_image = context.scene.super_efecto.delay_image
+		effect_length = context.scene.super_efecto.effect_length \
+			if context.scene.super_efecto.effect_length_type == "FRAMES" \
+			else int(context.scene.super_efecto.effect_length_percentage * sequence.frame_final_duration / 100)
+		
+		if is_in:
+			start_frame = sequence.frame_final_start
+			final_frame = sequence.frame_final_start + effect_length
+				
+		else:
+			start_frame = sequence.frame_final_end - effect_length
+			final_frame = sequence.frame_final_end
+		
+		if context.scene.super_efecto.apply_to_sound:
+			self.apply_effect_sound_transition(sequence, start_frame, final_frame, effect_length, is_in)
 	
-	def create_transition(self, context):
-		transitionable_types = ["COLOR","IMAGE","MOVIE","SCENE","TRANSFORM","CROSS","GAUSSIAN_BLUR"]
-		selected_not_sound_sequences = [s for s in context.selected_sequences if s.type in transitionable_types]
+		if sequence.type in effectable_strip_types:
+			original_sequence = sequence
+			sequence = self.add_transform_strip(context, sequence, start_frame, final_frame, is_in)
+			sequence = self.add_blur_strip(context, sequence, start_frame, final_frame, is_in)
+			
+			color_final_frame = final_frame
+			if is_in:
+				 color_final_frame += delay_image
+				 
+			channel = bpy_utils.get_available_channel(context, start_frame, color_final_frame, sequence.channel)
+			color_strip = effect.create_color_strip(context, channel, start_frame, color_final_frame, original_sequence.name)
+			
+			seq1 = color_strip if is_in else sequence
+			seq2 = sequence if is_in else color_strip
+			if is_in:
+				 original_sequence.frame_offset_start += delay_image
+				 
+			channel = bpy_utils.get_available_channel(context, start_frame, final_frame, channel)
+			effect_strip = effect.create_effect_strip(context, channel, start_frame, final_frame, seq1, seq2, original_sequence.name)
+		
+			original_sequence.select = False
+			sequence.select = True
+	
+	
+	def create_transition(self, context):		
+		selected_not_sound_sequences = [s for s in context.selected_sequences if s.type in transitionable_strip_types]
 		if len(selected_not_sound_sequences) != 2:
 			self.report({"ERROR"}, "Debes seleccionar dos (y SOLO dos) strips que no sean de sonido" )
 			return {"CANCELLED"}
@@ -150,7 +143,7 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 			return {"CANCELLED"}
 			
 		for selected_sound_sequence in selected_sound_sequences:
-			selected_sound_capable_sequences = [s for s in context.selected_sequences if s.type in ["COLOR","IMAGE","MOVIE","TRANSFORM","CROSS","GAUSSIAN_BLUR"]]
+			selected_sound_capable_sequences = [s for s in context.selected_sequences if s.type in sound_capable_strip_types]
 			not_sound_sequence_matches = [ nss for nss in selected_sound_capable_sequences \
 				if (nss.frame_final_start == selected_sound_sequence.frame_final_start \
 					and nss.frame_final_end == selected_sound_sequence.frame_final_end)]
@@ -165,28 +158,15 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 		
 		strip_tmp_1 = selected_not_sound_sequences[0]
 		strip_tmp_2 = selected_not_sound_sequences[1]
-		if strip_tmp_1.frame_final_start < strip_tmp_2.frame_final_start:
-			seq1 = strip_tmp_1
-			seq2 = strip_tmp_2
-		else:
-			seq1 = strip_tmp_2
-			seq2 = strip_tmp_1
-			
-		if (seq1.frame_final_start == seq2.frame_final_start and seq1.frame_final_end == seq2.frame_final_end):
+		if (strip_tmp_1.frame_final_start == strip_tmp_2.frame_final_start and strip_tmp_1.frame_final_end == strip_tmp_2.frame_final_end):
 			self.report({"ERROR"}, "Para añadir una transición las tiras no pueden estar en la misma posición" )
 			return {"CANCELLED"}
 		
-		seq1_sound = None
-		seq2_sound = None
-		selected_soundable_sequences = [s for s in context.selected_sequences if s.type in ["SOUND", "SCENE"] ]
-		for selected_soundable_sequence in selected_soundable_sequences:
-			if (selected_soundable_sequence.frame_final_start == seq1.frame_final_start \
-				and selected_soundable_sequence.frame_final_end == seq1.frame_final_end):
-				seq1_sound = selected_soundable_sequence
-			
-			if (selected_soundable_sequence.frame_final_start == seq2.frame_final_start \
-				and selected_soundable_sequence.frame_final_end == seq2.frame_final_end):
-				seq2_sound = selected_soundable_sequence
+		is_seq1_before_seq2 = (strip_tmp_1.frame_final_start < strip_tmp_2.frame_final_start)
+		seq1 = strip_tmp_1 if is_seq1_before_seq2 else strip_tmp_2
+		seq2 = strip_tmp_2 if is_seq1_before_seq2 else strip_tmp_1
+		
+		(seq1_sound, seq2_sound) = self.get_transition_sound_sequences(context, seq1, seq2)
 			
 		if context.scene.super_efecto.add_color_to_transition:
 			return self.create_transition_with_color(context, seq1, seq2, seq1_sound, seq2_sound)
@@ -221,52 +201,7 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 		effect_strip = effect.create_effect_strip(context, channel, start_frame, final_frame, seq1, seq2)
 						
 		if context.scene.super_efecto.apply_to_sound:
-		
-			if context.scene.super_efecto.overlap_sound:
-				effect_length = (final_frame - start_frame)
-				if seq1_sound is not None:
-					if seq1_sound.type == "SOUND":
-						seq1_volume_start_frame = start_frame
-						seq1_volume_final_frame = final_frame
-					elif seq1_sound.type == "SCENE":
-						seq1_volume_start_frame = seq1_sound.scene.frame_end - effect_length
-						seq1_volume_final_frame = seq1_sound.scene.frame_end
-				
-				if seq2_sound is not None:
-					if seq2_sound.type == "SOUND":
-						seq2_volume_start_frame = start_frame
-						seq2_volume_final_frame = final_frame
-					elif seq2_sound.type == "SCENE":
-						seq2_volume_start_frame = 1
-						seq2_volume_final_frame = 1 + effect_length
-					
-			else:
-				effect_length = (final_frame - start_frame)
-				half_effect_length = int(effect_length / 2)
-				medium_frame = start_frame + half_effect_length
-				
-				if seq1_sound is not None:
-					if seq1_sound.type == "SOUND":
-						seq1_volume_start_frame = start_frame
-						seq1_volume_final_frame = medium_frame
-					elif seq1_sound.type == "SCENE":
-						seq1_volume_start_frame = seq1_sound.scene.frame_end - effect_length
-						seq1_volume_final_frame = seq1_sound.scene.frame_end - half_effect_length
-					
-				if seq2_sound is not None:
-					if seq2_sound.type == "SOUND":
-						seq2_volume_start_frame = medium_frame
-						seq2_volume_final_frame = final_frame
-					elif seq2_sound.type == "SCENE":
-						seq2_volume_start_frame = half_effect_length
-						seq2_volume_final_frame = effect_length
-					
-			
-			if seq1_sound is not None:
-				bpy_utils.animate_volume(seq1_sound, 1, 0, seq1_volume_start_frame, seq1_volume_final_frame)
-			
-			if seq2_sound is not None:
-				bpy_utils.animate_volume(seq2_sound, 0, 1, seq2_volume_start_frame, seq2_volume_final_frame)
+			self.apply_overlapped_sound_transition(context, seq1_sound, seq2_sound, start_frame, final_frame)
 		
 		return {"FINISHED"}
 	
@@ -293,35 +228,20 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 		color_channel = bpy_utils.get_available_channel(context, start_frame, final_frame + delay_image, max(seq1.channel, seq2.channel))
 		color_strip = effect.create_color_strip(context, color_channel, start_frame, final_frame + delay_image)
 		
+		seq1_effect = effect if not context.scene.super_efecto.reverse_out_effect \
+			else context.scene.super_efecto.get_reversed_effect(effect)
+		
 		channel = bpy_utils.get_available_channel(context, start_frame, seq1.frame_final_end, color_channel)
-		if context.scene.super_efecto.reverse_out_effect:	
-			reversed_effect = context.scene.super_efecto.get_reversed_effect(effect)
-			effect_strip = reversed_effect.create_effect_strip(context, channel, start_frame, seq1.frame_final_end, seq1, color_strip)
-		else:
-			effect_strip = effect.create_effect_strip(context, channel, start_frame, seq1.frame_final_end, seq1, color_strip)
+		effect_strip = seq1_effect.create_effect_strip(context, channel, start_frame, seq1.frame_final_end, seq1, color_strip)
 		
 		channel = bpy_utils.get_available_channel(context, seq2.frame_final_start, final_frame + delay_image, color_channel)
 		effect_strip = effect.create_effect_strip(context, channel, seq2.frame_final_start, final_frame + delay_image, color_strip, seq2)
 		
 		seq2.frame_offset_start += delay_image
-						
+		
 		if context.scene.super_efecto.apply_to_sound:
-			if seq1_sound is not None:
-				if seq1_sound.type == "SOUND":
-					bpy_utils.animate_volume(seq1_sound, 1, 0, start_frame, seq1_sound.frame_final_end)
-				elif seq1_sound.type == "SCENE":
-					scene_volume_start_frame = seq1_sound.scene.frame_end - half_effect_length
-					scene_volume_final_frame = seq1_sound.scene.frame_end
-					bpy_utils.animate_volume(seq1_sound, 1, 0, scene_volume_start_frame, scene_volume_final_frame)
-				
-			if seq2_sound is not None:
-				if seq2_sound.type == "SOUND":
-					bpy_utils.animate_volume(seq2_sound, 0, 1, seq2_sound.frame_final_start, final_frame)
-				elif seq2_sound.type == "SCENE":
-					scene_volume_start_frame = 1
-					scene_volume_final_frame = half_effect_length + 1
-					bpy_utils.animate_volume(seq2_sound, 0, 1, scene_volume_start_frame, scene_volume_final_frame)
-				
+			self.apply_consecutive_sound_transition(seq1_sound, seq2_sound, start_frame, final_frame, half_effect_length)
+		
 		return {"FINISHED"}
 	
 	
@@ -372,8 +292,100 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 		bpy_utils.select_keyframe_points(context, selected_keyframes)
 		
 		return sequence_to_return
+	
 		
+	def apply_effect_sound_transition(self, seq_sound, start_frame, final_frame, effect_length, is_in):
+		initial_volume = 0 if is_in else 1
+		final_volume = 1 if is_in else 0
+			
+		if seq_sound.type == "SOUND":
+			volume_start_frame = start_frame
+			volume_final_frame = final_frame
+
+			bpy_utils.animate_volume(seq_sound, initial_volume, final_volume, volume_start_frame, volume_final_frame)
+
+		elif seq_sound.type == "SCENE":
+			if is_in:
+				volume_start_frame = 1
+				volume_final_frame = effect_length + 1
+			else:
+				volume_start_frame = seq_sound.scene.frame_end - effect_length
+				volume_final_frame = seq_sound.scene.frame_end
+			
+			bpy_utils.animate_volume(seq_sound, initial_volume, final_volume, volume_start_frame, volume_final_frame)
+	
+	
+	def apply_consecutive_sound_transition(self, seq1_sound, seq2_sound, start_frame, final_frame, half_effect_length):
+		if seq1_sound is not None:
+			if seq1_sound.type == "SOUND":
+				seq1_volume_start_frame = start_frame
+				seq1_volume_final_frame = seq1_sound.frame_final_end
+			elif seq1_sound.type == "SCENE":
+				seq1_volume_start_frame = seq1_sound.scene.frame_end - half_effect_length
+				seq1_volume_final_frame = seq1_sound.scene.frame_end
+			
+			bpy_utils.animate_volume(seq1_sound, 1, 0, seq1_volume_start_frame, seq1_volume_final_frame)
+				
+		if seq2_sound is not None:
+			if seq2_sound.type == "SOUND":
+				seq2_volume_start_frame = seq2_sound.frame_final_start
+				seq2_volume_final_frame = final_frame
+			elif seq2_sound.type == "SCENE":
+				seq2_volume_start_frame = 1
+				seq2_volume_final_frame = half_effect_length + 1
+			
+			bpy_utils.animate_volume(seq2_sound, 0, 1, seq2_volume_start_frame, seq2_volume_final_frame)
+	
+	
+	def apply_overlapped_sound_transition(self, context, seq1_sound, seq2_sound, start_frame, final_frame):
+		if context.scene.super_efecto.overlap_sound:
 		
+			effect_length = (final_frame - start_frame)
+			if seq1_sound is not None:
+				if seq1_sound.type == "SOUND":
+					seq1_volume_start_frame = start_frame
+					seq1_volume_final_frame = final_frame
+				elif seq1_sound.type == "SCENE":
+					seq1_volume_start_frame = seq1_sound.scene.frame_end - effect_length
+					seq1_volume_final_frame = seq1_sound.scene.frame_end
+			
+			if seq2_sound is not None:
+				if seq2_sound.type == "SOUND":
+					seq2_volume_start_frame = start_frame
+					seq2_volume_final_frame = final_frame
+				elif seq2_sound.type == "SCENE":
+					seq2_volume_start_frame = 1
+					seq2_volume_final_frame = 1 + effect_length
+				
+		else:
+			effect_length = (final_frame - start_frame)
+			half_effect_length = int(effect_length / 2)
+			medium_frame = start_frame + half_effect_length
+			
+			if seq1_sound is not None:
+				if seq1_sound.type == "SOUND":
+					seq1_volume_start_frame = start_frame
+					seq1_volume_final_frame = medium_frame
+				elif seq1_sound.type == "SCENE":
+					seq1_volume_start_frame = seq1_sound.scene.frame_end - effect_length
+					seq1_volume_final_frame = seq1_sound.scene.frame_end - half_effect_length
+				
+			if seq2_sound is not None:
+				if seq2_sound.type == "SOUND":
+					seq2_volume_start_frame = medium_frame
+					seq2_volume_final_frame = final_frame
+				elif seq2_sound.type == "SCENE":
+					seq2_volume_start_frame = half_effect_length
+					seq2_volume_final_frame = effect_length
+				
+		
+		if seq1_sound is not None:
+			bpy_utils.animate_volume(seq1_sound, 1, 0, seq1_volume_start_frame, seq1_volume_final_frame)
+		
+		if seq2_sound is not None:
+			bpy_utils.animate_volume(seq2_sound, 0, 1, seq2_volume_start_frame, seq2_volume_final_frame)
+	
+	
 	def create_or_get_existing_effect_strip(self, sequence, context, effect_type, effect_name_suffix):
 		sequence.blend_type = "ALPHA_OVER"
 		
@@ -406,6 +418,22 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 			
 		return sequence, sequence_to_return
 
+
+	def get_transition_sound_sequences(self, context, seq1, seq2):
+		seq1_sound = None
+		seq2_sound = None
+		selected_soundable_sequences = [s for s in context.selected_sequences if s.type in ["SOUND", "SCENE"] ]
+		for selected_soundable_sequence in selected_soundable_sequences:
+			if (selected_soundable_sequence.frame_final_start == seq1.frame_final_start \
+				and selected_soundable_sequence.frame_final_end == seq1.frame_final_end):
+				seq1_sound = selected_soundable_sequence
+			
+			if (selected_soundable_sequence.frame_final_start == seq2.frame_final_start \
+				and selected_soundable_sequence.frame_final_end == seq2.frame_final_end):
+				seq2_sound = selected_soundable_sequence
+
+		return (seq1_sound, seq2_sound)
+	
 	
 	def set_animatable_properties(self, context, animatable_properties_info, is_in, start_frame, final_frame):
 		delay_image = context.scene.super_efecto.delay_image
