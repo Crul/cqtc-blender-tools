@@ -12,7 +12,8 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 	def execute(self, context):
 		result = {"FINISHED"}
 		
-		if (self.operation_type == "IN_OUT" and context.scene.super_efecto.effect_length_type == "PERCENTAGE" and context.scene.super_efecto.effect_length_percentage > 50):
+		is_effect_length_percentage_over_limit = (self.operation_type == "IN_OUT" and context.scene.super_efecto.effect_length_type == "PERCENTAGE" and context.scene.super_efecto.effect_length_percentage > 50)
+		if is_effect_length_percentage_over_limit:
 			self.report({"ERROR"}, "No se puede crear un efecto de Entrada y Salida con más del 50% de porcentage de duración" )
 			return {"CANCELLED"}
 		
@@ -330,13 +331,7 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 		if context.scene.animation_data is None:
 			context.scene.animation_data_create()
 		
-		selected_keyframes = []
-		if context.scene.animation_data.action is not None:
-			for i, fcurve in context.scene.animation_data.action.fcurves.items():
-				for j, keyframe_point in fcurve.keyframe_points.items():
-					if keyframe_point.select_control_point:
-						keyframe_point.select_control_point = False
-						selected_keyframes.append(j)
+		selected_keyframes = self.deselect_selected_keyframe_points(context)
 						
 		return_original_sequence = False		
 		is_transform = (sequence.type == "TRANSFORM")
@@ -469,45 +464,18 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 				
 			sequence.transform.keyframe_insert("offset_y", index=-1, frame=tranform_end_frame)
 		
-		if context.scene.animation_data.action is not None:
-			old_area_type = context.area.type
-			context.area.type = 'GRAPH_EDITOR'
-			context.scene.update()
-
-			try:
-				if context.scene.super_efecto.constant_speed:
-					bpy.ops.graph.interpolation_type(type='LINEAR')
-				else:
-					bpy.ops.graph.interpolation_type(type='BEZIER')
-			except: 
-				pass
-				
-			context.area.type = old_area_type
-			context.scene.update()
-			
-			for i, fcurve in context.scene.animation_data.action.fcurves.items():
-				for j, keyframe_point in fcurve.keyframe_points.items():
-					if j in selected_keyframes:
-						keyframe_point.select_control_point = True
+		self.set_interpolation_type(context)
+		self.reselect_keyframe_points(context, selected_keyframes)
 						
 		return original_sequence if return_original_sequence else sequence
 		
-		
+						
 	def addBlurStrip(self, context, sequence, start_frame, final_frame, is_in):
 		is_blur_required = context.scene.super_efecto.isBlurRequired()
 		if not is_blur_required:
 			return sequence
 		
-		if context.scene.animation_data is None:
-			context.scene.animation_data_create()
-		
-		selected_keyframes = []
-		if context.scene.animation_data.action is not None:
-			for i, fcurve in context.scene.animation_data.action.fcurves.items():
-				for j, keyframe_point in fcurve.keyframe_points.items():
-					if keyframe_point.select_control_point:
-						keyframe_point.select_control_point = False
-						selected_keyframes.append(j)
+		selected_keyframes = self.deselect_selected_keyframe_points(context)
 			
 		return_original_sequence = False		
 		is_gaussian_blur = (sequence.type == "GAUSSIAN_BLUR")
@@ -566,26 +534,8 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 			
 			sequence.keyframe_insert("size_y", index=-1, frame=tranform_end_frame)
 				
-		if context.scene.animation_data.action is not None:
-			old_area_type = context.area.type
-			context.area.type = 'GRAPH_EDITOR'
-			context.scene.update()
-
-			try:
-				if context.scene.super_efecto.constant_speed:
-					bpy.ops.graph.interpolation_type(type='LINEAR')
-				else:
-					bpy.ops.graph.interpolation_type(type='BEZIER')
-			except: 
-				pass
-				
-			context.area.type = old_area_type
-			context.scene.update()
-			
-			for i, fcurve in context.scene.animation_data.action.fcurves.items():
-				for j, keyframe_point in fcurve.keyframe_points.items():
-					if j in selected_keyframes:
-						keyframe_point.select_control_point = True
+		self.set_interpolation_type(context)
+		self.reselect_keyframe_points(context, selected_keyframes)
 						
 		return original_sequence if return_original_sequence else sequence
 		
@@ -705,3 +655,51 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 				return channel
 				
 		return max_channel
+		
+		
+	def deselect_selected_keyframe_points(self, context):
+		if context.scene.animation_data is None:
+			context.scene.animation_data_create()
+		
+		selected_keyframes = []
+		if context.scene.animation_data.action is None:
+			return selected_keyframes
+		
+		for i, fcurve in context.scene.animation_data.action.fcurves.items():
+			for j, keyframe_point in fcurve.keyframe_points.items():
+				if keyframe_point.select_control_point:
+					keyframe_point.select_control_point = False
+					selected_keyframes.append((i, j))
+
+		return selected_keyframes
+
+		
+	def reselect_keyframe_points(self, context, selected_keyframes):
+		if context.scene.animation_data.action is None:
+			return
+			
+		for i, fcurve in context.scene.animation_data.action.fcurves.items():
+			for j, keyframe_point in fcurve.keyframe_points.items():
+				if (i, j) in selected_keyframes:
+					keyframe_point.select_control_point = True
+
+		
+	def set_interpolation_type(self, context):
+		if context.scene.animation_data.action is None:
+			return
+		
+		old_area_type = context.area.type
+		context.area.type = 'GRAPH_EDITOR'
+		context.scene.update()
+
+		try:
+			if context.scene.super_efecto.constant_speed:
+				bpy.ops.graph.interpolation_type(type='LINEAR')
+			else:
+				bpy.ops.graph.interpolation_type(type='BEZIER')
+		except: 
+			pass
+			
+		context.area.type = old_area_type
+		context.scene.update()
+		
