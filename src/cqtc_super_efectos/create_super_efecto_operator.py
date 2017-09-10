@@ -375,24 +375,26 @@ class CreateSuperEfectoOperator(bpy.types.Operator):
 	def create_or_get_existing_effect_strip(self, sequence, context, effect_type, effect_name_suffix):
 		sequence.blend_type = 'ALPHA_OVER'
 		
-		is_gaussian_blur = (sequence.type == effect_type)
-		if is_gaussian_blur:
+		is_effect_strip = (sequence.type == effect_type)
+		if is_effect_strip:
 			return sequence, sequence
 	
-		is_child_gaussian_blur = ("input_1" in dir(sequence) and sequence.input_1 is not None and sequence.input_1.type ==effect_type)
-		if is_child_gaussian_blur:
+		is_effect_strip_child = (("input_1" in dir(sequence))
+			and (sequence.input_1 is not None and sequence.input_1.type == effect_type))
+		
+		if is_effect_strip_child:
 			sequence_to_return = sequence
 			sequence = sequence.input_1
 			
 		else:
 			original_sequence = sequence
 			channel = self.get_available_channel(context, original_sequence.frame_final_start, original_sequence.frame_final_end, original_sequence.channel)
-			sequence = context.scene.sequence_editor.sequences.new_effect( \
-					original_sequence.name + effect_name_suffix, \
-					effect_type, \
-					channel, \
-					original_sequence.frame_final_start, \
-					original_sequence.frame_final_end, \
+			sequence = context.scene.sequence_editor.sequences.new_effect(
+					original_sequence.name + effect_name_suffix,
+					effect_type,
+					channel,
+					original_sequence.frame_final_start,
+					original_sequence.frame_final_end,
 					original_sequence)
 			
 			sequence.blend_type = 'ALPHA_OVER'
