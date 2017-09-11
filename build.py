@@ -4,6 +4,7 @@ import zipfile
 
 build_path = "build"
 src_path = "src"
+addons = ["cqtc_subtitles", "cqtc_super_effects", "cqtc_tools"]
 
 def build():
 	if not os.path.exists(build_path):
@@ -28,7 +29,6 @@ def build_modules():
 
 
 def build_addons():
-	addons = ["cqtc_super_effects", "cqtc_tools"]
 	for addon in addons:
 		output_fullpath = os.path.join(build_path, ("%s.zip" % addon))
 		if os.path.exists(output_fullpath):

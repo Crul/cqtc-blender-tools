@@ -1,4 +1,5 @@
 import bpy.types
+import cqtc_templates
 
 class SuperEffectPanel(bpy.types.Panel):
 	bl_label = "Añadir Super Efectos"
@@ -77,54 +78,7 @@ class SuperEffectPanel(bpy.types.Panel):
 		create_out_operator = row.operator("super_effect.create", text=">< Transición")
 		create_out_operator.operation_type = "TRANSITION"
 		
-		self.draw_template_panel(context)
-	
-
-	def draw_template_panel(self, context):
-		layout = self.layout
-		row = layout.row()
-		row.scale_y = 1.5
-		row.prop(context.scene.super_effect, "template_expanded",
-			icon="TRIA_DOWN" if context.scene.super_effect.template_expanded else "TRIA_RIGHT",
-			icon_only=False
-		)
-	
-		if not context.scene.super_effect.template_expanded:
-			return
-		
-		borrar_btn_width = 0.05
-		
-		split = layout.row().split(percentage=0.80)
-		
-		split_1 = split.column().split(percentage=borrar_btn_width)			
-		split_1.column().operator("super_effect.remove_template", text="X")
-		
-		
-		split_2 = split_1.split(percentage=0.25)
-		split_2.column().label("Plantillas")
-		split_2.column().prop(context.scene.super_effect, "template", text="")
-		split.column().operator("super_effect.load_template", text="Cargar")
-					
-		split = layout.row().split(percentage=0.80)
-		split_3 = split.column().split(percentage=borrar_btn_width)
-		split_3.column()
-		
-		split_4 = split_3.split(percentage=0.25)
-		split_4.column().label("Nombre")
-		
-		split_5 = split_4.split(align=True, percentage=0.90)
-		split_5.column(align=True).prop(context.scene.super_effect, "new_template_name", text="")
-		clear_template_name_operator = split_5.column(align=True).operator("super_effect.set_template_name", text="X")
-		clear_template_name_operator.action = "CLEAR"
-		load_template_name_operator = split_5.column(align=True).operator("super_effect.set_template_name", text="↓")
-		load_template_name_operator.action = "LOAD"
-		
-		split.column().operator("super_effect.add_template", text="Guardar")
-		
-		if len([tmpl for tmpl in context.scene.super_effect.template_data if tmpl["name"] == context.scene.super_effect.new_template_name ]) > 0:
-			split = layout.row().split(percentage=0.30)
-			split.column()
-			split.column().prop(context.scene.super_effect, "override_template")
+		cqtc_templates.draw_template_panel(self, context.scene.super_effect, "super_effect")
 	
 	
 	def draw_animatable_prop(self, context, prop_name):
