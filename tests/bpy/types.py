@@ -76,6 +76,7 @@ class Sequence:
 	transform = None
 	input_1 = None
 	channel = 0
+	frame_start = 0
 	frame_final_start = 0
 	frame_final_end = 0
 	frame_final_duration = 0
