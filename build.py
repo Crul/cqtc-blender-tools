@@ -4,7 +4,7 @@ import zipfile
 
 build_path = "build"
 src_path = "src"
-addons = ["cqtc_subtitles", "cqtc_super_effects", "cqtc_tools"]
+addons = [ addon for addon in next(os.walk(src_path))[1] if addon not in ["modules", "__pycache__"] ]
 
 def build():
 	if not os.path.exists(build_path):
