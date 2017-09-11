@@ -65,13 +65,10 @@ class SubtitlesProperties(bpy.types.PropertyGroup):
 		)
 	
 	new_template_name = bpy.props.StringProperty(name="Nombre plantilla", description="Nombre para la nueva plantilla")
+	override_template = bpy.props.BoolProperty(name="Sobreescribir Plantilla", default=False)
 		
 	template_data = templates.load_templates()
-	template_options = []
-	for tmpl in template_data:
-		new_template_option = (tmpl["name"], tmpl["name"], "Plantilla personalizada")
-		template_options.append(new_template_option)
-	
+	template_options = [ (tmpl["name"], tmpl["name"], "Plantilla personalizada") for tmpl in template_data ]
 	
 	def to_dict(self):
 		return {

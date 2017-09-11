@@ -166,7 +166,7 @@ class SuperEffectProperties(bpy.types.PropertyGroup):
 	
 	def to_dict(self):
 		return {
-			"effect_type": self.effect_type,                               
+			"effect_type": self.effect_type,
 			"effect_length_type": self.effect_length_type,
 			"effect_length": self.effect_length,
 			"effect_length_percentage": self.effect_length_percentage,

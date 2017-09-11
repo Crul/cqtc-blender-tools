@@ -1,4 +1,5 @@
 import bpy.types
+import cqtc_templates
 
 class SubtitlesPanel(bpy.types.Panel):
 	bl_label = "Añadir Subtítulos"
@@ -64,23 +65,4 @@ class SubtitlesPanel(bpy.types.Panel):
 				layout.row().prop(context.scene.subtitle, "strip_channel")
 				layout.row().prop(context.scene.subtitle, "strip_length")
 		
-		row = layout.row()
-		row.scale_y = 1.5
-		row.prop(context.scene.subtitle, "template_expanded",
-			icon="TRIA_DOWN" if context.scene.subtitle.template_expanded else "TRIA_RIGHT",
-			icon_only=False
-		)
-		
-		if context.scene.subtitle.template_expanded:
-			borrar_btn_width = 0.05
-			split = layout.row().split(percentage=0.80)
-			sub_split = split.column().split(percentage=borrar_btn_width)
-			sub_split.column().operator("subtitle.remove_template", text="X")
-			sub_split.column().prop(context.scene.subtitle, "template")
-			split.column().operator("subtitle.load_template", text="Cargar")
-						
-			split = layout.row().split(percentage=0.80)
-			sub_split = split.column().split(percentage=borrar_btn_width)
-			sub_split.column()
-			sub_split.column().prop(context.scene.subtitle, "new_template_name")
-			split.column().operator("subtitle.add_template", text="Guardar")
+		cqtc_templates.draw_template_panel(self, context.scene.subtitle, "subtitle")
