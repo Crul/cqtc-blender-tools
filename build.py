@@ -1,28 +1,59 @@
 import os
+import shutil
 import zipfile
 
-current_path = os.path.dirname(__file__)
-src_folder = "src"
-src_path = os.path.join(current_path, src_folder)
+build_path = "build"
+src_path = "src"
 
-build_path = r"build"
-if not os.path.exists(build_path):
-    os.makedirs(build_path)
+def build():
+	if not os.path.exists(build_path):
+		os.makedirs(build_path)
+	
+	build_modules()
+	build_addons()
 
-addons = ["cqtc_super_effects"]
-for addon in addons:
-	output_fullpath = os.path.join(build_path, ("%s.zip" % addon))
-	if os.path.exists(output_fullpath):
-		os.remove(output_fullpath)
+
+def build_modules():
+	build_modules_path = os.path.join(build_path, "modules")
+	if os.path.exists(build_modules_path):
+		shutil.rmtree(build_modules_path)
+
+	os.makedirs(build_modules_path)
 	
-	output_file = zipfile.ZipFile(output_fullpath, "w")
-	
-	addon_files_by_folder = [(name, files) for name, sub_folders, files in os.walk(os.path.join(src_path, addon)) if "__pycache__" not in name ]
-	for addon_folder, addon_files in addon_files_by_folder:
-		for addon_file in addon_files:
-			file_path = os.path.join(addon_folder, addon_file)
-			output_file_path = file_path[len(src_folder):]
-			output_file.write(file_path, output_file_path, zipfile.ZIP_DEFLATED)
-			
-			
-	print("Addon %s build: %s" % (addon, output_fullpath))
+	modules_path = os.path.join(src_path, "modules")
+	for module_file_path, module_file in ___file_tree_generator(modules_path):
+		output_file_path = os.path.join(build_modules_path, module_file)
+		shutil.copyfile(module_file_path, output_file_path)
+		print("Module %s\n" % output_file_path)
+
+
+def build_addons():
+	addons = ["cqtc_super_effects", "cqtc_tools"]
+	for addon in addons:
+		output_fullpath = os.path.join(build_path, ("%s.zip" % addon))
+		if os.path.exists(output_fullpath):
+			os.remove(output_fullpath)
+		
+		output_file = zipfile.ZipFile(output_fullpath, "w")
+		addon_path = os.path.join(src_path, addon)
+		addon_files = []
+		for addon_file_path, addon_file in ___file_tree_generator(addon_path):
+			output_file_path = addon_file_path[len(src_path):]
+			output_file.write(addon_file_path, output_file_path, zipfile.ZIP_DEFLATED)
+			addon_files.append(output_file_path)
+		
+		addon_info = "Addon %s build: %s" % (addon, output_fullpath)
+		addon_info += " > ".join("%s\n" % f for f in ([""] + addon_files))
+		print(addon_info)
+
+
+def ___file_tree_generator(folder_path):
+	files_by_folder = [(name, files) for name, sub_folders, files in os.walk(folder_path) if "__pycache__" not in name ]
+	for folder, files in files_by_folder:
+		for file in files:
+			file_path = os.path.join(folder, file)
+			yield file_path, file
+
+
+if __name__ == "__main__":
+	build()

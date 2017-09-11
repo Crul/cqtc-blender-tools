@@ -1,4 +1,4 @@
-from . import bpy_utils
+import cqtc_bpy
 
 global_scale_x = 1920
 global_scale_y = int(global_scale_x * (1080/1920))		
@@ -14,8 +14,8 @@ class SuperEffectCreator():
 			return error
 		
 		for sequence in context.selected_sequences.copy():
-			bpy_utils.unselect_children(sequence)
-			bpy_utils.align_image(context, sequence)
+			cqtc_bpy.unselect_children(sequence)
+			cqtc_bpy.align_image(context, sequence)
 		
 		for in_or_out in ["IN", "OUT"]:
 			if (in_or_out in operation_type):
@@ -35,14 +35,14 @@ class SuperEffectCreator():
 			and context.scene.super_effect.effect_length_percentage > 50)
 		
 		if is_effect_length_percentage_over_limit:
-			return ({"ERROR"}, "No se puede crear un efecto de Entrada y Salida con más del 50% de porcentage de duración" )
+			return "No se puede crear un efecto de Entrada y Salida con más del 50% de porcentage de duración"
 	
 	
 	def __validate_in_or_out_effect(self, context, is_in):
 
 		selected_not_sound_sequences = [s for s in context.selected_sequences if s.type in effectable_strip_types]
 		if len(selected_not_sound_sequences) == 0:
-			return ({"ERROR"}, "Debes seleccionar al menos una strip que no sea de tipo sonido" )
+			return "Debes seleccionar al menos una strip que no sea de tipo sonido"
 		
 		effect_length = context.scene.super_effect.effect_length
 		delay_image = context.scene.super_effect.delay_image
@@ -53,12 +53,12 @@ class SuperEffectCreator():
 				
 			for sequence in selected_not_sound_sequences:
 				if sequence.frame_final_duration < min_length:
-					return ({"ERROR"}, "La strip " + sequence.name + " es más corta de lo necesario para añdir el efecto")
+					return "La strip " + sequence.name + " es más corta de lo necesario para añdir el efecto"
 			
 		selected_sound_capable_sequences = [s for s in context.selected_sequences if s.type in sound_capable_strip_types]
 		selected_sound_sequences = [s for s in context.selected_sequences if s.type == "SOUND"]
 		if len(selected_sound_sequences) > len(selected_sound_capable_sequences):
-			return ({"ERROR"}, "No puedes seleccionar más strips de sonido que strips de imagen, vídeo o transform" )
+			return "No puedes seleccionar más strips de sonido que strips de imagen, vídeo o transform"
 
 		for selected_sound_sequence in selected_sound_sequences:
 			not_sound_sequence_matches = [ nss for nss in selected_sound_capable_sequences \
@@ -66,17 +66,17 @@ class SuperEffectCreator():
 					or nss.frame_final_end == selected_sound_sequence.frame_final_end)]
 					
 			if len(not_sound_sequence_matches) == 0:
-				return ({"ERROR"}, "La strip de sonido " + selected_sound_sequence.name + " no corresponde con ninguna strip de imagen, vídeo o transform" )
+				return "La strip de sonido " + selected_sound_sequence.name + " no corresponde con ninguna strip de imagen, vídeo o transform"
 	
 	
 	def __validate_transition(self, context):
 		selected_not_sound_sequences = [s for s in context.selected_sequences if s.type in transitionable_strip_types]
 		if len(selected_not_sound_sequences) != 2:
-			return ({"ERROR"}, "Debes seleccionar dos (y SOLO dos) strips que no sean de sonido" )
+			return "Debes seleccionar dos (y SOLO dos) strips que no sean de sonido"
 			
 		selected_sound_sequences = [s for s in context.selected_sequences if s.type == "SOUND"]
 		if len(selected_sound_sequences) > 2:
-			return ({"ERROR"}, "Puedes seleccionar dos strips de sonido como máximo" )
+			return "Puedes seleccionar dos strips de sonido como máximo"
 			
 		for selected_sound_sequence in selected_sound_sequences:
 			selected_sound_capable_sequences = [s for s in context.selected_sequences if s.type in sound_capable_strip_types]
@@ -85,28 +85,28 @@ class SuperEffectCreator():
 					and nss.frame_final_end == selected_sound_sequence.frame_final_end)]
 					
 			if len(not_sound_sequence_matches) == 0:
-				return ({"ERROR"}, "La strip de sonido " + selected_sound_sequence.name + " no corresponde con ninguna strip de imagen, vídeo" )
+				return "La strip de sonido " + selected_sound_sequence.name + " no corresponde con ninguna strip de imagen, vídeo"
 			
 		if context.scene.super_effect.effect_length_type == "PERCENTAGE":
-			return ({"ERROR"}, "No se puede añadir una transición con una duración de tipo porcentaje" )
+			return "No se puede añadir una transición con una duración de tipo porcentaje"
 		
 		strip_tmp_1 = selected_not_sound_sequences[0]
 		strip_tmp_2 = selected_not_sound_sequences[1]
 		if (strip_tmp_1.frame_final_start == strip_tmp_2.frame_final_start and strip_tmp_1.frame_final_end == strip_tmp_2.frame_final_end):
-			return ({"ERROR"}, "Para añadir una transición las tiras no pueden estar en la misma posición" )
+			return "Para añadir una transición las tiras no pueden estar en la misma posición"
 	
 	
 	def __validate_transition_without_color(self, context, seq1, seq2, seq1_sound, seq2_sound):
 		if seq1.frame_final_end < seq2.frame_final_start:
-			return ({"ERROR"}, "Para añadir una transición sin color intermedio las tiras deben solaparse o ser consecutivas" )
+			return "Para añadir una transición sin color intermedio las tiras deben solaparse o ser consecutivas"
 			
 		if seq1.frame_final_end == seq2.frame_final_start:
-			return bpy_utils.overlap_strips(context, seq1, seq2, seq1_sound, seq2_sound)
+			return cqtc_bpy.overlap_strips(context, seq1, seq2, seq1_sound, seq2_sound)
 	
 	
 	def __validate_transition_with_color(self, seq1, seq2):
 		if seq1.frame_final_end > seq2.frame_final_start:
-			return ({"ERROR"}, "Para añadir una transición con color intermedio las tiras no pueden solaparse" )
+			return "Para añadir una transición con color intermedio las tiras no pueden solaparse"
 	
 	
 	def __create_in_or_out_effect(self, context, in_or_out):
@@ -151,7 +151,7 @@ class SuperEffectCreator():
 			if is_in:
 				 color_final_frame += delay_image
 				 
-			channel = bpy_utils.get_available_channel(context, start_frame, color_final_frame, sequence.channel)
+			channel = cqtc_bpy.get_available_channel_in_position(context, start_frame, color_final_frame, sequence.channel)
 			color_strip = effect.create_color_strip(context, channel, start_frame, color_final_frame, original_sequence.name)
 			
 			seq1 = color_strip if is_in else sequence
@@ -159,7 +159,7 @@ class SuperEffectCreator():
 			if is_in:
 				 original_sequence.frame_offset_start += delay_image
 				 
-			channel = bpy_utils.get_available_channel(context, start_frame, final_frame, channel)
+			channel = cqtc_bpy.get_available_channel_in_position(context, start_frame, final_frame, channel)
 			effect_strip = effect.create_effect_strip(context, channel, start_frame, final_frame, seq1, seq2, original_sequence.name)
 		
 			original_sequence.select = False
@@ -204,7 +204,7 @@ class SuperEffectCreator():
 		effect = context.scene.super_effect.get_effect()
 		
 		max_channel = max([s.channel for s in context.selected_sequences])
-		channel = bpy_utils.get_available_channel(context, start_frame, final_frame, max_channel)
+		channel = cqtc_bpy.get_available_channel_in_position(context, start_frame, final_frame, max_channel)
 		effect_strip = effect.create_effect_strip(context, channel, start_frame, final_frame, seq1, seq2)
 						
 		if context.scene.super_effect.apply_to_sound:
@@ -229,16 +229,16 @@ class SuperEffectCreator():
 		seq2 = self.__add_blur_strip(context, seq2, seq2.frame_final_start, final_frame, is_in=True)
 		seq2 = self.__add_transform_strip(context, seq2, seq2.frame_final_start, final_frame, is_in=True)
 
-		color_channel = bpy_utils.get_available_channel(context, start_frame, final_frame + delay_image, max(seq1.channel, seq2.channel))
+		color_channel = cqtc_bpy.get_available_channel_in_position(context, start_frame, final_frame + delay_image, max(seq1.channel, seq2.channel))
 		color_strip = effect.create_color_strip(context, color_channel, start_frame, final_frame + delay_image)
 		
 		seq1_effect = effect if not context.scene.super_effect.reverse_out_effect \
 			else context.scene.super_effect.get_reversed_effect(effect)
 		
-		channel = bpy_utils.get_available_channel(context, start_frame, seq1.frame_final_end, color_channel)
+		channel = cqtc_bpy.get_available_channel_in_position(context, start_frame, seq1.frame_final_end, color_channel)
 		effect_strip = seq1_effect.create_effect_strip(context, channel, start_frame, seq1.frame_final_end, seq1, color_strip)
 		
-		channel = bpy_utils.get_available_channel(context, seq2.frame_final_start, final_frame + delay_image, color_channel)
+		channel = cqtc_bpy.get_available_channel_in_position(context, seq2.frame_final_start, final_frame + delay_image, color_channel)
 		effect_strip = effect.create_effect_strip(context, channel, seq2.frame_final_start, final_frame + delay_image, color_strip, seq2)
 		
 		seq2.frame_offset_start += delay_image
@@ -252,7 +252,7 @@ class SuperEffectCreator():
 		if not is_transform_required:
 			return sequence
 
-		selected_keyframes = bpy_utils.deselect_selected_keyframe_points(context)
+		selected_keyframes = cqtc_bpy.deselect_selected_keyframe_points(context)
 		(sequence, sequence_to_return) = self.__create_or_get_existing_effect_strip(sequence, context, "TRANSFORM", "_Transform")
 		
 		sequence.use_uniform_scale = True
@@ -273,8 +273,8 @@ class SuperEffectCreator():
 		]
 		self.__set_animatable_properties(context, animatable_properties_info, is_in, start_frame, final_frame)
 		
-		bpy_utils.set_interpolation_type(context)
-		bpy_utils.select_keyframe_points(context, selected_keyframes)
+		cqtc_bpy.set_interpolation_type(context)
+		cqtc_bpy.select_keyframe_points(context, selected_keyframes)
 		
 		return sequence_to_return
 	
@@ -284,14 +284,14 @@ class SuperEffectCreator():
 		if not is_blur_required:
 			return sequence
 		
-		selected_keyframes = bpy_utils.deselect_selected_keyframe_points(context)
+		selected_keyframes = cqtc_bpy.deselect_selected_keyframe_points(context)
 		(sequence, sequence_to_return) = self.__create_or_get_existing_effect_strip(sequence, context, "GAUSSIAN_BLUR", "_Blur")
 
 		animatable_properties_info = [ (sequence, "size_x", "blur_x", {}), (sequence, "size_y", "blur_y", {}) ]
 		self.__set_animatable_properties(context, animatable_properties_info, is_in, start_frame, final_frame)
 		
-		bpy_utils.set_interpolation_type(context)
-		bpy_utils.select_keyframe_points(context, selected_keyframes)
+		cqtc_bpy.set_interpolation_type(context)
+		cqtc_bpy.select_keyframe_points(context, selected_keyframes)
 		
 		return sequence_to_return
 	
@@ -304,7 +304,7 @@ class SuperEffectCreator():
 			volume_start_frame = start_frame
 			volume_final_frame = final_frame
 
-			bpy_utils.animate_volume(seq_sound, initial_volume, final_volume, volume_start_frame, volume_final_frame)
+			cqtc_bpy.animate_volume(seq_sound, initial_volume, final_volume, volume_start_frame, volume_final_frame)
 
 		elif seq_sound.type == "SCENE":
 			if is_in:
@@ -314,7 +314,7 @@ class SuperEffectCreator():
 				volume_start_frame = seq_sound.scene.frame_end - effect_length
 				volume_final_frame = seq_sound.scene.frame_end
 			
-			bpy_utils.animate_volume(seq_sound, initial_volume, final_volume, volume_start_frame, volume_final_frame)
+			cqtc_bpy.animate_volume(seq_sound, initial_volume, final_volume, volume_start_frame, volume_final_frame)
 	
 	
 	def __apply_consecutive_sound_transition(self, seq1_sound, seq2_sound, start_frame, final_frame, half_effect_length):
@@ -326,7 +326,7 @@ class SuperEffectCreator():
 				seq1_volume_start_frame = seq1_sound.scene.frame_end - half_effect_length
 				seq1_volume_final_frame = seq1_sound.scene.frame_end
 			
-			bpy_utils.animate_volume(seq1_sound, 1, 0, seq1_volume_start_frame, seq1_volume_final_frame)
+			cqtc_bpy.animate_volume(seq1_sound, 1, 0, seq1_volume_start_frame, seq1_volume_final_frame)
 				
 		if seq2_sound is not None:
 			if seq2_sound.type == "SOUND":
@@ -336,7 +336,7 @@ class SuperEffectCreator():
 				seq2_volume_start_frame = 1
 				seq2_volume_final_frame = half_effect_length + 1
 			
-			bpy_utils.animate_volume(seq2_sound, 0, 1, seq2_volume_start_frame, seq2_volume_final_frame)
+			cqtc_bpy.animate_volume(seq2_sound, 0, 1, seq2_volume_start_frame, seq2_volume_final_frame)
 	
 	
 	def __apply_overlapped_sound_transition(self, context, seq1_sound, seq2_sound, start_frame, final_frame):
@@ -382,10 +382,10 @@ class SuperEffectCreator():
 				
 		
 		if seq1_sound is not None:
-			bpy_utils.animate_volume(seq1_sound, 1, 0, seq1_volume_start_frame, seq1_volume_final_frame)
+			cqtc_bpy.animate_volume(seq1_sound, 1, 0, seq1_volume_start_frame, seq1_volume_final_frame)
 		
 		if seq2_sound is not None:
-			bpy_utils.animate_volume(seq2_sound, 0, 1, seq2_volume_start_frame, seq2_volume_final_frame)
+			cqtc_bpy.animate_volume(seq2_sound, 0, 1, seq2_volume_start_frame, seq2_volume_final_frame)
 	
 	
 	def __create_or_get_existing_effect_strip(self, sequence, context, effect_type, effect_name_suffix):
@@ -404,7 +404,7 @@ class SuperEffectCreator():
 			
 		else:
 			original_sequence = sequence
-			channel = bpy_utils.get_available_channel(context, original_sequence.frame_final_start, original_sequence.frame_final_end, original_sequence.channel)
+			channel = cqtc_bpy.get_available_channel_in_position(context, original_sequence.frame_final_start, original_sequence.frame_final_end, original_sequence.channel)
 			sequence = context.scene.sequence_editor.sequences.new_effect(
 					original_sequence.name + effect_name_suffix,
 					effect_type,

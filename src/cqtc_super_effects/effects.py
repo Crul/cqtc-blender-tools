@@ -36,7 +36,7 @@ class SuperEffect:
 						frame_end=final_frame)
 		
 		color_strip.select = False
-		color_strip.blend_type = 'ALPHA_OVER'
+		color_strip.blend_type = "ALPHA_OVER"
 		color_strip.color = context.scene.super_effect.color
 		
 		return color_strip
@@ -53,7 +53,7 @@ class SuperEffect:
 						seq2=seq2)
 		
 		effect_strip.select = False
-		effect_strip.blend_type = 'ALPHA_OVER'
+		effect_strip.blend_type = "ALPHA_OVER"
 		
 		return self.customize_effect_strip(effect_strip)
 	

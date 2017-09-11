@@ -1,8 +1,8 @@
 import bpy.props
-import bpy.types
+from cqtc_operator import CqtcOperator
 from .super_effect_creator import SuperEffectCreator
 
-class CreateSuperEffectOperator(bpy.types.Operator):
+class CreateSuperEffectOperator(CqtcOperator):
 	bl_idname = "super_effect.create"
 	bl_label = "Crear Transición"
 	operation_type =  bpy.props.StringProperty()
@@ -11,8 +11,6 @@ class CreateSuperEffectOperator(bpy.types.Operator):
 	def execute(self, context):
 		error = self.super_effect_creator.create(context, self.operation_type)
 		if error:
-			(error_result, error_msg) = error
-			self.report(error_result, error_msg)
-			return {"CANCELLED"}
+			return self.return_error(error)
 	
 		return {"FINISHED"}

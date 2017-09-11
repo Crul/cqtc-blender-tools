@@ -47,9 +47,30 @@ def animate_volume(seq_sound, initial_volume, final_volume, initial_frame, final
 		seq_sound.scene.keyframe_insert("audio_volume", index=-1, frame=final_frame)
 
 
-def get_available_channel(context, start_frame, final_frame, start_channel=1):
-	for channel in range(start_channel, max_channel):
+def get_available_channel_for_strip(context, sequence, up_or_down):
+	if up_or_down:
+		channel_range = range(sequence.channel + 1, max_channel)
+	else:
+		channel_range = reversed(range(1, sequence.channel))
+
+	start_frame = sequence.frame_final_start
+	final_frame = sequence.frame_final_end
+	channel = get_available_channel_in_range(context, channel_range, start_frame, final_frame)
+	
+	return channel if channel is not None else sequence.channel
+
+
+def get_available_channel_in_position(context, start_frame, final_frame, start_channel=1):
+	channel_range = range(start_channel, max_channel)
+	channel = get_available_channel_in_range(context, channel_range, start_frame, final_frame)
+	
+	return channel if channel is not None else max_channel
+
+
+def get_available_channel_in_range(context, channel_range, start_frame, final_frame):
+	for channel in channel_range:
 		is_channel_available = True
+		
 		for sequence in context.scene.sequence_editor.sequences:
 			is_sequence_in_channel_and_interval = (sequence.channel == channel \
 				and sequence.frame_final_start < final_frame \
@@ -62,7 +83,7 @@ def get_available_channel(context, start_frame, final_frame, start_channel=1):
 		if is_channel_available:
 			return channel
 			
-	return max_channel
+	return None
 
 
 def overlap_strips(context, seq1, seq2, seq1_sound, seq2_sound):
@@ -77,33 +98,33 @@ def overlap_strips(context, seq1, seq2, seq1_sound, seq2_sound):
 	if seq1.type in ["MOVIE","SCENE"]:
 		not_enough_data_after_seq1 = (seq1.frame_offset_end < effect_length)
 		if not_enough_data_after_seq1:
-			return ({"ERROR"}, "No hay suficientes datos después del final en la tira " + seq1.name)
+			return "No hay suficientes datos después del final en la tira " + seq1.name
 	
 	if seq2.type in ["MOVIE","SCENE"]:
 		not_enough_data_before_seq2 = (seq2.frame_offset_start < effect_length)
 		if not_enough_data_before_seq2:
-			return ({"ERROR"}, "No hay suficientes datos antes del comianzo en la tira " + seq2.name)
+			return "No hay suficientes datos antes del comianzo en la tira " + seq2.name
 	
 	seq1_channel = seq1.channel
 	seq1.channel = tmp_channel
-	seq1.channel = get_available_channel(context, seq1.frame_final_start, seq1.frame_final_end + effect_length, seq1_channel)
+	seq1.channel = get_available_channel_in_position(context, seq1.frame_final_start, seq1.frame_final_end + effect_length, seq1_channel)
 	seq1.frame_final_end += effect_length
 	
 	if seq1_sound is not None:
 		seq1_sound_channel = seq1_sound.channel
 		seq1_sound.channel = tmp_channel
-		seq1_sound.channel = get_available_channel(context, seq1.frame_final_start, seq1.frame_final_end + effect_length, seq1_sound_channel)
+		seq1_sound.channel = get_available_channel_in_position(context, seq1.frame_final_start, seq1.frame_final_end + effect_length, seq1_sound_channel)
 		seq1_sound.frame_final_end += effect_length
 
 	seq2_channel = seq2.channel
 	seq2.channel = tmp_channel
-	seq2.channel = get_available_channel(context, seq2.frame_final_start - effect_length, seq2.frame_final_end, seq2_channel)
+	seq2.channel = get_available_channel_in_position(context, seq2.frame_final_start - effect_length, seq2.frame_final_end, seq2_channel)
 	seq2.frame_final_start -= effect_length
 	
 	if seq2_sound is not None:
 		seq2_sound_channel = seq2_sound.channel
 		seq2_sound.channel = tmp_channel
-		seq2_sound.channel = get_available_channel(context, seq2.frame_final_start - effect_length, seq2.frame_final_end, seq2_sound_channel)
+		seq2_sound.channel = get_available_channel_in_position(context, seq2.frame_final_start - effect_length, seq2.frame_final_end, seq2_sound_channel)
 		seq2_sound.frame_final_start -= effect_length
 
 
