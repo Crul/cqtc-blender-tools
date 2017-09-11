@@ -10,11 +10,11 @@ numbered_intro_image_path = os.path.join(cqtc_path.addons_path, r"..\DIBUJOS")
 
 class CreateNumberedIntroOperator(CqtcOperator):
 	bl_idname = "numbered_intro.create"
-	bl_label = "Crear Tomas Falsas"
+	bl_label = "Create Numbered Intros"
 	
 	def execute(self, context):
 		
-		error = self.validate_date(context)
+		error = self.validate_data(context)
 		if error:
 			return self.return_error(error)
 		
@@ -89,16 +89,16 @@ class CreateNumberedIntroOperator(CqtcOperator):
 		return {"FINISHED"}
 	
 	
-	def validate_date(self, context):
+	def validate_data(self, context):
 		selected_sequences = [ seq for seq in context.selected_sequences if seq.type != "SOUND" ]
 		if len(selected_sequences) == 0:
-			return "Debes seleccionar al menos una strip"
+			return "You should select at least one strip"
 		
 		next_number = context.scene.numbered_intro.next_number
-		for numbered_intro_number in range(next_number, next_number + len(selected_sequences) - 1):
+		for numbered_intro_number in range(next_number, next_number + len(selected_sequences)):
 			numbered_intro_full_path = self.get_numbered_intro_image_fullpath(numbered_intro_number)
 			if not os.path.isfile(numbered_intro_full_path):
-				return "No se ha encontrado el fichero " + numbered_intro_full_path
+				return "%s: %s" % (self.translate("File not found"), numbered_intro_full_path)
 	
 	
 	def get_numbered_intro_image_fullpath(self, numbered_intro_number):

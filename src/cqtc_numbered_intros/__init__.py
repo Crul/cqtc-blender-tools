@@ -14,10 +14,10 @@ else:
 	from . import blender_addon
 
 def register():
-	blender_addon.register()
+	blender_addon.register(__name__)
 
 def unregister():
-	blender_addon.unregister()
+	blender_addon.unregister(__name__)
 
 if __name__ == "__main__":
 	register()
