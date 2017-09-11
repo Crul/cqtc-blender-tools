@@ -69,23 +69,61 @@ class SequenceTransform:
 		pass
 
 class Sequence:
-	select = True
-	name = ""
-	type = ""
-	elements = []
-	transform = None
-	input_1 = None
-	channel = 0
-	frame_start = 0
-	frame_final_start = 0
-	frame_final_end = 0
-	frame_final_duration = 0
-	frame_offset_start = 0
-	frame_offset_end = 0
 	
-	def __init__(self):
+	def __init__(self,
+		frame_final_start,
+		frame_final_end,
+		frame_offset_start = 0,
+		frame_offset_end = 0
+	):
 		self.transform = SequenceTransform()
-
+		self.select = True
+		self.name = ""
+		self.type = ""
+		self.elements = []
+		self.input_1 = None
+		self.channel = 0
+		self.frame_final_start = frame_final_start
+		self.frame_final_end = frame_final_end
+		self._frame_start = frame_final_start - frame_offset_start
+		self._frame_offset_start = frame_offset_start
+		self._frame_offset_end = frame_offset_end
+	
+	@property
+	def frame_start(self):
+		return self._frame_start
+		
+	@frame_start.setter
+	def frame_start(self, value):
+		diff = (value - self._frame_start)
+		self.frame_final_start += diff
+		self.frame_final_end += diff
+		self._frame_start = value
+		
+	@property
+	def frame_final_duration(self):
+		return self.frame_final_end - self.frame_final_start
+	
+	@property
+	def frame_offset_start(self):
+		return self._frame_offset_start
+	
+	@frame_offset_start.setter
+	def frame_offset_start(self, value):
+		diff = (value - self._frame_offset_start)
+		self.frame_final_start += diff
+		self._frame_offset_start = value
+	
+	@property
+	def frame_offset_end(self):
+		return self._frame_offset_end
+	
+	@frame_offset_end.setter
+	def frame_offset_end(self, value):
+		diff = (value - self._frame_offset_end)
+		self.frame_final_end -= diff
+		self._frame_offset_end = value
+	
 	def keyframe_insert(self, property_name, index=-1, frame=0):
 		pass
 	
@@ -102,8 +140,18 @@ class VolumeSequence(Sequence):
 class VolumeSceneSequence(Sequence):
 	scene = None
 	
-	def __init__(self):
-		super(VolumeSceneSequence, self).__init__()
+	def __init__(self,
+		frame_final_start,
+		frame_final_end,
+		frame_offset_start = 0,
+		frame_offset_end = 0
+	):
+		super(VolumeSceneSequence, self).__init__(
+			frame_final_start,
+			frame_final_end,
+			frame_offset_start,
+			frame_offset_end
+		)
 		self.scene = SequenceScene()
 	
 Panel = object

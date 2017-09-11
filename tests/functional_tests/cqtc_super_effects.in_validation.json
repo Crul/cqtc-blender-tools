@@ -26,44 +26,44 @@
 		},
 		{	"name": "test IN too short sequence selected",
 			"sequences": [
-				{"name": "MySequence1", "type": "MOVIE" }
+				{"name": "MySequence1", "type": "MOVIE", "frame_final_start": 30, "frame_final_end": 35 }
 			],
 			"expected_report": [ "ERROR", "La strip MySequence1 es más corta de lo necesario para añdir el efecto" ],
 			"expected_sequences": [
-				{"name": "MySequence1", "type": "MOVIE" }
+				{"name": "MySequence1", "type": "MOVIE", "frame_final_start": 30, "frame_final_end": 35 }
 			]
 		},
 		{	"name": "test IN too short sequence selected because delay",
 			"super_effect": { "delay_image": 10 },
 			"sequences": [
-				{"name": "MySequence1", "type": "MOVIE", "frame_final_duration": 90 }
+				{"name": "MySequence1", "type": "MOVIE", "frame_final_start": 0, "frame_final_end": 50 }
 			],
 			"expected_report": [ "ERROR", "La strip MySequence1 es más corta de lo necesario para añdir el efecto" ],
 			"expected_sequences": [
-				{"name": "MySequence1", "type": "MOVIE", "frame_final_duration": 90 }
+				{"name": "MySequence1", "type": "MOVIE", "frame_final_start": 0, "frame_final_end": 50 }
 			]
 		},
 		{	"name": "test IN too many sound sequences selected",
 			"sequences": [
-				{"name": "MySequence1", "type": "MOVIE", "frame_final_duration": 90 },
+				{"name": "MySequence1", "type": "MOVIE", "frame_final_start": 0, "frame_final_end": 250 },
 				{"name": "MySequenceSound1", "type": "SOUND" },
 				{"name": "MySequenceSound2", "type": "SOUND" }
 			],
 			"expected_report": [ "ERROR", "No puedes seleccionar más strips de sonido que strips de imagen, vídeo o transform" ],
 			"expected_sequences": [
-				{"name": "MySequence1", "type": "MOVIE", "frame_final_duration": 90 },
+				{"name": "MySequence1", "type": "MOVIE", "frame_final_start": 0, "frame_final_end": 250 },
 				{"name": "MySequenceSound1", "type": "SOUND" },
 				{"name": "MySequenceSound2", "type": "SOUND" }
 			]
 		},
 		{	"name": "test IN incorrect sound sequence selected",
 			"sequences": [
-				{"name": "MySequence", "type": "MOVIE", "frame_final_start": 30, "frame_final_end": 50, "frame_final_duration": 90 },
+				{"name": "MySequence", "type": "MOVIE", "frame_final_start": 30, "frame_final_end": 250 },
 				{"name": "MySequenceSound", "type": "SOUND", "frame_final_start": 10, "frame_final_end": 20 }
 			],
 			"expected_report": [ "ERROR", "La strip de sonido MySequenceSound no corresponde con ninguna strip de imagen, vídeo o transform" ],
 			"expected_sequences": [
-				{"name": "MySequence", "type": "MOVIE", "frame_final_start": 30, "frame_final_end": 50, "frame_final_duration": 90 },
+				{"name": "MySequence", "type": "MOVIE", "frame_final_start": 30, "frame_final_end": 250 },
 				{"name": "MySequenceSound", "type": "SOUND", "frame_final_start": 10, "frame_final_end": 20 }
 			]
 		},
@@ -71,12 +71,12 @@
 			"operator": { "operation_type": "IN_OUT" },
 			"super_effect": { "effect_length_type": "PERCENTAGE", "effect_length_percentage": 51 },
 			"sequences": [
-				{"name": "MySequence", "type": "MOVIE", "frame_final_start": 30, "frame_final_end": 50, "frame_final_duration": 90 },
+				{"name": "MySequence", "type": "MOVIE", "frame_final_start": 30, "frame_final_end": 50 },
 				{"name": "MySequenceSound", "type": "SOUND", "frame_final_start": 10, "frame_final_end": 20 }
 			],
 			"expected_report": [ "ERROR", "No se puede crear un efecto de Entrada y Salida con más del 50% de porcentage de duración" ],
 			"expected_sequences": [
-				{"name": "MySequence", "type": "MOVIE", "frame_final_start": 30, "frame_final_end": 50, "frame_final_duration": 90 },
+				{"name": "MySequence", "type": "MOVIE", "frame_final_start": 30, "frame_final_end": 50 },
 				{"name": "MySequenceSound", "type": "SOUND", "frame_final_start": 10, "frame_final_end": 20 }
 			]
 		}

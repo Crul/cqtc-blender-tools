@@ -26,7 +26,8 @@
 					"type": "MOVIE",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
+					"final_frame_start": 50,
+					"final_frame_end": 150,
 					"frame_offset_start": 25
 				}
 			],
@@ -36,7 +37,7 @@
 					"type": "MOVIE",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
+					"frame_final_duration": 90,
 					"frame_offset_start": 35
 				}
 			]
@@ -58,7 +59,8 @@
 					"blend_type": "FOO",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
+					"frame_final_start": 17,
+					"frame_final_end": 117,
 					"frame_offset_start": 25,
 					"transform" : {
 						"offset_x": 11,
@@ -73,7 +75,7 @@
 					"blend_type": "ALPHA_OVER",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
+					"frame_final_duration": 90,
 					"frame_offset_start": 35,
 					"translate_start_x": 21,
 					"translate_start_y": 31,
@@ -117,7 +119,6 @@
 					"blend_type": "FOO",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
 					"frame_final_start": 33,
 					"frame_final_end": 133,
 					"scale_start_x": 1.2,
@@ -134,7 +135,7 @@
 					"blend_type": "ALPHA_OVER",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
+					"frame_final_duration": 91,
 					"translate_start_x": 121,
 					"translate_start_y": 191,
 					"scale_start_x": 1.2,
@@ -194,7 +195,6 @@
 					"blend_type": "FOO",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
 					"frame_final_start": 50,
 					"frame_final_end": 150
 				}
@@ -237,7 +237,6 @@
 					"blend_type": "FOO",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
 					"frame_final_start": 50,
 					"frame_final_end": 150,
 					"input_1": {
@@ -288,14 +287,14 @@
 					"blend_type": "ALPHA_OVER",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
+					"frame_final_start": 17,
+					"frame_final_end": 117,
 					"input_1": {
 						"name": "MyBlurSequence",
 						"type": "GAUSSIAN_BLUR",
 						"blend_type": "FOO",
 						"channel": 1,
 						"select": false,
-						"frame_final_duration": 100,
 						"frame_final_start": 50,
 						"frame_final_end": 150,
 						"input_1": {
@@ -345,14 +344,14 @@
 					"blend_type": "FOO",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
+					"frame_final_start": 17,
+					"frame_final_end": 117,
 					"input_1": {
 						"name": "MyTranformSequence",
 						"type": "TRANSFORM",
 						"blend_type": "FOO",
 						"channel": 1,
 						"select": false,
-						"frame_final_duration": 100,
 						"frame_final_start": 50,
 						"frame_final_end": 150,
 						"input_1": {
@@ -403,8 +402,7 @@
 					"channel": 1,
 					"select": true,
 					"frame_final_start": 50,
-					"frame_final_end": 150,
-					"frame_final_duration": 100
+					"frame_final_end": 150
 				}
 			],
 			"expected_sequences": [
@@ -446,8 +444,7 @@
 					"channel": 1,
 					"select": true,
 					"frame_final_start": 50,
-					"frame_final_end": 150,
-					"frame_final_duration": 100
+					"frame_final_end": 150
 				}
 			],
 			"expected_sequences": [
@@ -500,7 +497,6 @@
 					"select": true,
 					"frame_final_start": 50,
 					"frame_final_end": 150,
-					"frame_final_duration": 100,
 					"frame_offset_start": 25,
 					"transform" : {
 						"offset_x": 11,
@@ -550,13 +546,13 @@
 					"blend_type": "ALPHA_OVER",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
+					"frame_final_start": 50,
+					"frame_final_end": 150,
 					"input_1": {
 						"name": "MyBlurSequence",
 						"type": "GAUSSIAN_BLUR",
 						"channel": 1,
 						"select": false,
-						"frame_final_duration": 100,
 						"frame_final_start": 50,
 						"frame_final_end": 150,
 						"input_1": {
@@ -608,7 +604,6 @@
 					"blend_type": "ALPHA_OVER",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
 					"frame_final_start": 50,
 					"frame_final_end": 150,
 					"input_1": {
@@ -616,7 +611,8 @@
 						"type": "TRANSFORM",
 						"channel": 1,
 						"select": false,
-						"frame_final_duration": 100,
+						"frame_final_start": 50,
+						"frame_final_end": 150,
 						"input_1": {
 							"name": "MySequence",
 							"type": "MOVIE"
@@ -665,7 +661,6 @@
 					"type": "MOVIE",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
 					"frame_final_start": 50,
 					"frame_final_end": 150
 				}
@@ -713,7 +708,6 @@
 					"type": "MOVIE",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
 					"frame_final_start": 50,
 					"frame_final_end": 150
 				}
@@ -761,7 +755,6 @@
 					"type": "MOVIE",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
 					"frame_final_start": 50,
 					"frame_final_end": 150
 				}
@@ -812,7 +805,6 @@
 					"type": "MOVIE",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
 					"frame_final_start": 50,
 					"frame_final_end": 150
 				},
@@ -821,7 +813,6 @@
 					"type": "SOUND",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
 					"frame_final_start": 50,
 					"frame_final_end": 150,
 					"volume": 0.5
@@ -872,7 +863,6 @@
 					"type": "MOVIE",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
 					"frame_final_start": 50,
 					"frame_final_end": 150
 				},
@@ -881,7 +871,6 @@
 					"type": "SCENE",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
 					"frame_final_start": 50,
 					"frame_final_end": 150,
 					"scene": { "audio_volume": 0.5 }
@@ -941,7 +930,6 @@
 					"blend_type": "FOO",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
 					"frame_final_start": 33,
 					"frame_final_end": 133,
 					"scale_start_x": 1.2,
@@ -1005,7 +993,6 @@
 					"blend_type": "FOO",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
 					"frame_final_start": 33,
 					"frame_final_end": 133,
 					"scale_start_x": 1.2,
@@ -1022,7 +1009,7 @@
 					"blend_type": "ALPHA_OVER",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
+					"frame_final_duration": 91,
 					"translate_start_x": 121,
 					"translate_start_y": 191,
 					"scale_start_x": 1.2,
@@ -1100,7 +1087,6 @@
 					"blend_type": "FOO",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
 					"frame_final_start": 33,
 					"frame_final_end": 133,
 					"scale_start_x": 1.2,
@@ -1117,7 +1103,7 @@
 					"blend_type": "ALPHA_OVER",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
+					"frame_final_duration": 91,
 					"translate_start_x": 121,
 					"translate_start_y": 191,
 					"scale_start_x": 1.2,
@@ -1195,7 +1181,6 @@
 					"blend_type": "FOO",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
 					"frame_final_start": 33,
 					"frame_final_end": 133,
 					"scale_start_x": 1.2,
@@ -1212,7 +1197,7 @@
 					"blend_type": "ALPHA_OVER",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
+					"frame_final_duration": 91,
 					"translate_start_x": 121,
 					"translate_start_y": 191,
 					"scale_start_x": 1.2,

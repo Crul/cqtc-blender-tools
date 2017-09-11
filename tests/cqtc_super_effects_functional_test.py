@@ -73,7 +73,7 @@ class TestCqtcSuperEffectsFunctional():
 			"final_opacity": 1,
 			"effect_length": 10
 		},
-		"sequences": [ { "name": "MySequence", "type": "MOVIE", "frame_final_duration": 100 } ]
+		"sequences": [ { "name": "MySequence", "type": "MOVIE", "frame_final_start": 33, "frame_final_end": 133 } ]
 	}
 	graph_tests_data = [
 		{ "super_effect": { "initial_position_x": 10, "constant_speed": True } },
@@ -289,8 +289,7 @@ class TestCqtcSuperEffectsFunctional():
 			"type": effect_type,
 			"channel": channel,
 			"frame_final_start": frame_start,
-			"frame_final_end": frame_end,
-			"frame_final_duration": frame_end - frame_start
+			"frame_final_end": frame_end
 		}
 		if seq1 is not None:
 			effect_sequence_data["input_1"] = seq1
@@ -323,14 +322,18 @@ class TestCqtcSuperEffectsFunctional():
 			mock_sequence_select = mock.patch("bpy.types.Sequence.select", new_callable=mock.PropertyMock)
 			mock_sequence_select.return_value = sequence_data["select"] if "select" in sequence_data else True
 			
+			frame_final_start = sequence_data["frame_final_start"] if "frame_final_start" in sequence_data else 0
+			frame_final_end = sequence_data["frame_final_end"] if "frame_final_end" in sequence_data else 100
+			frame_offset_start = sequence_data["frame_offset_start"] if "frame_offset_start" in sequence_data else 0
+			frame_offset_end = sequence_data["frame_offset_end"] if "frame_offset_end" in sequence_data else 0
 			if "type" in sequence_data and sequence_data["type"] == "SOUND":
-				mock_sequence = bpy.types.VolumeSequence()
+				mock_sequence = bpy.types.VolumeSequence(frame_final_start, frame_final_end, frame_offset_start, frame_offset_end)
 			elif "type" in sequence_data and sequence_data["type"] == "SCENE":
-				mock_sequence = bpy.types.VolumeSceneSequence()
+				mock_sequence = bpy.types.VolumeSceneSequence(frame_final_start, frame_final_end, frame_offset_start, frame_offset_end)
 				mock_sequence.scene.keyframe_insert = mock.MagicMock()
 				mock_sequence.scene.keyframe_insert.side_effect = self.get_keyframe_insert_fake_fn(mock_sequence, "scene")
 			else:
-				mock_sequence = bpy.types.Sequence()
+				mock_sequence = bpy.types.Sequence(frame_final_start, frame_final_end, frame_offset_start, frame_offset_end)
 				
 			self.set_values(mock_sequence, sequence_data)
 			mock_sequence.keyframe_insert = mock.MagicMock()
@@ -388,10 +391,11 @@ class TestCqtcSuperEffectsFunctional():
 	
 	
 	def set_values(self, object, data_dict):
-		for key, value in data_dict.items():
+		for key, value in sorted(data_dict.items()):
 			if type(value) is dict:
 				obj_prop = getattr(object, key)
 				if obj_prop is not None:
 					self.set_values(obj_prop, value)
 			else:
-				setattr(object, key, value)
+				if key != "frame_final_duration":
+					setattr(object, key, value)

@@ -26,7 +26,8 @@
 					"type": "MOVIE",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
+					"frame_final_start": 50,
+					"frame_final_end": 150,
 					"frame_offset_start": 25
 				}
 			],
@@ -57,7 +58,8 @@
 					"blend_type": "FOO",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
+					"frame_final_start": 50,
+					"frame_final_end": 150,
 					"frame_offset_start": 25,
 					"transform" : {
 						"offset_x": 11,
@@ -115,7 +117,6 @@
 					"blend_type": "FOO",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
 					"frame_final_start": 33,
 					"frame_final_end": 133,
 					"scale_start_x": 1.2,
@@ -191,7 +192,6 @@
 					"blend_type": "FOO",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
 					"frame_final_start": 50,
 					"frame_final_end": 150
 				}
@@ -233,7 +233,6 @@
 					"blend_type": "FOO",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
 					"frame_final_start": 50,
 					"frame_final_end": 150,
 					"input_1": {
@@ -283,14 +282,14 @@
 					"blend_type": "ALPHA_OVER",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
+					"frame_final_start": 50,
+					"frame_final_end": 150,
 					"input_1": {
 						"name": "MyBlurSequence",
 						"type": "GAUSSIAN_BLUR",
 						"blend_type": "FOO",
 						"channel": 1,
 						"select": false,
-						"frame_final_duration": 100,
 						"frame_final_start": 50,
 						"frame_final_end": 150,
 						"input_1": {
@@ -339,14 +338,14 @@
 					"blend_type": "FOO",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
+					"frame_final_start": 50,
+					"frame_final_end": 150,
 					"input_1": {
 						"name": "MyTranformSequence",
 						"type": "TRANSFORM",
 						"blend_type": "FOO",
 						"channel": 1,
 						"select": false,
-						"frame_final_duration": 100,
 						"frame_final_start": 50,
 						"frame_final_end": 150,
 						"input_1": {
@@ -396,8 +395,7 @@
 					"channel": 1,
 					"select": true,
 					"frame_final_start": 50,
-					"frame_final_end": 150,
-					"frame_final_duration": 100
+					"frame_final_end": 150
 				}
 			],
 			"expected_sequences": [
@@ -438,8 +436,7 @@
 					"channel": 1,
 					"select": true,
 					"frame_final_start": 50,
-					"frame_final_end": 150,
-					"frame_final_duration": 100
+					"frame_final_end": 150
 				}
 			],
 			"expected_sequences": [
@@ -491,7 +488,6 @@
 					"select": true,
 					"frame_final_start": 50,
 					"frame_final_end": 150,
-					"frame_final_duration": 100,
 					"frame_offset_start": 25,
 					"transform" : {
 						"offset_x": 11,
@@ -540,14 +536,14 @@
 					"blend_type": "ALPHA_OVER",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
+					"frame_final_start": 50,
+					"frame_final_end": 150,
 					"input_1": {
 						"name": "MyBlurSequence",
 						"type": "GAUSSIAN_BLUR",
 						"channel": 1,
 						"select": false,
-						"frame_final_duration": 100,
-						"frame_final_start": 50,
+						"frame_final_start": 0,
 						"frame_final_end": 150,
 						"input_1": {
 							"name": "MySequence",
@@ -569,8 +565,8 @@
 						"type": "GAUSSIAN_BLUR",
 						"channel": 1,
 						"select": false,
-						"frame_final_duration": 100,
-						"frame_final_start": 50,
+						"frame_final_duration": 150,
+						"frame_final_start": 0,
 						"frame_final_end": 150,
 						"size_x": 11,
 						"size_y": 21,
@@ -597,7 +593,6 @@
 					"blend_type": "ALPHA_OVER",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
 					"frame_final_start": 50,
 					"frame_final_end": 150,
 					"input_1": {
@@ -605,7 +600,8 @@
 						"type": "TRANSFORM",
 						"channel": 1,
 						"select": false,
-						"frame_final_duration": 100,
+						"frame_final_start": 50,
+						"frame_final_end": 150,
 						"input_1": {
 							"name": "MySequence",
 							"type": "MOVIE"
@@ -653,7 +649,6 @@
 					"type": "MOVIE",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
 					"frame_final_start": 50,
 					"frame_final_end": 150
 				}
@@ -700,7 +695,6 @@
 					"type": "MOVIE",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
 					"frame_final_start": 50,
 					"frame_final_end": 150
 				}
@@ -747,7 +741,6 @@
 					"type": "MOVIE",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
 					"frame_final_start": 50,
 					"frame_final_end": 150
 				}
@@ -798,7 +791,6 @@
 					"type": "MOVIE",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
 					"frame_final_start": 50,
 					"frame_final_end": 150
 				},
@@ -807,7 +799,6 @@
 					"type": "SOUND",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
 					"frame_final_start": 50,
 					"frame_final_end": 150,
 					"volume": 0.5
@@ -858,7 +849,6 @@
 					"type": "MOVIE",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
 					"frame_final_start": 50,
 					"frame_final_end": 150
 				},
@@ -867,7 +857,6 @@
 					"type": "SCENE",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
 					"frame_final_start": 50,
 					"frame_final_end": 150,
 					"scene": { "audio_volume": 0.5 }
@@ -927,7 +916,6 @@
 					"blend_type": "FOO",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
 					"frame_final_start": 33,
 					"frame_final_end": 133,
 					"scale_start_x": 1.2,
@@ -991,7 +979,6 @@
 					"blend_type": "FOO",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
 					"frame_final_start": 33,
 					"frame_final_end": 133,
 					"scale_start_x": 1.2,
@@ -1086,7 +1073,6 @@
 					"blend_type": "FOO",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
 					"frame_final_start": 33,
 					"frame_final_end": 133,
 					"scale_start_x": 1.2,
@@ -1181,7 +1167,6 @@
 					"blend_type": "FOO",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
 					"frame_final_start": 33,
 					"frame_final_end": 133,
 					"scale_start_x": 1.2,

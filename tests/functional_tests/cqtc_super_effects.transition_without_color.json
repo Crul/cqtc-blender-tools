@@ -527,7 +527,6 @@
 				{
 					"name": "MySoundSequence1",
 					"type": "SOUND",
-					"frame_final_duration": 100,
 					"frame_final_start": 12,
 					"frame_final_end": 23,
 					"volume": 0.5
@@ -544,7 +543,6 @@
 					"type": "SOUND",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
 					"frame_final_start": 15,
 					"frame_final_end": 35,
 					"volume": 0.5
@@ -561,7 +559,7 @@
 				{
 					"name": "MySoundSequence1",
 					"type": "SOUND",
-					"frame_final_duration": 100,
+					"frame_final_duration": 11,
 					"frame_final_start": 12,
 					"frame_final_end": 23,
 					"volume": 0
@@ -578,7 +576,7 @@
 					"type": "SOUND",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
+					"frame_final_duration": 20,
 					"frame_final_start": 15,
 					"frame_final_end": 35,
 					"volume": 1
@@ -619,7 +617,6 @@
 				{
 					"name": "MySoundSequence1",
 					"type": "SOUND",
-					"frame_final_duration": 100,
 					"frame_final_start": 12,
 					"frame_final_end": 23,
 					"volume": 0.5
@@ -636,7 +633,6 @@
 					"type": "SOUND",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
 					"frame_final_start": 15,
 					"frame_final_end": 35,
 					"volume": 0.5
@@ -653,7 +649,7 @@
 				{
 					"name": "MySoundSequence1",
 					"type": "SOUND",
-					"frame_final_duration": 100,
+					"frame_final_duration": 11,
 					"frame_final_start": 12,
 					"frame_final_end": 23,
 					"volume": 0
@@ -670,7 +666,7 @@
 					"type": "SOUND",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
+					"frame_final_duration": 20,
 					"frame_final_start": 15,
 					"frame_final_end": 35,
 					"volume": 1
@@ -704,7 +700,6 @@
 				{
 					"name": "MySceneSequence1",
 					"type": "SCENE",
-					"frame_final_duration": 200,
 					"frame_final_start": 12,
 					"frame_final_end": 312,
 					"scene": { "audio_volume": 0.5 }
@@ -712,7 +707,6 @@
 				{
 					"name": "MySceneSequence2",
 					"type": "SCENE",
-					"frame_final_duration": 200,
 					"frame_final_start": 150,
 					"frame_final_end": 350,
 					"scene": { "audio_volume": 0.5 }
@@ -722,7 +716,7 @@
 				{
 					"name": "MySceneSequence1",
 					"type": "SCENE",
-					"frame_final_duration": 200,
+					"frame_final_duration": 300,
 					"frame_final_start": 12,
 					"frame_final_end": 312,
 					"scene": { "audio_volume": 0 }
@@ -762,7 +756,6 @@
 				{
 					"name": "MySceneSequence1",
 					"type": "SCENE",
-					"frame_final_duration": 200,
 					"frame_final_start": 12,
 					"frame_final_end": 312,
 					"scene": { "audio_volume": 0.5 }
@@ -770,7 +763,6 @@
 				{
 					"name": "MySceneSequence2",
 					"type": "SCENE",
-					"frame_final_duration": 200,
 					"frame_final_start": 150,
 					"frame_final_end": 350,
 					"scene": { "audio_volume": 0.5 }
@@ -780,7 +772,7 @@
 				{
 					"name": "MySceneSequence1",
 					"type": "SCENE",
-					"frame_final_duration": 200,
+					"frame_final_duration": 300,
 					"frame_final_start": 12,
 					"frame_final_end": 312,
 					"scene": { "audio_volume": 0 }

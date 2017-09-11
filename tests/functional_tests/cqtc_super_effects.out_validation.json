@@ -26,34 +26,34 @@
 		},
 		{	"name": "test OUT too short sequence selected",
 			"sequences": [
-				{"name": "MySequence1", "type": "MOVIE", "frame_final_duration": 40 }
+				{"name": "MySequence1", "type": "MOVIE", "frame_final_start": 30, "frame_final_end": 70 }
 			],
 			"expected_report": [ "ERROR", "La strip MySequence1 es más corta de lo necesario para añdir el efecto" ],
 			"expected_sequences": [
-				{"name": "MySequence1", "type": "MOVIE", "frame_final_duration": 40 }
+				{"name": "MySequence1", "type": "MOVIE", "frame_final_start": 30, "frame_final_end": 70 }
 			]
 		},
 		{	"name": "test OUT too many sound sequences selected",
 			"sequences": [
-				{"name": "MySequence1", "type": "MOVIE", "frame_final_duration": 60 },
+				{"name": "MySequence1", "type": "MOVIE" },
 				{"name": "MySequenceSound1", "type": "SOUND" },
 				{"name": "MySequenceSound2", "type": "SOUND" }
 			],
 			"expected_report": [ "ERROR", "No puedes seleccionar más strips de sonido que strips de imagen, vídeo o transform" ],
 			"expected_sequences": [
-				{"name": "MySequence1", "type": "MOVIE", "frame_final_duration": 60 },
+				{"name": "MySequence1", "type": "MOVIE" },
 				{"name": "MySequenceSound1", "type": "SOUND" },
 				{"name": "MySequenceSound2", "type": "SOUND" }
 			]
 		},
 		{	"name": "test OUT incorrect sound sequence selected",
 			"sequences": [
-				{"name": "MySequence", "type": "MOVIE", "frame_final_start": 30, "frame_final_end": 50, "frame_final_duration": 60 },
+				{"name": "MySequence", "type": "MOVIE", "frame_final_start": 30, "frame_final_end": 250 },
 				{"name": "MySequenceSound", "type": "SOUND", "frame_final_start": 10, "frame_final_end": 20 }
 			],
 			"expected_report": [ "ERROR", "La strip de sonido MySequenceSound no corresponde con ninguna strip de imagen, vídeo o transform" ],
 			"expected_sequences": [
-				{"name": "MySequence", "type": "MOVIE", "frame_final_start": 30, "frame_final_end": 50, "frame_final_duration": 60 },
+				{"name": "MySequence", "type": "MOVIE", "frame_final_start": 30, "frame_final_end": 250 },
 				{"name": "MySequenceSound", "type": "SOUND", "frame_final_start": 10, "frame_final_end": 20 }
 			]
 		}

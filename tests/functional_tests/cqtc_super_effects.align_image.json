@@ -9,7 +9,8 @@
 				"name": "MySequence",
 				"type": "IMAGE",
 				"blend_type": "FOO",
-				"frame_final_duration": 100,
+				"frame_final_start": 17,
+				"frame_final_end": 117,
 				"elements": [{ "orig_width": 300, "orig_height": 500 }],
 				"use_translation": false,
 				"transform": { "offset_x": 123, "offset_y": 456 }
