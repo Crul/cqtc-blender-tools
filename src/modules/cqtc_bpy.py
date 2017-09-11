@@ -47,6 +47,22 @@ def animate_volume(seq_sound, initial_volume, final_volume, initial_frame, final
 		seq_sound.scene.keyframe_insert("audio_volume", index=-1, frame=final_frame)
 
 
+def create_material(name, diffuse, specular, alpha):
+	mat = bpy.data.materials.new(name)
+	mat.diffuse_color = diffuse
+	mat.diffuse_shader = "LAMBERT" 
+	mat.diffuse_intensity = 1.0 
+	mat.specular_color = specular
+	mat.specular_shader = "COOKTORR"
+	mat.specular_intensity = 0
+	mat.alpha = alpha
+	mat.ambient = 1
+	mat.transparency_method = "Z_TRANSPARENCY"   
+	mat.use_transparency = True
+	
+	return mat
+
+
 def get_available_channel_for_strip(context, sequence, up_or_down):
 	if up_or_down:
 		channel_range = range(sequence.channel + 1, max_channel)

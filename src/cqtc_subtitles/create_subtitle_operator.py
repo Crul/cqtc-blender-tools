@@ -1,5 +1,6 @@
 import bpy
 import os
+import cqtc_bpy
 from cqtc_operator import CqtcOperator
 
 scene_prefix = "tx"
@@ -24,8 +25,8 @@ class CreateSubtitleOperator(CqtcOperator):
 		
 		context.scene.subtitle.scene_name = scene_prefix + context.scene.subtitle.scene_name
 		
-		text_scene = self.create_subtitle(context)
-		self.create_strip(context, text_scene)
+		text_scene = self.create_subtitle_scene(context)
+		self.create_scene_strip(context, text_scene)
 		
 		context.scene.subtitle.scene_name = ""
 		context.scene.subtitle.text = ""
@@ -47,7 +48,7 @@ class CreateSubtitleOperator(CqtcOperator):
 			return "No se ha encontrado el fichero " + font_path
 	
 	
-	def create_subtitle(self, context):	
+	def create_subtitle_scene(self, context):	
 		current_scene = context.scene
 		
 		scene_name = context.scene.subtitle.scene_name
@@ -107,7 +108,7 @@ class CreateSubtitleOperator(CqtcOperator):
 		
 		txt_object.location = txt_position_x, 0, 0
 				
-		font_material = self.make_material("font_material", font_color, (1,1,1), 1)
+		font_material = cqtc_bpy.create_material("font_material", font_color, (1,1,1), 1)
 		txt_object.data.materials.append(font_material)
 		
 		context.scene.update()
@@ -122,7 +123,7 @@ class CreateSubtitleOperator(CqtcOperator):
 			bgr_dimensions_z = bgr_object.dimensions.z
 			bgr_object.dimensions = bgr_dimensions_x, bgr_dimensions_y, bgr_dimensions_z
 			
-			bgr_material = self.make_material("bgr_material", bgr_color, (1,1,1), bgr_alpha)
+			bgr_material = cqtc_bpy.create_material("bgr_material", bgr_color, (1,1,1), bgr_alpha)
 			bgr_object.show_transparent = True
 			bgr_object.data.materials.append(bgr_material)
 		
@@ -168,7 +169,7 @@ class CreateSubtitleOperator(CqtcOperator):
 		return text_scene
 	
 	
-	def create_strip(self, context, text_scene):
+	def create_scene_strip(self, context, text_scene):
 		if not context.scene.subtitle.create_strip:
 			return
 		
@@ -180,46 +181,10 @@ class CreateSubtitleOperator(CqtcOperator):
 		if context.scene.sequence_editor is None:
 			context.scene.sequence_editor_create()
 			
-		available_channel = self.getAvailableChannel(context, current_frame, current_frame + strip_length)
+		available_channel = cqtc_bpy.get_available_channel_for_strip(context, current_frame, current_frame + strip_length)
 		text_strip = context.scene.sequence_editor.sequences.new_scene(scene_name, text_scene, available_channel, current_frame)
 			
 		text_strip.blend_type = "ALPHA_OVER"
 		text_strip.frame_final_end = current_frame + strip_length
 	
 	
-	def make_material(self, name, diffuse, specular, alpha):
-		mat = bpy.data.materials.new(name)
-		mat.diffuse_color = diffuse
-		mat.diffuse_shader = "LAMBERT" 
-		mat.diffuse_intensity = 1.0 
-		mat.specular_color = specular
-		mat.specular_shader = "COOKTORR"
-		mat.specular_intensity = 0
-		mat.alpha = alpha
-		mat.ambient = 1
-		mat.transparency_method = "Z_TRANSPARENCY"   
-		mat.use_transparency = True
-		
-		return mat
-	
-	
-	def getAvailableChannel(self, context, start_frame, final_frame, start_channel=1):
-		if context.scene.sequence_editor is None:
-			context.scene.sequence_editor_create()
-			
-		max_channel = 20
-		for channel in range(start_channel, max_channel):
-			is_channel_available = True
-			for sequence in context.scene.sequence_editor.sequences:
-				is_sequence_in_channel_and_interval = (sequence.channel == channel \
-					and sequence.frame_final_start < final_frame \
-					and sequence.frame_final_end > start_frame)
-					
-				if is_sequence_in_channel_and_interval:
-					is_channel_available = False
-					break
-					
-			if is_channel_available:
-				return channel
-				
-		return max_channel
