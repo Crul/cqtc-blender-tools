@@ -117,10 +117,7 @@ class TestCqtcSuperEffectsFunctional():
 		final_sequences = self.get_mock_selected_sequences()
 		self.assert_sequences(test_data, final_sequences)
 		self.assert_calls(mock_new_effect, "new_effect", test_data["expected_calls"]["new_effect"])
-		self.assert_sequences_calls(final_sequences, test_data, "sequences_keyframe_insert", lambda seq: seq.keyframe_insert)
-		self.assert_sequences_calls(final_sequences, test_data, "sequences_transform_keyframe_insert", lambda seq: seq.transform.keyframe_insert)
-		self.assert_sequences_calls(final_sequences, test_data, "sequences_scene_keyframe_insert", lambda seq: seq.scene.keyframe_insert if hasattr(seq, "scene") else None )
-		expected_keyframe_insert_call_values = (test_data["sequences_keyframe_insert_values"] if "sequences_keyframe_insert_values" in test_data else [])
+		expected_keyframe_insert_call_values = (test_data["expected_calls"]["sequences_keyframe_insert_values"] if "sequences_keyframe_insert_values" in test_data["expected_calls"] else [])
 		assert expected_keyframe_insert_call_values == self.keyframe_insert_calls
 
 	
@@ -229,21 +226,6 @@ class TestCqtcSuperEffectsFunctional():
 					assert expected_value == current_value, assert_msg
 				else:
 					self.assert_sequences_values(current_value, expected_value)
-	
-	
-	def assert_sequences_calls(self, final_sequences, test_data, call_type, get_mock_fn):
-		if call_type not in test_data["expected_calls"]:
-			return
-		
-		expected_calls_by_sequence = test_data["expected_calls"][call_type]
-		assert len(expected_calls_by_sequence) <= len(final_sequences)
-		for index, expected_sequence_calls in enumerate(expected_calls_by_sequence):
-			sequence = final_sequences[index]
-			mock_method = get_mock_fn(sequence)
-			if mock_method is None:
-				continue
-				
-			self.assert_calls(mock_method, call_type, expected_sequence_calls)
 	
 	
 	def assert_calls(self, mock_method, method_name, expected_calls):

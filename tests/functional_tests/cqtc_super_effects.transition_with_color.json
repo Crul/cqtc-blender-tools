@@ -405,73 +405,36 @@
 						{ "name": "MySequence2" }
 					]
 				],
-				"sequences_keyframe_insert": [
-					[	
-						[ "translate_start_x", { "index": -1, "frame": 15 } ],
-						[ "translate_start_x", { "index": -1, "frame": 23 } ],
-						[ "translate_start_y", { "index": -1, "frame": 15 } ],
-						[ "translate_start_y", { "index": -1, "frame": 23 } ],
-						[ "scale_start_x", { "index": -1, "frame": 15 } ],
-						[ "scale_start_x", { "index": -1, "frame": 23 } ],
-						[ "blend_alpha", { "index": -1, "frame": 15 } ],
-						[ "blend_alpha", { "index": -1, "frame": 23 } ]
-					],
-					[	
-						[ "translate_start_x", { "index": -1, "frame": 45 } ],
-						[ "translate_start_x", { "index": -1, "frame": 53 } ],
-						[ "translate_start_y", { "index": -1, "frame": 45 } ],
-						[ "translate_start_y", { "index": -1, "frame": 53 } ],
-						[ "scale_start_x", { "index": -1, "frame": 45 } ],
-						[ "scale_start_x", { "index": -1, "frame": 53 } ],
-						[ "blend_alpha", { "index": -1, "frame": 45 } ],
-						[ "blend_alpha", { "index": -1, "frame": 53 } ]
-					]
-				],
-				"sequences_transform_keyframe_insert": [
-					[
-						[ "offset_x", { "index": -1, "frame": 15 } ],
-						[ "offset_x", { "index": -1, "frame": 23 } ],
-						[ "offset_y", { "index": -1, "frame": 15 } ],
-						[ "offset_y", { "index": -1, "frame": 23 } ]
-					],
-					[
-						[ "offset_x", { "index": -1, "frame": 45 } ],
-						[ "offset_x", { "index": -1, "frame": 53 } ],
-						[ "offset_y", { "index": -1, "frame": 45 } ],
-						[ "offset_y", { "index": -1, "frame": 53 } ]
-					]
-				]
-			},
-			"sequences_keyframe_insert_values": [
-				{ "sequence": "MySequence1_Transform", "name": "translate_start_x", "frame": 15, "value": 121 },
-				{ "sequence": "MySequence1_Transform", "name": "translate_start_x", "frame": 23, "value":  21 },
-				{ "sequence": "MySequence1_Transform", "name": "translate_start_y", "frame": 15, "value": 191 },
-				{ "sequence": "MySequence1_Transform", "name": "translate_start_y", "frame": 23, "value":  51 },
-				{ "sequence": "MySequence1_Transform", "name": "scale_start_x", "frame": 15, "value": 1.2 },
-				{ "sequence": "MySequence1_Transform", "name": "scale_start_x", "frame": 23, "value": 0.1 },
-				{ "sequence": "MySequence1_Transform", "name": "blend_alpha", "frame": 15, "value": 0.9 },
-				{ "sequence": "MySequence1_Transform", "name": "blend_alpha", "frame": 23, "value": 0.2 },
-				
-				{ "sequence": "MySequence1_Transform.transform", "name": "offset_x", "frame": 15, "value": 2937.6 },
-				{ "sequence": "MySequence1_Transform.transform", "name": "offset_x", "frame": 23, "value": 1017.6 },
-				{ "sequence": "MySequence1_Transform.transform", "name": "offset_y", "frame": 15, "value": 1782.0 },
-				{ "sequence": "MySequence1_Transform.transform", "name": "offset_y", "frame": 23, "value":  777.6 },
-				
-				{ "sequence": "MySequence2_Transform", "name": "translate_start_x", "frame": 45, "value":  21 },
-				{ "sequence": "MySequence2_Transform", "name": "translate_start_x", "frame": 53, "value": 121 },
-				{ "sequence": "MySequence2_Transform", "name": "translate_start_y", "frame": 45, "value":  51 },
-				{ "sequence": "MySequence2_Transform", "name": "translate_start_y", "frame": 53, "value": 191 },
-				{ "sequence": "MySequence2_Transform", "name": "scale_start_x", "frame": 45, "value": 0.1 },
-				{ "sequence": "MySequence2_Transform", "name": "scale_start_x", "frame": 53, "value": 1.2 },
-				{ "sequence": "MySequence2_Transform", "name": "blend_alpha", "frame": 45, "value": 0.2 },
-				{ "sequence": "MySequence2_Transform", "name": "blend_alpha", "frame": 53, "value": 0.9 },
-				
-				{ "sequence": "MySequence2_Transform.transform", "name": "offset_x", "frame": 45, "value": 1017.6 },
-				{ "sequence": "MySequence2_Transform.transform", "name": "offset_x", "frame": 53, "value": 2937.6 },
-				{ "sequence": "MySequence2_Transform.transform", "name": "offset_y", "frame": 45, "value":  777.6 },
-				{ "sequence": "MySequence2_Transform.transform", "name": "offset_y", "frame": 53, "value": 1782.0 }
-				
-			]
+				"sequences_keyframe_insert_values": [
+					{ "sequence": "MySequence1_Transform", "name": "translate_start_x", "frame": 15, "value": 121 },
+					{ "sequence": "MySequence1_Transform", "name": "translate_start_x", "frame": 23, "value":  21 },
+					{ "sequence": "MySequence1_Transform", "name": "translate_start_y", "frame": 15, "value": 191 },
+					{ "sequence": "MySequence1_Transform", "name": "translate_start_y", "frame": 23, "value":  51 },
+					{ "sequence": "MySequence1_Transform", "name": "scale_start_x", "frame": 15, "value": 1.2 },
+					{ "sequence": "MySequence1_Transform", "name": "scale_start_x", "frame": 23, "value": 0.1 },
+					{ "sequence": "MySequence1_Transform", "name": "blend_alpha", "frame": 15, "value": 0.9 },
+					{ "sequence": "MySequence1_Transform", "name": "blend_alpha", "frame": 23, "value": 0.2 },
+					
+					{ "sequence": "MySequence1_Transform.transform", "name": "offset_x", "frame": 15, "value": 2937.6 },
+					{ "sequence": "MySequence1_Transform.transform", "name": "offset_x", "frame": 23, "value": 1017.6 },
+					{ "sequence": "MySequence1_Transform.transform", "name": "offset_y", "frame": 15, "value": 1782.0 },
+					{ "sequence": "MySequence1_Transform.transform", "name": "offset_y", "frame": 23, "value":  777.6 },
+					
+					{ "sequence": "MySequence2_Transform", "name": "translate_start_x", "frame": 45, "value":  21 },
+					{ "sequence": "MySequence2_Transform", "name": "translate_start_x", "frame": 53, "value": 121 },
+					{ "sequence": "MySequence2_Transform", "name": "translate_start_y", "frame": 45, "value":  51 },
+					{ "sequence": "MySequence2_Transform", "name": "translate_start_y", "frame": 53, "value": 191 },
+					{ "sequence": "MySequence2_Transform", "name": "scale_start_x", "frame": 45, "value": 0.1 },
+					{ "sequence": "MySequence2_Transform", "name": "scale_start_x", "frame": 53, "value": 1.2 },
+					{ "sequence": "MySequence2_Transform", "name": "blend_alpha", "frame": 45, "value": 0.2 },
+					{ "sequence": "MySequence2_Transform", "name": "blend_alpha", "frame": 53, "value": 0.9 },
+					
+					{ "sequence": "MySequence2_Transform.transform", "name": "offset_x", "frame": 45, "value": 1017.6 },
+					{ "sequence": "MySequence2_Transform.transform", "name": "offset_x", "frame": 53, "value": 2937.6 },
+					{ "sequence": "MySequence2_Transform.transform", "name": "offset_y", "frame": 45, "value":  777.6 },
+					{ "sequence": "MySequence2_Transform.transform", "name": "offset_y", "frame": 53, "value": 1782.0 }
+				]			
+			}
 		},
 		{	"name": "test TRANSITION with color apply volume to SOUND no overlap",
 			"super_effect": { "apply_to_sound": true, "overlap_sound": false },
@@ -541,25 +504,13 @@
 			],
 			"expected_calls": {
 				"new_effect": [],
-				"sequences_keyframe_insert": [
-					[],
-					[
-						[ "volume", { "index": -1, "frame": 15 } ],
-						[ "volume", { "index": -1, "frame": 23 } ]
-					],
-					[],
-					[
-						[ "volume", { "index": -1, "frame": 45 } ],
-						[ "volume", { "index": -1, "frame": 53 } ]
-					]
+				"sequences_keyframe_insert_values": [
+					{ "sequence": "MySoundSequence1", "name": "volume", "frame": 15, "value": 1 },
+					{ "sequence": "MySoundSequence1", "name": "volume", "frame": 23, "value": 0 },
+					{ "sequence": "MySoundSequence2", "name": "volume", "frame": 45, "value": 0 },
+					{ "sequence": "MySoundSequence2", "name": "volume", "frame": 53, "value": 1 }
 				]
-			},
-			"sequences_keyframe_insert_values": [
-				{ "sequence": "MySoundSequence1", "name": "volume", "frame": 15, "value": 1 },
-				{ "sequence": "MySoundSequence1", "name": "volume", "frame": 23, "value": 0 },
-				{ "sequence": "MySoundSequence2", "name": "volume", "frame": 45, "value": 0 },
-				{ "sequence": "MySoundSequence2", "name": "volume", "frame": 53, "value": 1 }
-			]
+			}
 		},
 		{	"name": "test TRANSITION with color apply volume to SOUND with overlap",
 			"super_effect": { "apply_to_sound": true, "overlap_sound": true },
@@ -629,25 +580,13 @@
 			],
 			"expected_calls": {
 				"new_effect": [],
-				"sequences_keyframe_insert": [
-					[],
-					[
-						[ "volume", { "index": -1, "frame": 15 } ],
-						[ "volume", { "index": -1, "frame": 23 } ]
-					],
-					[],
-					[
-						[ "volume", { "index": -1, "frame": 45 } ],
-						[ "volume", { "index": -1, "frame": 53 } ]
-					]
+				"sequences_keyframe_insert_values": [
+					{ "sequence": "MySoundSequence1", "name": "volume", "frame": 15, "value": 1 },
+					{ "sequence": "MySoundSequence1", "name": "volume", "frame": 23, "value": 0 },
+					{ "sequence": "MySoundSequence2", "name": "volume", "frame": 45, "value": 0 },
+					{ "sequence": "MySoundSequence2", "name": "volume", "frame": 53, "value": 1 }
 				]
-			},
-			"sequences_keyframe_insert_values": [
-				{ "sequence": "MySoundSequence1", "name": "volume", "frame": 15, "value": 1 },
-				{ "sequence": "MySoundSequence1", "name": "volume", "frame": 23, "value": 0 },
-				{ "sequence": "MySoundSequence2", "name": "volume", "frame": 45, "value": 0 },
-				{ "sequence": "MySoundSequence2", "name": "volume", "frame": 53, "value": 1 }
-			]
+			}
 		},
 		{	"name": "test TRANSITION with color apply volume to SCENE no overlap",
 			"super_effect": { "apply_to_sound": true, "overlap_sound": false },
@@ -685,23 +624,13 @@
 			],
 			"expected_calls": {
 				"new_effect": [],
-				"sequences_keyframe_insert": [
-					[
-						[ "volume", { "index": -1, "frame": 192 } ],
-						[ "volume", { "index": -1, "frame": 200 } ]
-					],
-					[
-						[ "volume", { "index": -1, "frame": 1 } ],
-						[ "volume", { "index": -1, "frame": 9 } ]
-					]
+				"sequences_keyframe_insert_values": [
+					{ "sequence": "MySceneSequence1", "name": "volume", "frame": 192, "value": 1 },
+					{ "sequence": "MySceneSequence1", "name": "volume", "frame": 200, "value": 0 },
+					{ "sequence": "MySceneSequence2", "name": "volume", "frame":   1, "value": 0 },
+					{ "sequence": "MySceneSequence2", "name": "volume", "frame":   9, "value": 1 }
 				]
-			},
-			"sequences_keyframe_insert_values": [
-				{ "sequence": "MySceneSequence1", "name": "volume", "frame": 192, "value": 1 },
-				{ "sequence": "MySceneSequence1", "name": "volume", "frame": 200, "value": 0 },
-				{ "sequence": "MySceneSequence2", "name": "volume", "frame":   1, "value": 0 },
-				{ "sequence": "MySceneSequence2", "name": "volume", "frame":   9, "value": 1 }
-			]
+			}
 		},
 		{	"name": "test TRANSITION with color create transition with mirror_horizontal_out_effect",
 			"super_effect": {
@@ -806,73 +735,36 @@
 						{ "name": "MySequence2" }
 					]
 				],
-				"sequences_keyframe_insert": [
-					[	
-						[ "translate_start_x", { "index": -1, "frame": 15 } ],
-						[ "translate_start_x", { "index": -1, "frame": 23 } ],
-						[ "translate_start_y", { "index": -1, "frame": 15 } ],
-						[ "translate_start_y", { "index": -1, "frame": 23 } ],
-						[ "scale_start_x", { "index": -1, "frame": 15 } ],
-						[ "scale_start_x", { "index": -1, "frame": 23 } ],
-						[ "blend_alpha", { "index": -1, "frame": 15 } ],
-						[ "blend_alpha", { "index": -1, "frame": 23 } ]
-					],
-					[	
-						[ "translate_start_x", { "index": -1, "frame": 45 } ],
-						[ "translate_start_x", { "index": -1, "frame": 53 } ],
-						[ "translate_start_y", { "index": -1, "frame": 45 } ],
-						[ "translate_start_y", { "index": -1, "frame": 53 } ],
-						[ "scale_start_x", { "index": -1, "frame": 45 } ],
-						[ "scale_start_x", { "index": -1, "frame": 53 } ],
-						[ "blend_alpha", { "index": -1, "frame": 45 } ],
-						[ "blend_alpha", { "index": -1, "frame": 53 } ]
-					]
-				],
-				"sequences_transform_keyframe_insert": [
-					[
-						[ "offset_x", { "index": -1, "frame": 15 } ],
-						[ "offset_x", { "index": -1, "frame": 23 } ],
-						[ "offset_y", { "index": -1, "frame": 15 } ],
-						[ "offset_y", { "index": -1, "frame": 23 } ]
-					],
-					[
-						[ "offset_x", { "index": -1, "frame": 45 } ],
-						[ "offset_x", { "index": -1, "frame": 53 } ],
-						[ "offset_y", { "index": -1, "frame": 45 } ],
-						[ "offset_y", { "index": -1, "frame": 53 } ]
-					]
+				"sequences_keyframe_insert_values": [
+					{ "sequence": "MySequence1_Transform", "name": "translate_start_x", "frame": 15, "value": -121 },
+					{ "sequence": "MySequence1_Transform", "name": "translate_start_x", "frame": 23, "value":  -21 },
+					{ "sequence": "MySequence1_Transform", "name": "translate_start_y", "frame": 15, "value": 191 },
+					{ "sequence": "MySequence1_Transform", "name": "translate_start_y", "frame": 23, "value":  51 },
+					{ "sequence": "MySequence1_Transform", "name": "scale_start_x", "frame": 15, "value": 1.2 },
+					{ "sequence": "MySequence1_Transform", "name": "scale_start_x", "frame": 23, "value": 0.1 },
+					{ "sequence": "MySequence1_Transform", "name": "blend_alpha", "frame": 15, "value": 0.9 },
+					{ "sequence": "MySequence1_Transform", "name": "blend_alpha", "frame": 23, "value": 0.2 },
+					
+					{ "sequence": "MySequence1_Transform.transform", "name": "offset_x", "frame": 15, "value": -2937.6 },
+					{ "sequence": "MySequence1_Transform.transform", "name": "offset_x", "frame": 23, "value": -1017.6 },
+					{ "sequence": "MySequence1_Transform.transform", "name": "offset_y", "frame": 15, "value": 1782.0 },
+					{ "sequence": "MySequence1_Transform.transform", "name": "offset_y", "frame": 23, "value":  777.6 },
+					
+					{ "sequence": "MySequence2_Transform", "name": "translate_start_x", "frame": 45, "value":  21 },
+					{ "sequence": "MySequence2_Transform", "name": "translate_start_x", "frame": 53, "value": 121 },
+					{ "sequence": "MySequence2_Transform", "name": "translate_start_y", "frame": 45, "value":  51 },
+					{ "sequence": "MySequence2_Transform", "name": "translate_start_y", "frame": 53, "value": 191 },
+					{ "sequence": "MySequence2_Transform", "name": "scale_start_x", "frame": 45, "value": 0.1 },
+					{ "sequence": "MySequence2_Transform", "name": "scale_start_x", "frame": 53, "value": 1.2 },
+					{ "sequence": "MySequence2_Transform", "name": "blend_alpha", "frame": 45, "value": 0.2 },
+					{ "sequence": "MySequence2_Transform", "name": "blend_alpha", "frame": 53, "value": 0.9 },
+					
+					{ "sequence": "MySequence2_Transform.transform", "name": "offset_x", "frame": 45, "value": 1017.6 },
+					{ "sequence": "MySequence2_Transform.transform", "name": "offset_x", "frame": 53, "value": 2937.6 },
+					{ "sequence": "MySequence2_Transform.transform", "name": "offset_y", "frame": 45, "value":  777.6 },
+					{ "sequence": "MySequence2_Transform.transform", "name": "offset_y", "frame": 53, "value": 1782.0 }
 				]
-			},
-			"sequences_keyframe_insert_values": [
-				{ "sequence": "MySequence1_Transform", "name": "translate_start_x", "frame": 15, "value": -121 },
-				{ "sequence": "MySequence1_Transform", "name": "translate_start_x", "frame": 23, "value":  -21 },
-				{ "sequence": "MySequence1_Transform", "name": "translate_start_y", "frame": 15, "value": 191 },
-				{ "sequence": "MySequence1_Transform", "name": "translate_start_y", "frame": 23, "value":  51 },
-				{ "sequence": "MySequence1_Transform", "name": "scale_start_x", "frame": 15, "value": 1.2 },
-				{ "sequence": "MySequence1_Transform", "name": "scale_start_x", "frame": 23, "value": 0.1 },
-				{ "sequence": "MySequence1_Transform", "name": "blend_alpha", "frame": 15, "value": 0.9 },
-				{ "sequence": "MySequence1_Transform", "name": "blend_alpha", "frame": 23, "value": 0.2 },
-				
-				{ "sequence": "MySequence1_Transform.transform", "name": "offset_x", "frame": 15, "value": -2937.6 },
-				{ "sequence": "MySequence1_Transform.transform", "name": "offset_x", "frame": 23, "value": -1017.6 },
-				{ "sequence": "MySequence1_Transform.transform", "name": "offset_y", "frame": 15, "value": 1782.0 },
-				{ "sequence": "MySequence1_Transform.transform", "name": "offset_y", "frame": 23, "value":  777.6 },
-				
-				{ "sequence": "MySequence2_Transform", "name": "translate_start_x", "frame": 45, "value":  21 },
-				{ "sequence": "MySequence2_Transform", "name": "translate_start_x", "frame": 53, "value": 121 },
-				{ "sequence": "MySequence2_Transform", "name": "translate_start_y", "frame": 45, "value":  51 },
-				{ "sequence": "MySequence2_Transform", "name": "translate_start_y", "frame": 53, "value": 191 },
-				{ "sequence": "MySequence2_Transform", "name": "scale_start_x", "frame": 45, "value": 0.1 },
-				{ "sequence": "MySequence2_Transform", "name": "scale_start_x", "frame": 53, "value": 1.2 },
-				{ "sequence": "MySequence2_Transform", "name": "blend_alpha", "frame": 45, "value": 0.2 },
-				{ "sequence": "MySequence2_Transform", "name": "blend_alpha", "frame": 53, "value": 0.9 },
-				
-				{ "sequence": "MySequence2_Transform.transform", "name": "offset_x", "frame": 45, "value": 1017.6 },
-				{ "sequence": "MySequence2_Transform.transform", "name": "offset_x", "frame": 53, "value": 2937.6 },
-				{ "sequence": "MySequence2_Transform.transform", "name": "offset_y", "frame": 45, "value":  777.6 },
-				{ "sequence": "MySequence2_Transform.transform", "name": "offset_y", "frame": 53, "value": 1782.0 }
-				
-			]
+			}
 		},
 		{	"name": "test TRANSITION with color create transition with mirror_vertical_out_effect",
 			"super_effect": {
@@ -977,73 +869,36 @@
 						{ "name": "MySequence2" }
 					]
 				],
-				"sequences_keyframe_insert": [
-					[	
-						[ "translate_start_x", { "index": -1, "frame": 15 } ],
-						[ "translate_start_x", { "index": -1, "frame": 23 } ],
-						[ "translate_start_y", { "index": -1, "frame": 15 } ],
-						[ "translate_start_y", { "index": -1, "frame": 23 } ],
-						[ "scale_start_x", { "index": -1, "frame": 15 } ],
-						[ "scale_start_x", { "index": -1, "frame": 23 } ],
-						[ "blend_alpha", { "index": -1, "frame": 15 } ],
-						[ "blend_alpha", { "index": -1, "frame": 23 } ]
-					],
-					[	
-						[ "translate_start_x", { "index": -1, "frame": 45 } ],
-						[ "translate_start_x", { "index": -1, "frame": 53 } ],
-						[ "translate_start_y", { "index": -1, "frame": 45 } ],
-						[ "translate_start_y", { "index": -1, "frame": 53 } ],
-						[ "scale_start_x", { "index": -1, "frame": 45 } ],
-						[ "scale_start_x", { "index": -1, "frame": 53 } ],
-						[ "blend_alpha", { "index": -1, "frame": 45 } ],
-						[ "blend_alpha", { "index": -1, "frame": 53 } ]
-					]
-				],
-				"sequences_transform_keyframe_insert": [
-					[
-						[ "offset_x", { "index": -1, "frame": 15 } ],
-						[ "offset_x", { "index": -1, "frame": 23 } ],
-						[ "offset_y", { "index": -1, "frame": 15 } ],
-						[ "offset_y", { "index": -1, "frame": 23 } ]
-					],
-					[
-						[ "offset_x", { "index": -1, "frame": 45 } ],
-						[ "offset_x", { "index": -1, "frame": 53 } ],
-						[ "offset_y", { "index": -1, "frame": 45 } ],
-						[ "offset_y", { "index": -1, "frame": 53 } ]
-					]
+				"sequences_keyframe_insert_values": [
+					{ "sequence": "MySequence1_Transform", "name": "translate_start_x", "frame": 15, "value": 121 },
+					{ "sequence": "MySequence1_Transform", "name": "translate_start_x", "frame": 23, "value":  21 },
+					{ "sequence": "MySequence1_Transform", "name": "translate_start_y", "frame": 15, "value": -191 },
+					{ "sequence": "MySequence1_Transform", "name": "translate_start_y", "frame": 23, "value":  -51 },
+					{ "sequence": "MySequence1_Transform", "name": "scale_start_x", "frame": 15, "value": 1.2 },
+					{ "sequence": "MySequence1_Transform", "name": "scale_start_x", "frame": 23, "value": 0.1 },
+					{ "sequence": "MySequence1_Transform", "name": "blend_alpha", "frame": 15, "value": 0.9 },
+					{ "sequence": "MySequence1_Transform", "name": "blend_alpha", "frame": 23, "value": 0.2 },
+					
+					{ "sequence": "MySequence1_Transform.transform", "name": "offset_x", "frame": 15, "value": 2937.6 },
+					{ "sequence": "MySequence1_Transform.transform", "name": "offset_x", "frame": 23, "value": 1017.6 },
+					{ "sequence": "MySequence1_Transform.transform", "name": "offset_y", "frame": 15, "value": -1782.0 },
+					{ "sequence": "MySequence1_Transform.transform", "name": "offset_y", "frame": 23, "value":  -777.6 },
+					
+					{ "sequence": "MySequence2_Transform", "name": "translate_start_x", "frame": 45, "value":  21 },
+					{ "sequence": "MySequence2_Transform", "name": "translate_start_x", "frame": 53, "value": 121 },
+					{ "sequence": "MySequence2_Transform", "name": "translate_start_y", "frame": 45, "value":  51 },
+					{ "sequence": "MySequence2_Transform", "name": "translate_start_y", "frame": 53, "value": 191 },
+					{ "sequence": "MySequence2_Transform", "name": "scale_start_x", "frame": 45, "value": 0.1 },
+					{ "sequence": "MySequence2_Transform", "name": "scale_start_x", "frame": 53, "value": 1.2 },
+					{ "sequence": "MySequence2_Transform", "name": "blend_alpha", "frame": 45, "value": 0.2 },
+					{ "sequence": "MySequence2_Transform", "name": "blend_alpha", "frame": 53, "value": 0.9 },
+					
+					{ "sequence": "MySequence2_Transform.transform", "name": "offset_x", "frame": 45, "value": 1017.6 },
+					{ "sequence": "MySequence2_Transform.transform", "name": "offset_x", "frame": 53, "value": 2937.6 },
+					{ "sequence": "MySequence2_Transform.transform", "name": "offset_y", "frame": 45, "value":  777.6 },
+					{ "sequence": "MySequence2_Transform.transform", "name": "offset_y", "frame": 53, "value": 1782.0 }
 				]
-			},
-			"sequences_keyframe_insert_values": [
-				{ "sequence": "MySequence1_Transform", "name": "translate_start_x", "frame": 15, "value": 121 },
-				{ "sequence": "MySequence1_Transform", "name": "translate_start_x", "frame": 23, "value":  21 },
-				{ "sequence": "MySequence1_Transform", "name": "translate_start_y", "frame": 15, "value": -191 },
-				{ "sequence": "MySequence1_Transform", "name": "translate_start_y", "frame": 23, "value":  -51 },
-				{ "sequence": "MySequence1_Transform", "name": "scale_start_x", "frame": 15, "value": 1.2 },
-				{ "sequence": "MySequence1_Transform", "name": "scale_start_x", "frame": 23, "value": 0.1 },
-				{ "sequence": "MySequence1_Transform", "name": "blend_alpha", "frame": 15, "value": 0.9 },
-				{ "sequence": "MySequence1_Transform", "name": "blend_alpha", "frame": 23, "value": 0.2 },
-				
-				{ "sequence": "MySequence1_Transform.transform", "name": "offset_x", "frame": 15, "value": 2937.6 },
-				{ "sequence": "MySequence1_Transform.transform", "name": "offset_x", "frame": 23, "value": 1017.6 },
-				{ "sequence": "MySequence1_Transform.transform", "name": "offset_y", "frame": 15, "value": -1782.0 },
-				{ "sequence": "MySequence1_Transform.transform", "name": "offset_y", "frame": 23, "value":  -777.6 },
-				
-				{ "sequence": "MySequence2_Transform", "name": "translate_start_x", "frame": 45, "value":  21 },
-				{ "sequence": "MySequence2_Transform", "name": "translate_start_x", "frame": 53, "value": 121 },
-				{ "sequence": "MySequence2_Transform", "name": "translate_start_y", "frame": 45, "value":  51 },
-				{ "sequence": "MySequence2_Transform", "name": "translate_start_y", "frame": 53, "value": 191 },
-				{ "sequence": "MySequence2_Transform", "name": "scale_start_x", "frame": 45, "value": 0.1 },
-				{ "sequence": "MySequence2_Transform", "name": "scale_start_x", "frame": 53, "value": 1.2 },
-				{ "sequence": "MySequence2_Transform", "name": "blend_alpha", "frame": 45, "value": 0.2 },
-				{ "sequence": "MySequence2_Transform", "name": "blend_alpha", "frame": 53, "value": 0.9 },
-				
-				{ "sequence": "MySequence2_Transform.transform", "name": "offset_x", "frame": 45, "value": 1017.6 },
-				{ "sequence": "MySequence2_Transform.transform", "name": "offset_x", "frame": 53, "value": 2937.6 },
-				{ "sequence": "MySequence2_Transform.transform", "name": "offset_y", "frame": 45, "value":  777.6 },
-				{ "sequence": "MySequence2_Transform.transform", "name": "offset_y", "frame": 53, "value": 1782.0 }
-				
-			]
+			}
 		}
 	]
 }
