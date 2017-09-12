@@ -56,7 +56,7 @@ def get_test_data(tests_data, common_data, original_test_data):
 	return (test_name, test_data)
 	
 
-class TestCqtcSuperEffectsFunctional():
+class TestCqtcSuperEffectsFunctional:
 
 	cqtc_super_effects_operator = None
 	super_effect_properties = None

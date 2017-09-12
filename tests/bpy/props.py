@@ -1,4 +1,8 @@
+from abc import ABCMeta
+
 class Property:
+	metaclass__ = ABCMeta
+	
 	def __new__(self,
 		name = None,
 		description = None,
@@ -13,11 +17,20 @@ class Property:
 	):
 		return default
 
-BoolProperty = Property
-EnumProperty = Property
-FloatProperty = Property
-IntProperty = Property
-StringProperty = Property
+class BoolProperty(Property):
+	pass
+
+class EnumProperty(Property):
+	pass
+
+class FloatProperty(Property):
+	pass
+
+class IntProperty(Property):
+	pass
+
+class StringProperty(Property):
+	pass
 
 class FloatVectorProperty(Property):
 	r = 0

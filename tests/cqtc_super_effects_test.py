@@ -1,6 +1,6 @@
 from unittest import mock
 
-class TestCqtcSuperEffects():
+class TestCqtcSuperEffects:
 
 	@mock.patch("bpy.props.IntProperty")
 	@mock.patch("bpy.props.FloatProperty")

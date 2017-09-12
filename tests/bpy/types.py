@@ -1,7 +1,7 @@
-class AnimationDataAction():
+class AnimationDataAction:
 	fcurves = {}
 
-class AnimationData():
+class AnimationData:
 	action = AnimationDataAction()
 
 class Area:
@@ -18,14 +18,14 @@ class Context:
 		self.scene = Scene()
 		self.area = Area()
 
-class FCurve():
+class FCurve:
 	keyframe_points = {}
 
 class Graph:
 	def interpolation_type(self, type):
 		pass
 
-class KeyframePoint():
+class KeyframePoint:
 	select_control_point = True
 
 class Operator:
@@ -56,10 +56,14 @@ class SequenceScene:
 
 	def keyframe_insert(self, property_name, index=-1, frame=0):
 		pass
-	
-class SequenceEditor():
+
+class SequenceEditor:
 	def __init__(self):
 		self.sequences = Sequences()
+
+class SequenceProxy:
+	quality = ""
+	build_25 = False
 
 class SequenceTransform:
 	offset_x = 0
@@ -126,17 +130,26 @@ class Sequence:
 	
 	def keyframe_insert(self, property_name, index=-1, frame=0):
 		pass
-	
-class Sequences():
+
+class Sequencer:
+	def rebuild_proxy(self):
+		pass
+
+class Sequences:
 	def __iter__(self):
 		return iter([])
 
 	def new_effect(name, effect_type, channel, frame_start, frame_end, seq1=None, seq2=None):
 		pass
 
+class ProxyableSequence(Sequence):	
+	def __init__(self, frame_final_start, frame_final_end):
+		super(ProxyableSequence, self).__init__(frame_final_start, frame_final_end)
+		self.proxy = SequenceProxy()
+
 class VolumeSequence(Sequence):
 	volume = 1
-		
+
 class VolumeSceneSequence(Sequence):
 	scene = None
 	
@@ -153,7 +166,7 @@ class VolumeSceneSequence(Sequence):
 			frame_offset_end
 		)
 		self.scene = SequenceScene()
-	
+
 Panel = object
 
 PropertyGroup = object

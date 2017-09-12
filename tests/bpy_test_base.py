@@ -1,7 +1,7 @@
 from abc import ABCMeta
 from unittest import mock
 
-class BpyTestBase():
+class BpyTestBase:
 	metaclass__ = ABCMeta
 	
 	
@@ -22,16 +22,19 @@ class BpyTestBase():
 	
 	def assert_operator_error(self, operator, result, error_msg):
 		assert {"CANCELLED"} == result
-		expected_report_calls = [ mock.call({'ERROR'}, error_msg) ]
+		expected_report_calls = [ mock.call({"ERROR"}, error_msg) ]
 		assert expected_report_calls == operator.report.call_args_list
 	
 	
-	def assert_operator_success(self, operator, result):
+	def assert_operator_success(self, operator, result, expected_info_reports=[]):
 		assert {"FINISHED"} == result
-		expected_report_calls = []
+		expected_report_calls = [ mock.call({"INFO"}, info_msg) for info_msg in expected_info_reports ]
 		assert expected_report_calls == operator.report.call_args_list
 	
 	
 	def mock_panel_layout(self, panel):
-		panel.layout = mock.MagicMock()
-		panel.layout.row.return_value = panel.layout
+		mock_layout = mock.MagicMock()
+		panel.layout = mock_layout
+		panel.layout.column.return_value = mock_layout
+		panel.layout.row.return_value = mock_layout
+		panel.layout.split.return_value = mock_layout
