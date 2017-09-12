@@ -1,7 +1,7 @@
-import bpy.types
 import cqtc_templates
+import cqtc_panel
 
-class SuperEffectPanel(bpy.types.Panel):
+class SuperEffectPanel(cqtc_panel.CqtcPanel):
 	bl_label = "Añadir Super Efectos"
 	bl_idname = "SCENE_PT_super_effect"
 	bl_space_type = "PROPERTIES"
@@ -53,6 +53,9 @@ class SuperEffectPanel(bpy.types.Panel):
 			layout.row().prop(context.scene.super_effect, "mirror_horizontal_out_effect")
 			layout.row().prop(context.scene.super_effect, "mirror_vertical_out_effect")
 			
+		
+		self.draw_selected_sequences_info(layout, context)
+		
 		row = layout.row()
 		split = row.split(percentage=0.66)
 		x_col = split.column(align=True)

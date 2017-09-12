@@ -15,8 +15,7 @@ class NumberedIntroPanel(cqtc_panel.CqtcPanel):
 		row.prop(context.scene.numbered_intro, "next_number")
 		row.prop(context.scene.numbered_intro, "transition_length")
 		
-		selected_sequences_count = len(context.selected_sequences) if context.selected_sequences else 0
-		layout.row().label("%i %s" % (selected_sequences_count, self.translate("selected strips")))
+		self.draw_selected_sequences_info(layout, context)
 		
 		row = layout.row()
 		row.scale_y = 2.0
