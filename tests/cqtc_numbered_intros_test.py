@@ -88,7 +88,7 @@ class TestCqtcTools(BpyTestBase):
 		import bpy.types
 		mock_bpy_context = mock.MagicMock()
 		mock_bpy_context.scene.numbered_intro.next_number = 5
-		mock_bpy_context.selected_sequences = [ bpy.types.Sequence() for x in range(3) ]
+		mock_bpy_context.selected_sequences = [ mock.MagicMock() for x in range(3) ]
 		for seq in mock_bpy_context.selected_sequences:
 			seq.type = "MOVIE"
 		mock_isfile.side_effect = [True, True, False]
@@ -113,27 +113,23 @@ class TestCqtcTools(BpyTestBase):
 		mock_bpy_context = mock.MagicMock()
 		mock_bpy_context.scene.numbered_intro.next_number = 5
 		mock_bpy_context.scene.numbered_intro.transition_length = 34
-		mock_bpy_context.selected_sequences = [ bpy.types.Sequence() for x in range(2) ]
-		for seq in mock_bpy_context.selected_sequences:
-			seq.type = "MOVIE"
-		mock_bpy_context.selected_sequences[0].name = "MySequence2"
-		mock_bpy_context.selected_sequences[0].channel = 2
-		mock_bpy_context.selected_sequences[0].frame_start = 200
-		mock_bpy_context.selected_sequences[0].frame_final_start = 200
-		mock_bpy_context.selected_sequences[0].frame_final_end = 300
-		mock_bpy_context.selected_sequences[1].name = "MySequence1"
-		mock_bpy_context.selected_sequences[1].channel = 2
-		mock_bpy_context.selected_sequences[1].frame_start = 51
-		mock_bpy_context.selected_sequences[1].frame_final_start = 51
-		mock_bpy_context.selected_sequences[1].frame_final_end = 100
-		mock_bpy_context.sequences = [ bpy.types.Sequence() ] + mock_bpy_context.selected_sequences
-		mock_bpy_context.sequences[0].name = "MySequence3"
-		mock_bpy_context.sequences[0].channel = 2
-		mock_bpy_context.sequences[0].frame_final_start = 10
-		mock_bpy_context.sequences[0].frame_final_end = 21
-		mock_image_seqs = [ bpy.types.Sequence() for x in range(2) ]
+		previous_sequence = bpy.types.Sequence(10, 21)
+		previous_sequence.name = "MySequence3"
+		previous_sequence.type = "MOVIE"
+		previous_sequence.channel = 2
+		first_sequence = bpy.types.Sequence(51, 100)
+		first_sequence.name = "MySequence1"
+		first_sequence.type = "MOVIE"
+		first_sequence.channel = 2
+		second_sequence = bpy.types.Sequence(200, 300)
+		second_sequence.name = "MySequence2"
+		second_sequence.type = "MOVIE"
+		second_sequence.channel = 2
+		mock_bpy_context.selected_sequences = [ second_sequence, first_sequence ]
+		mock_bpy_context.sequences = [ previous_sequence ] + mock_bpy_context.selected_sequences
+		mock_image_seqs = [ bpy.types.Sequence(0, 0) for x in range(2) ]
 		mock_bpy_context.scene.sequence_editor.sequences.new_image.side_effect = mock_image_seqs
-		mock_effect_seqs = [ bpy.types.Sequence() for x in range(4) ]
+		mock_effect_seqs = [ bpy.types.Sequence(0, 0) for x in range(4) ]
 		mock_bpy_context.scene.sequence_editor.sequences.new_effect.side_effect = mock_effect_seqs
 		mock_isfile.return_value = True
 		import cqtc_numbered_intros.create_numbered_intro_operator
@@ -147,25 +143,27 @@ class TestCqtcTools(BpyTestBase):
 		
 		
 		self.assert_operator_success(operator, result)
-		expeceted_new_image_calls = [
-			mock.call("TF Imagen 5", "FOO\\TF 05.jpg", 2, 38),
-			mock.call("TF Imagen 6", "FOO\\TF 06.jpg", 2, 117)
-		]
-		assert expeceted_new_image_calls == mock_bpy_context.scene.sequence_editor.sequences.new_image.call_args_list
-		assert 138 == mock_bpy_context.selected_sequences[0].frame_start
-		assert 55 == mock_bpy_context.selected_sequences[1].frame_start
-		assert 51 == mock_image_seqs[0].frame_final_end
-		assert 200 == mock_image_seqs[1].frame_final_end
 		expeceted_new_effect_calls = [
-			mock.call("TF Negro 5", "COLOR", 2, 21, frame_end=22),
-			mock.call("TF Transición 5", "WIPE", 2, 21, frame_end=38, seq1=mock_effect_seqs[0], seq2=mock_image_seqs[0]),
-			mock.call("TF Negro 6", "COLOR", 2, 100, frame_end=101),
-			mock.call("TF Transición 6", "WIPE", 2, 100, frame_end=117, seq1=mock_effect_seqs[2], seq2=mock_image_seqs[1])
+			mock.call("TF Negro 5",     "COLOR", 2,  21, frame_end= 22),
+			mock.call("TF Transición 5", "WIPE", 2,  21, frame_end= 38, seq1=mock_effect_seqs[0], seq2=mock_image_seqs[0]),
+			mock.call("TF Negro 6",     "COLOR", 2, 104, frame_end=105),
+			mock.call("TF Transición 6", "WIPE", 2, 104, frame_end=121, seq1=mock_effect_seqs[2], seq2=mock_image_seqs[1])
 		]
 		assert expeceted_new_effect_calls == mock_bpy_context.scene.sequence_editor.sequences.new_effect.call_args_list
-		assert (0,0,0) == mock_effect_seqs[0].color
-		assert "CLOCK" == mock_effect_seqs[1].transition_type
-		assert "IN" == mock_effect_seqs[1].direction
-		assert (0,0,0) == mock_effect_seqs[2].color
-		assert "CLOCK" == mock_effect_seqs[3].transition_type
-		assert "IN" == mock_effect_seqs[3].direction
+		for i in range(0,4,2):
+			assert (0,0,0) == mock_effect_seqs[i].color
+			assert "CLOCK" == mock_effect_seqs[i+1].transition_type
+			assert "IN" == mock_effect_seqs[i+1].direction
+		expected_image_frames = [
+			{ "start": 38, "end": 55 },
+			{ "start": 121, "end": 138 },
+		]
+		expected_new_image_calls = [
+			mock.call("TF Imagen 5", "FOO\\TF 05.jpg", 2, expected_image_frames[0]["start"]),
+			mock.call("TF Imagen 6", "FOO\\TF 06.jpg", 2, expected_image_frames[1]["start"])
+		]
+		assert expected_new_image_calls == mock_bpy_context.scene.sequence_editor.sequences.new_image.call_args_list
+		assert expected_image_frames[0]["end"] == mock_image_seqs[0].frame_final_end
+		assert expected_image_frames[1]["end"] == mock_image_seqs[1].frame_final_end
+		assert expected_image_frames[0]["end"] == first_sequence.frame_start
+		assert expected_image_frames[1]["end"] == second_sequence.frame_start

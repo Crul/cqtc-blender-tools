@@ -16,10 +16,12 @@ class SetProxyConfigOperator(CqtcOperator):
 			sequence.proxy.quality = context.scene.cqtc_tools_proxy.jpeg_quality
 			sequence.proxy.build_25 = True
 		
+		sequence_operation = "modificadas"
 		if context.scene.cqtc_tools_proxy.rebuild:
 			bpy.ops.sequencer.rebuild_proxy()
-		
-		self.report({"INFO"}, "%i strips reconstruidas" % len(proxyable_sequences))
+			sequence_operation  = "reconstruidas"
+			
+		self.report({"INFO"}, "%i strips %s" % (len(proxyable_sequences), sequence_operation))
 		
 		return {"FINISHED"}
 	

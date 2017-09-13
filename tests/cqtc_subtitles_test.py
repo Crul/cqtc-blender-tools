@@ -1,6 +1,6 @@
 from unittest import mock
 
-class TestCqtcSubtitles():
+class TestCqtcSubtitles:
 
 	def test_panel(self):
 		from cqtc_subtitles.subtitles_panel import SubtitlesPanel

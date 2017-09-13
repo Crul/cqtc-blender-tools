@@ -1,6 +1,6 @@
-import bpy.types
+import cqtc_panel
 
-class CqtcToolsPanel(bpy.types.Panel):
+class CqtcToolsPanel(cqtc_panel.CqtcPanel):
 	bl_label = "Herramientas"
 	bl_idname = "SCENE_PT_cqtc_tools"
 	bl_space_type = "PROPERTIES"
@@ -10,8 +10,7 @@ class CqtcToolsPanel(bpy.types.Panel):
 	def draw(self, context):
 		layout = self.layout
 		
-		selected_sequences_count = len(context.selected_sequences) if context.selected_sequences else 0
-		layout.row().label("%i tiras seleccionadas" % selected_sequences_count)
+		self.draw_selected_sequences_info(layout, context)
 		
 		split = layout.split()
 		
