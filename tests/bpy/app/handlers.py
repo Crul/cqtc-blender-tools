@@ -1,0 +1,2 @@
+def persistent(func):
+	pass
