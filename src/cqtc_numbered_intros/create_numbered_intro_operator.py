@@ -25,12 +25,12 @@ class CreateNumberedIntroOperator(CqtcOperator):
 		
 			channel = numerable_seq.channel
 			last_frame_until_numerable_seq = -1
-			for sequence in context.sequences:
-				if sequence.channel == channel \
-				 and sequence.name != numerable_seq.name \
-				 and sequence.frame_final_start <= numerable_seq.frame_final_start \
-				 and last_frame_until_numerable_seq < sequence.frame_final_end <= numerable_seq.frame_final_start:
-					last_frame_until_numerable_seq = sequence.frame_final_end
+			for any_sequence in context.sequences:
+				if (
+					any_sequence.frame_final_start <= numerable_seq.frame_final_start \
+					and last_frame_until_numerable_seq < any_sequence.frame_final_end <= numerable_seq.frame_final_start
+				):
+					last_frame_until_numerable_seq = any_sequence.frame_final_end
 			
 			if numerable_seq.frame_final_start == last_frame_until_numerable_seq:
 				continue
@@ -40,13 +40,14 @@ class CreateNumberedIntroOperator(CqtcOperator):
 			if adjustment != 0:
 				move_to_right = (adjustment > 0)
 				
-				sequences_to_move = [ seq for seq in context.sequences \
-					if seq.frame_final_start >= numerable_seq.frame_final_start and seq.type in ["MOVIE", "SOUND", "IMAGE"] ]
-				
+				sequences_to_move = [ seq for seq in context.sequences if seq.frame_final_start >= numerable_seq.frame_final_start ]
 				sequences_to_move = sorted(sequences_to_move, key=attrgetter("frame_final_end"), reverse=move_to_right)
 				
 				for sequence in sequences_to_move:
-					sequence.frame_start += adjustment
+					try:
+						sequence.frame_start += adjustment
+					except AttributeError as ae:
+						pass
 			
 			start_frame = last_frame_until_numerable_seq
 			transition_end_frame = start_frame + int(transition_length/2)
