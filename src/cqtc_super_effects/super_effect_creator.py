@@ -272,21 +272,28 @@ class SuperEffectCreator():
 	
 	
 	def __add_speed_strip(self, context, sequence):
-		if sequence.type not in ["MOVIE","SCENE","TRANSFORM","GAUSSIAN_BLUR","META"]:
-			return sequence
-		
 		is_speed_required = (context.scene.super_effect.speed_factor != 1)
 		if not is_speed_required:
 			return sequence
 	
-		original_sequence = sequence
-		(sequence, sequence_to_return) = self.__create_or_get_existing_effect_strip(sequence, context, "SPEED", "_Speed")
-		sequence.use_default_fade = False
-		sequence.speed_factor = context.scene.super_effect.speed_factor
-		
-		sequence_new_length = (original_sequence.frame_final_duration / sequence.speed_factor)
-		original_sequence.frame_final_end = (original_sequence.frame_final_start + sequence_new_length)
-		
+		speed_factor = context.scene.super_effect.speed_factor
+		sequence_to_return = sequence
+		if sequence.type in ["MOVIE","SCENE","TRANSFORM","GAUSSIAN_BLUR","META"]:
+			original_sequence = sequence
+			(sequence, sequence_to_return) = self.__create_or_get_existing_effect_strip(sequence, context, "SPEED", "_Speed")
+			sequence.use_default_fade = False
+			sequence.speed_factor = speed_factor
+			
+			if speed_factor > 0:
+				sequence_new_length = (original_sequence.frame_final_duration / speed_factor)
+				original_sequence.frame_final_end = (original_sequence.frame_final_start + sequence_new_length)
+			
+		elif sequence.type == "SOUND":
+			sequence.pitch = speed_factor
+			if speed_factor > 0:
+				sequence_new_length = (sequence.frame_final_duration / speed_factor)
+				sequence.frame_final_end = (sequence.frame_final_start + sequence_new_length)
+			
 		return sequence_to_return
 	
 	
