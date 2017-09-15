@@ -3,7 +3,7 @@ from cqtc_operator import CqtcOperator
 import cqtc_bpy
 
 class ChangeStripsChannelOperator(CqtcOperator):
-	bl_idname = "cqtc_tools_channel.change"
+	bl_idname = "cqtc_tools.change_channel"
 	bl_label = "Cambiar canal de las secuencias"
 	up_or_down =  bpy.props.BoolProperty(default=True)
 	

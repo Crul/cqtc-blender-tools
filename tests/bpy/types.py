@@ -170,3 +170,5 @@ class VolumeSceneSequence(Sequence):
 Panel = object
 
 PropertyGroup = object
+
+AddonPreferences = object
