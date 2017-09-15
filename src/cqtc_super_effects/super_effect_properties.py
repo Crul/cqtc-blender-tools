@@ -58,6 +58,7 @@ class SuperEffectProperties(bpy.types.PropertyGroup):
 	add_color_to_transition = bpy.props.BoolProperty(name="Con color", default=True)
 	
 	delay_image = bpy.props.IntProperty(name="Retrasar la imagen (frames)", default=0, min=0, max=500, step=1)
+	speed_factor = bpy.props.FloatProperty(name="Velocidad", default=1, min=0, max=500, step=1)
 		
 	initial_position_x = bpy.props.FloatProperty(name="Posición X Inicial", default=0, min=-1000, max=1000, step=5)
 	position_x_animated = bpy.props.BoolProperty(name="Animar Posición X", default=False)
@@ -175,6 +176,7 @@ class SuperEffectProperties(bpy.types.PropertyGroup):
 			"color": (self.color.r, self.color.g, self.color.b),
 			"add_color_to_transition": self.add_color_to_transition,
 			"delay_image": self.delay_image,
+			"speed_factor": self.speed_factor,
 			"initial_position_x": self.initial_position_x,
 			"position_x_animated": self.position_x_animated,
 			"final_position_x": self.final_position_x,
@@ -218,6 +220,7 @@ class SuperEffectProperties(bpy.types.PropertyGroup):
 		self.color.g = tmpl["color"][1]
 		self.color.b = tmpl["color"][2]
 		self.delay_image = tmpl["delay_image"]
+		self.speed_factor = tmpl["speed_factor"] if ("speed_factor" in tmpl) else 1 # TODO
 		self.add_color_to_transition = tmpl["add_color_to_transition"]
 		self.initial_position_x = tmpl["initial_position_x"]
 		self.position_x_animated = tmpl["position_x_animated"]

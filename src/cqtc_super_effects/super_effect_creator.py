@@ -126,6 +126,8 @@ class SuperEffectCreator():
 	
 	def __create_in_or_out_strip_effect(self, context, effect, is_in, sequence):
 
+		sequence = self.__add_speed_strip(context, sequence)
+
 		delay_image = context.scene.super_effect.delay_image
 		effect_length = context.scene.super_effect.effect_length \
 			if context.scene.super_effect.effect_length_type == "FRAMES" \
@@ -245,6 +247,25 @@ class SuperEffectCreator():
 		
 		if context.scene.super_effect.apply_to_sound:
 			self.__apply_consecutive_sound_transition(seq1_sound, seq2_sound, start_frame, final_frame, half_effect_length)
+	
+	
+	def __add_speed_strip(self, context, sequence):
+		if sequence.type not in ["MOVIE","SCENE","TRANSFORM","GAUSSIAN_BLUR","META"]:
+			return sequence
+		
+		is_speed_required = (context.scene.super_effect.speed_factor != 1)
+		if not is_speed_required:
+			return sequence
+	
+		original_sequence = sequence
+		(sequence, sequence_to_return) = self.__create_or_get_existing_effect_strip(sequence, context, "SPEED", "_Speed")
+		sequence.use_default_fade = False
+		sequence.speed_factor = context.scene.super_effect.speed_factor
+		
+		sequence_new_length = (original_sequence.frame_final_duration / sequence.speed_factor)
+		original_sequence.frame_final_end = (original_sequence.frame_final_start + sequence_new_length)
+		
+		return sequence_to_return
 	
 	
 	def __add_transform_strip(self, context, sequence, start_frame, final_frame, is_in):

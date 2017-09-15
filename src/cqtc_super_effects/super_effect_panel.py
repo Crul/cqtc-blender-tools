@@ -39,6 +39,7 @@ class SuperEffectPanel(cqtc_panel.CqtcPanel):
 			
 			layout.row().prop(context.scene.super_effect, "color")
 			layout.row().prop(context.scene.super_effect, "delay_image")
+			layout.row().prop(context.scene.super_effect, "speed_factor")
 			self.draw_animatable_prop(context, "position_x")
 			self.draw_animatable_prop(context, "position_y")
 			self.draw_animatable_prop(context, "zoom")
