@@ -55,7 +55,6 @@ class SuperEffectProperties(bpy.types.PropertyGroup):
 	overlap_sound = bpy.props.BoolProperty(name="Superponer el sonido", default=False)
 	
 	color = bpy.props.FloatVectorProperty(name="Color", subtype="COLOR", default=(0.0, 0.0, 0.0), min=0.0, max=1.0, description="color picker")
-	add_color_to_transition = bpy.props.BoolProperty(name="Con color", default=True)
 	
 	delay_image = bpy.props.IntProperty(name="Retrasar la imagen (frames)", default=0, min=0, max=500, step=1)
 	speed_factor = bpy.props.FloatProperty(name="Velocidad", default=1, min=0, max=500, step=1)
@@ -175,7 +174,6 @@ class SuperEffectProperties(bpy.types.PropertyGroup):
 			"apply_to_sound": self.apply_to_sound,
 			"overlap_sound": self.overlap_sound,
 			"color": (self.color.r, self.color.g, self.color.b),
-			"add_color_to_transition": self.add_color_to_transition,
 			"delay_image": self.delay_image,
 			"speed_factor": self.speed_factor,
 			"sound_file": self.sound_file,
@@ -224,7 +222,6 @@ class SuperEffectProperties(bpy.types.PropertyGroup):
 		self.delay_image = tmpl["delay_image"]
 		self.speed_factor = tmpl["speed_factor"] if ("speed_factor" in tmpl) else 1 # TODO
 		self.sound_file = tmpl["sound_file"] if ("sound_file" in tmpl) else "" # TODO
-		self.add_color_to_transition = tmpl["add_color_to_transition"]
 		self.initial_position_x = tmpl["initial_position_x"]
 		self.position_x_animated = tmpl["position_x_animated"]
 		self.final_position_x = tmpl["final_position_x"]

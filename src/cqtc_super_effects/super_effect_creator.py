@@ -8,7 +8,7 @@ sound_capable_strip_types = ["COLOR","IMAGE","MOVIE","TRANSFORM","CROSS","GAUSSI
 
 class SuperEffectCreator():
 	
-	def create(self, context, operation_type):
+	def create(self, context, operation_type, add_color_to_transition=False):
 		error = self.__validate_global(context, operation_type)
 		if error:
 			return error
@@ -24,7 +24,7 @@ class SuperEffectCreator():
 					return error
 		
 		if (operation_type == "TRANSITION"):
-			error = self.__create_transition(context)
+			error = self.__create_transition(context, add_color_to_transition)
 			if error:
 				return error
 	
@@ -190,7 +190,7 @@ class SuperEffectCreator():
 			sequence.select = True
 	
 	
-	def __create_transition(self, context):
+	def __create_transition(self, context, add_color_to_transition):
 		error = self.__validate_transition(context)
 		if error:
 			return error
@@ -205,7 +205,7 @@ class SuperEffectCreator():
 		
 		(seq1_sound, seq2_sound) = self.__get_transition_sound_sequences(context, seq1, seq2)
 			
-		if context.scene.super_effect.add_color_to_transition:
+		if add_color_to_transition:
 			return self.__create_transition_with_color(context, seq1, seq2, seq1_sound, seq2_sound)
 			
 		else:

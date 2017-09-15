@@ -17,7 +17,6 @@ def load_templates(template_filename):
 def draw_template_panel(addon_panel, addon_properties, addon_properties_name):
 	layout = addon_panel.layout
 	row = layout.row()
-	row.scale_y = 1.5
 	row.prop(addon_properties, "template_expanded",
 		icon="TRIA_DOWN" if addon_properties.template_expanded else "TRIA_RIGHT",
 		icon_only=False
@@ -32,7 +31,6 @@ def draw_template_panel(addon_panel, addon_properties, addon_properties_name):
 	
 	split_1 = split.column().split(percentage=borrar_btn_width)			
 	split_1.column().operator(addon_properties_name + ".remove_template", text="X")
-	
 	
 	split_2 = split_1.split(percentage=0.25)
 	split_2.column().label("Plantillas")

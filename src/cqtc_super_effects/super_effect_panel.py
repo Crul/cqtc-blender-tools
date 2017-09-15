@@ -12,6 +12,7 @@ class SuperEffectPanel(cqtc_panel.CqtcPanel):
 		layout = self.layout
 		scene = context.scene
 				
+		layout.row().prop(context.scene.super_effect, "template")
 		layout.row().prop(context.scene.super_effect, "effect_type")
 		
 		split = layout.split(percentage=0.25)
@@ -64,24 +65,29 @@ class SuperEffectPanel(cqtc_panel.CqtcPanel):
 		col = x_col.row(align=True)
 		col.scale_y = 1.5
 		
-		create_in_operator = col.operator("super_effect.create", text="< Entrada")
+		create_in_operator = col.operator("super_effect.create", text="Entrada", icon="FORWARD")
 		create_in_operator.operation_type = "IN"
 		
-		create_out_operator = col.operator("super_effect.create", text="Salida >")
+		create_out_operator = col.operator("super_effect.create", text="Salida", icon="BACK")
 		create_out_operator.operation_type = "OUT"
 		
 		row = x_col.row(align=True)
 		row.scale_y = 1.5
-		create_ind_and_out_operator = row.operator("super_effect.create", text="< Entrada y Salida >")
+		create_ind_and_out_operator = row.operator("super_effect.create", text="Entrada y Salida", icon="SMOOTHCURVE")
 		create_ind_and_out_operator.operation_type = "IN_OUT"
 		
 		col = split.column(align=True)
-		col.prop(context.scene.super_effect, "add_color_to_transition", toggle=True)
+		row = col.row(align=True)
+		row.scale_y = 1.5
+		create_color_transition_operator = row.operator("super_effect.create", text="Transición SIN color", icon="SEQ_SEQUENCER")
+		create_color_transition_operator.add_color_to_transition = False
+		create_color_transition_operator.operation_type = "TRANSITION"
 		
 		row = col.row(align=True)
-		row.scale_y = 2.0
-		create_out_operator = row.operator("super_effect.create", text=">< Transición")
-		create_out_operator.operation_type = "TRANSITION"
+		row.scale_y = 1.5
+		create_transition_operator = row.operator("super_effect.create", text="Transición CON color", icon="SEQ_SPLITVIEW")
+		create_color_transition_operator.add_color_to_transition = True
+		create_transition_operator.operation_type = "TRANSITION"
 		
 		cqtc_templates.draw_template_panel(self, context.scene.super_effect, "super_effect")
 	
