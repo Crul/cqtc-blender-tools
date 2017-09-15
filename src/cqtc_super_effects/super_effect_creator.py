@@ -122,6 +122,28 @@ class SuperEffectCreator():
 		selected_sequences = context.selected_sequences.copy()			
 		for sequence in selected_sequences:
 			self.__create_in_or_out_strip_effect(context, effect, is_in, sequence)
+			self.__create_in_or_out_strip_sound_effect(context, sequence)
+						
+	
+	def __create_in_or_out_strip_sound_effect(self, context, sequence):
+		sound_file = context.scene.super_effect.sound_file
+		if not sound_file:
+			return
+		
+		if sequence.type not in sound_capable_strip_types:
+			return
+		
+		sound_strip = context.scene.sequence_editor.sequences.new_sound(sequence.name + "_SonidoEfecto", sound_file, -1, sequence.frame_final_start)
+		sound_strip.select = False
+		
+		sound_final_frame = sound_strip.frame_final_end
+		while sound_final_frame < sequence.frame_final_end:
+			sound_strip = context.scene.sequence_editor.sequences.new_sound(sequence.name + "_SonidoEfecto", sound_file, -1, sound_final_frame + 1)					
+			sound_strip.select = False
+			sound_final_frame = sound_strip.frame_final_end
+			
+		if sound_strip.frame_final_end > sequence.frame_final_end:
+			sound_strip.frame_final_end = sequence.frame_final_end
 	
 	
 	def __create_in_or_out_strip_effect(self, context, effect, is_in, sequence):
@@ -416,12 +438,17 @@ class SuperEffectCreator():
 		if is_effect_strip:
 			return sequence, sequence
 		
-		is_effect_strip_child = (("input_1" in dir(sequence))
-			and (sequence.input_1 is not None and sequence.input_1.type == effect_type))
+		is_effect_strip_child =  False
+		tmp_sequence = sequence
+		while "input_1" in dir(tmp_sequence):
+			tmp_sequence = tmp_sequence.input_1
+			is_effect_strip_child = (tmp_sequence is not None and tmp_sequence.type == effect_type)
+			if is_effect_strip_child:
+				break
 		
 		if is_effect_strip_child:
 			sequence_to_return = sequence
-			sequence = sequence.input_1
+			sequence = tmp_sequence
 			
 		else:
 			original_sequence = sequence
