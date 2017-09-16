@@ -1,7 +1,7 @@
 {
 	"common": {
-		"operator": { "operation_type": "TRANSITION" },
-		"super_effect": { "add_color_to_transition": false, "effect_type": "no_effect", "effect_length": 90, "delay_image": 0 },
+		"operator": { "operation_type": "TRANSITION", "add_color_to_transition": false },
+		"super_effect": { "effect_type": "no_effect", "effect_length": 90, "delay_image": 0 },
 		"expected_result": "CANCELLED",
 		"expected_sequences": [],
 		"expected_calls": { "new_effect": null },
@@ -139,7 +139,7 @@
 			]
 		},
 		{	"name": "test TRANSITION with color and sequences overlapped",
-			"super_effect": { "add_color_to_transition": true },
+			"operator": { "add_color_to_transition": true },
 			"sequences": [
 				{ "name": "MySequence1", "type": "MOVIE", "frame_final_start": 12, "frame_final_end": 34 },
 				{ "name": "MySequence2", "type": "MOVIE", "frame_final_start": 23, "frame_final_end": 45 }

@@ -1,8 +1,7 @@
 {
 	"common": {
-		"operator": { "operation_type": "TRANSITION" },
+		"operator": { "operation_type": "TRANSITION", "add_color_to_transition": true },
 		"super_effect": {
-			"add_color_to_transition": true,
 			"effect_length": 16,
 			"delay_image": 0,
 			"apply_to_sound": false,

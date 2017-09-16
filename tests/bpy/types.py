@@ -87,6 +87,7 @@ class Sequence:
 		self.elements = []
 		self.input_1 = None
 		self.channel = 0
+		self.translate_start_x = 0
 		self.frame_final_start = frame_final_start
 		self.frame_final_end = frame_final_end
 		self._frame_start = frame_final_start - frame_offset_start
@@ -172,3 +173,16 @@ Panel = object
 PropertyGroup = object
 
 AddonPreferences = object
+
+class InterpolationType:
+	enum_items = []
+	
+class BlRna():
+	def __init__(self):
+		self.properties = { "type": InterpolationType() }
+
+class GraphOtInterpolationType:
+	def __init__(self):
+		self.bl_rna = BlRna()
+
+GRAPH_OT_interpolation_type = GraphOtInterpolationType()

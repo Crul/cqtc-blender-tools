@@ -23,6 +23,17 @@ test_definitions = [
 	"effects"
 ]
 
+animatable_properties = {
+	"position_x": 0,
+	"position_y": 0,
+	"zoom": 1,
+	"opacity": 1,
+	"offset_x": 0,
+	"offset_y": 0,
+	"blur_x": 0,
+	"blur_y": 0
+}
+
 def load_tests():
 	tests_data = {}
 	for test_definition in test_definitions:
@@ -53,6 +64,45 @@ def get_test_data(tests_data, common_data, original_test_data):
 	test_name = test_data["name"]
 	assert test_name not in tests_data
 	
+	for animatable_property in animatable_properties:
+		animated_prop_name = "%s_animated" % animatable_property
+		initial_value_prop_name = "initial_%s" % animatable_property
+		final_value_prop_name = "final_%s" % animatable_property
+		
+		if initial_value_prop_name in test_data["super_effect"]:
+			initial_value = test_data["super_effect"][initial_value_prop_name]
+			prop_items = []
+			
+			default_animatable_property_value = animatable_properties[animatable_property]
+			is_prop_animated = (animated_prop_name in test_data["super_effect"] and test_data["super_effect"][animated_prop_name])
+			is_prop_enabled = (initial_value != default_animatable_property_value or is_prop_animated)
+			
+			if is_prop_enabled:
+				prop_items.append({
+					"value": initial_value,
+					"position_in_frames": 0,
+					"position_in_percentage": 0,
+					"interpolation_type": "BEZIER"
+				})
+			
+			if is_prop_animated:
+				final_value = test_data["super_effect"][final_value_prop_name]
+				prop_items.append({
+					"value": final_value,
+					"position_in_frames": test_data["super_effect"]["effect_length"],
+					"position_in_percentage": test_data["super_effect"]["effect_length_percentage"] if "effect_length_percentage" in test_data["super_effect"] else 100,
+					"interpolation_type": "BEZIER"
+				})
+			
+		else:
+			is_prop_enabled = False
+			prop_items = []
+	
+		enabled_prop_name = "%s_enabled" % animatable_property
+		test_data["super_effect"][enabled_prop_name] = is_prop_enabled
+		items_prop_name = "%s_items" % animatable_property
+		test_data["super_effect"][items_prop_name] = prop_items
+	
 	return (test_name, test_data)
 	
 
@@ -76,13 +126,12 @@ class TestCqtcSuperEffectsFunctional:
 		"sequences": [ { "name": "MySequence", "type": "MOVIE", "frame_final_start": 33, "frame_final_end": 133 } ]
 	}
 	graph_tests_data = [
-		{ "super_effect": { "initial_position_x": 10, "constant_speed": True } },
-		{ "super_effect": { "initial_position_x": 10, "constant_speed": False } },
-		{ "super_effect": { "initial_blur_x": 10, "constant_speed": True } },
-		{ "super_effect": { "initial_blur_x": 10, "constant_speed": False } }
+		{ "super_effect": { "initial_position_x": 10 } },
+		{ "super_effect": { "initial_position_x": 10 } },
+		{ "super_effect": { "initial_blur_x": 10 } },
+		{ "super_effect": { "initial_blur_x": 10 } }
 	]
 	fake_fcurves = {}
-	selected_keyframe_points_on_interpolation_type_call = []
 	
 	def setup_method(self, method):
 		self.cqtc_super_effects_operator = CreateSuperEffectOperator()
@@ -105,6 +154,18 @@ class TestCqtcSuperEffectsFunctional:
 		mock_selected_sequences.side_effect = self.get_mock_selected_sequences
 		mock_new_effect.side_effect = self.create_mock_effect_sequence
 		self.set_values(self.super_effect_properties, test_data["super_effect"])
+		for animatable_property in animatable_properties:
+			items_prop_name = "%s_items" % animatable_property
+			#items_property = getattr(self.super_effect_properties, items_prop_name)
+			property_items = []
+			for item_data in test_data["super_effect"][items_prop_name]:
+				item = mock.MagicMock()
+				item.value = item_data["value"]
+				item.position_in_frames = item_data["position_in_frames"]
+				item.position_in_percentage = item_data["position_in_percentage"]
+				item.interpolation_type = item_data["interpolation_type"]
+				property_items.append(item)
+			setattr(self.super_effect_properties, items_prop_name, property_items)
 		bpy.context.scene.super_effect = self.super_effect_properties
 		self.set_values(self.cqtc_super_effects_operator, test_data["operator"])
 		
@@ -123,12 +184,8 @@ class TestCqtcSuperEffectsFunctional:
 	
 	@mock.patch("bpy.types.Context.selected_sequences", new_callable=mock.PropertyMock)
 	@mock.patch("bpy.types.Sequences.new_effect")
-	@mock.patch("bpy.types.Scene.animation_data_create")
-	@mock.patch("bpy.types.Graph.interpolation_type")
 	@pytest.mark.parametrize("graph_test_data", graph_tests_data)
 	def test_graph_functional(self,
-						mock_interpolation_type,
-						mock_animation_data_create,
 						mock_new_effect,
 						mock_selected_sequences,
 						graph_test_data
@@ -140,13 +197,11 @@ class TestCqtcSuperEffectsFunctional:
 		for key in graph_test_data:
 			test_data[key].update(graph_test_data[key].copy())
 			
-		mock_interpolation_type.side_effect = self.handle_interpolation_type_call
-		mock_animation_data_create.side_effect = self.create_animation_data
 		mock_new_effect.side_effect = self.create_mock_effect_sequence
 		self.mock_selected_sequences_array = self.create_mock_sequences(test_data)
 		mock_selected_sequences.side_effect = self.get_mock_selected_sequences
 		self.set_values(self.super_effect_properties, test_data["super_effect"])
-		bpy.context.scene.super_effect = self.super_effect_properties
+		bpy.context.scene.super_effect = self.super_effect_properties		
 		self.set_values(self.cqtc_super_effects_operator, test_data["operator"])
 		bpy.context.scene.animation_data = None
 		self.create_fake_fcurves()
@@ -156,22 +211,10 @@ class TestCqtcSuperEffectsFunctional:
 
 				
 		self.cqtc_super_effects_operator.report.assert_not_called()
-		mock_animation_data_create.assert_called_once_with()
-		assert 1 == mock_interpolation_type.call_count
-		call_args, named_call_args = mock_interpolation_type.call_args_list[0]
-		expected_interpolation_type = "LINEAR" if test_data["super_effect"]["constant_speed"] else "BEZIER"
-		assert { "type": expected_interpolation_type } == named_call_args
-		assert () == call_args
-		assert [] == self.selected_keyframe_points_on_interpolation_type_call
 		for fcurve_key in self.fake_fcurves:
 			for kf_point_key in self.fake_fcurves[fcurve_key].keyframe_points:
 				kf_point = self.fake_fcurves[fcurve_key].keyframe_points[kf_point_key]
 				assert True == kf_point.select_control_point
-	
-	
-	def create_animation_data(self):
-		bpy.context.scene.animation_data = bpy.types.AnimationData()
-		bpy.context.scene.animation_data.action.fcurves = self.fake_fcurves
 	
 	
 	def create_fake_fcurves(self):
@@ -183,16 +226,6 @@ class TestCqtcSuperEffectsFunctional:
 				kf_point_idx = "kf_point_%i_%i" % (i, j)
 				self.fake_fcurves[fcurve_idx].keyframe_points[kf_point_idx] = bpy.types.KeyframePoint()
 				self.fake_fcurves[fcurve_idx].keyframe_points[kf_point_idx].select_control_point = True
-			
-	
-	def handle_interpolation_type_call(self, type=None):
-		self.selected_keyframe_points_on_interpolation_type_call = []
-		for fcurve_key in self.fake_fcurves:
-			for kf_point_key in self.fake_fcurves[fcurve_key].keyframe_points:
-				kf_point = self.fake_fcurves[fcurve_key].keyframe_points[kf_point_key]
-				
-				if kf_point.select_control_point:
-					self.selected_keyframe_points_on_interpolation_type_call.append(kf_point_key)
 	
 	
 	def get_mock_selected_sequences(self):

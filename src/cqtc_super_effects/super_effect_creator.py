@@ -15,7 +15,9 @@ class SuperEffectCreator():
 		
 		for sequence in context.selected_sequences.copy():
 			cqtc_bpy.unselect_children(sequence)
-			cqtc_bpy.align_image(context, sequence)
+			image_alignment = context.scene.super_effect.image_alignment
+			image_alignment_margin = context.scene.super_effect.image_alignment_margin
+			cqtc_bpy.align_image(context, sequence, image_alignment, image_alignment_margin)
 		
 		for in_or_out in ["IN", "OUT"]:
 			if (in_or_out in operation_type):
@@ -101,7 +103,8 @@ class SuperEffectCreator():
 			return "Para añadir una transición sin color intermedio las tiras deben solaparse o ser consecutivas"
 			
 		if seq1.frame_final_end == seq2.frame_final_start:
-			return cqtc_bpy.overlap_strips(context, seq1, seq2, seq1_sound, seq2_sound)
+			effect_length = context.scene.super_effect.effect_length
+			return cqtc_bpy.overlap_strips(context, effect_length, seq1, seq2, seq1_sound, seq2_sound)
 	
 	
 	def __validate_transition_with_color(self, seq1, seq2):
@@ -194,7 +197,7 @@ class SuperEffectCreator():
 		error = self.__validate_transition(context)
 		if error:
 			return error
-
+		
 		selected_not_sound_sequences = [s for s in context.selected_sequences if s.type in transitionable_strip_types]
 		strip_tmp_1 = selected_not_sound_sequences[0]
 		strip_tmp_2 = selected_not_sound_sequences[1]
@@ -204,10 +207,10 @@ class SuperEffectCreator():
 		seq2 = strip_tmp_2 if is_seq1_before_seq2 else strip_tmp_1
 		
 		(seq1_sound, seq2_sound) = self.__get_transition_sound_sequences(context, seq1, seq2)
-			
+		
 		if add_color_to_transition:
 			return self.__create_transition_with_color(context, seq1, seq2, seq1_sound, seq2_sound)
-			
+		
 		else:
 			return self.__create_transition_without_color(context, seq1, seq2, seq1_sound, seq2_sound)
 	
@@ -219,7 +222,7 @@ class SuperEffectCreator():
 			
 		start_frame = seq2.frame_final_start
 		final_frame = seq1.frame_final_end
-			
+		
 		seq1 = self.__add_blur_strip(context, seq1, start_frame, final_frame, is_in=False)
 		seq1 = self.__add_transform_strip(context, seq1, start_frame, final_frame, is_in=False)
 		seq2 = self.__add_blur_strip(context, seq2, start_frame, final_frame, is_in=True)
@@ -308,22 +311,34 @@ class SuperEffectCreator():
 		sequence.use_uniform_scale = True
 		sequence.use_translation = True
 		
-		original_offset_x = sequence.transform.offset_x
-		get_offset_x_fn = lambda value : (original_offset_x + (global_scale_x * value / 100))
-		original_offset_y = sequence.transform.offset_y
-		get_offset_y_fn = lambda value : (original_offset_y + (global_scale_y * value / 100))
+		is_small_image = (sequence.type == "IMAGE" 
+			and len(sequence.elements) > 0
+			and (
+				sequence.elements[0].orig_width != context.scene.render.resolution_x
+				or sequence.elements[0].orig_height != context.scene.render.resolution_y
+			)
+		)
+		if is_small_image:
+			# TODO OUT offset_x / offset_y effect on small images
+			base_offset_x = sequence.transform.offset_x
+			base_offset_y = sequence.transform.offset_y
+		else:
+			base_offset_x = 0
+			base_offset_y = 0
+		
+		get_offset_x_fn = lambda value : (base_offset_x + (global_scale_x * value / 100))
+		get_offset_y_fn = lambda value : (base_offset_y + (global_scale_y * value / 100))
 		
 		animatable_properties_info = [
-			(sequence, "translate_start_x", "position_x", {"is_horizontal_mirrorable"}),
-			(sequence, "translate_start_y", "position_y", {"is_vertical_mirrorable"}),
-			(sequence, "scale_start_x", "zoom", {}),
-			(sequence, "blend_alpha", "opacity", {}),
-			(sequence.transform, "offset_x", "offset_x", {"is_horizontal_mirrorable": True, "get_value_fn": get_offset_x_fn }),
-			(sequence.transform, "offset_y", "offset_y", {"is_vertical_mirrorable": True, "get_value_fn": get_offset_y_fn })
+			(sequence, sequence, "translate_start_x", "position_x", {"is_horizontal_mirrorable"}),
+			(sequence, sequence, "translate_start_y", "position_y", {"is_vertical_mirrorable"}),
+			(sequence, sequence, "scale_start_x", "zoom", {}),
+			(sequence, sequence, "blend_alpha", "opacity", {}),
+			(sequence, sequence.transform, "offset_x", "offset_x", {"is_horizontal_mirrorable": True, "get_value_fn": get_offset_x_fn }),
+			(sequence, sequence.transform, "offset_y", "offset_y", {"is_vertical_mirrorable": True, "get_value_fn": get_offset_y_fn })
 		]
 		self.__set_animatable_properties(context, animatable_properties_info, is_in, start_frame, final_frame)
 		
-		cqtc_bpy.set_interpolation_type(context)
 		cqtc_bpy.select_keyframe_points(context, selected_keyframes)
 		
 		return sequence_to_return
@@ -336,11 +351,13 @@ class SuperEffectCreator():
 		
 		selected_keyframes = cqtc_bpy.deselect_selected_keyframe_points(context)
 		(sequence, sequence_to_return) = self.__create_or_get_existing_effect_strip(sequence, context, "GAUSSIAN_BLUR", "_Blur")
-
-		animatable_properties_info = [ (sequence, "size_x", "blur_x", {}), (sequence, "size_y", "blur_y", {}) ]
+		
+		animatable_properties_info = [
+			(sequence, sequence, "size_x", "blur_x", {}),
+			(sequence, sequence, "size_y", "blur_y", {})
+		]
 		self.__set_animatable_properties(context, animatable_properties_info, is_in, start_frame, final_frame)
 		
-		cqtc_bpy.set_interpolation_type(context)
 		cqtc_bpy.select_keyframe_points(context, selected_keyframes)
 		
 		return sequence_to_return
@@ -498,12 +515,13 @@ class SuperEffectCreator():
 			start_frame += delay_image
 			final_frame += delay_image
 		
-		for obj, seq_attr, super_effect_prop, options in animatable_properties_info:
+		for sequence, obj, seq_attr, super_effect_prop, options in animatable_properties_info:
 			is_horizontal_mirrorable = "is_horizontal_mirrorable" in options
 			is_vertical_mirrorable = "is_vertical_mirrorable" in options
 			get_value_fn = options["get_value_fn"] if "get_value_fn" in options else lambda value : value
 			
 			self.__set_animatable_property(context,
+				sequence,
 				obj,
 				seq_attr,
 				super_effect_prop,
@@ -517,39 +535,60 @@ class SuperEffectCreator():
 	
 	def __set_animatable_property(self,
 		context,
+		sequence,
 		obj,
 		seq_attr,
 		super_effect_prop,
 		start_frame,
-		end_frame,
+		final_frame,
 		is_in,
 		is_vertical_mirrorable=False,
 		is_horizontal_mirrorable=False,
 		get_value_fn=lambda value : value
 	):
-		initial_value = get_value_fn(getattr(context.scene.super_effect, "initial_%s" % super_effect_prop))
-		final_value = get_value_fn(getattr(context.scene.super_effect, "final_%s" % super_effect_prop))
-		is_animated_value = getattr(context.scene.super_effect, "%s_animated" % super_effect_prop)
-		
-		setattr(obj, seq_attr, initial_value)		
-		if not is_animated_value:
+		is_property_enabled = getattr(context.scene.super_effect, "%s_enabled" % super_effect_prop)
+		if not is_property_enabled:
 			return
-	
-		is_reversed =  ((not is_in) and context.scene.super_effect.reverse_out_effect)
+		
+		is_in_frames = (context.scene.super_effect.effect_length_type == "FRAMES")
+		is_reversed = ((not is_in) and context.scene.super_effect.reverse_out_effect)
 		is_horizontal_mirrored = (is_horizontal_mirrorable and (not is_in) and context.scene.super_effect.mirror_horizontal_out_effect)
 		is_vertical_mirrored = (is_vertical_mirrorable and(not is_in) and context.scene.super_effect.mirror_vertical_out_effect)
-		
+		is_mirrored = (is_horizontal_mirrored or is_vertical_mirrored)
+				
+		property_items = getattr(context.scene.super_effect, "%s_items" % super_effect_prop)
+		property_items_length = len(property_items)
 		if is_reversed:
-			setattr(obj, seq_attr, final_value)
-
-		if is_horizontal_mirrored or is_vertical_mirrored:
-			setattr(obj, seq_attr, -getattr(obj, seq_attr))
-			
-		obj.keyframe_insert(seq_attr, index=-1, frame=start_frame)
+			property_items = list(reversed(property_items))
 		
-		setattr(obj, seq_attr, final_value if not is_reversed else initial_value)
-		
-		if is_horizontal_mirrored or is_vertical_mirrored:
-			setattr(obj, seq_attr, -getattr(obj, seq_attr))
+		for item_index, property_item in enumerate(property_items):
+			value = get_value_fn(property_item.value)
+			if is_mirrored:
+				value = -value
 			
-		obj.keyframe_insert(seq_attr, index=-1, frame=end_frame)
+			setattr(obj, seq_attr, value)
+			
+			if property_items_length < 2:
+				continue
+						
+			if is_in_frames:
+				position_in_frames = property_item.position_in_frames
+			else:
+				position_in_frames = (sequence.frame_final_duration * property_item.position_in_percentage / 100)
+			
+			if is_in or not is_reversed:
+				position = start_frame + position_in_frames
+				interpolation_type = property_item.interpolation_type
+			else:
+				position = final_frame - position_in_frames
+				interpolation_type = (property_items[item_index+1].interpolation_type if (item_index < property_items_length - 1) else None)
+			
+			obj.keyframe_insert(seq_attr, index=-1, frame=position)
+			
+			if interpolation_type:
+				fcurve_data_path = "sequence_editor.sequences_all[\"%s\"].%s" % (sequence.name, seq_attr)
+				fcurves = [fcurve for fcurve in context.scene.animation_data.action.fcurves if fcurve.data_path == fcurve_data_path]
+				for fcurve in fcurves:
+					keyframe_points = [keyframe_point for keyframe_point in fcurve.keyframe_points if keyframe_point.co[0] == position]
+					for keyframe_point in keyframe_points:
+						keyframe_point.interpolation = interpolation_type

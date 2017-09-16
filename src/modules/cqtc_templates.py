@@ -25,17 +25,17 @@ def draw_template_panel(addon_panel, addon_properties, addon_properties_name):
 	if not addon_properties.template_expanded:
 		return
 	
-	borrar_btn_width = 0.05
+	borrar_btn_width = 0.1
 	
 	split = layout.row().split(percentage=0.80)
 	
 	split_1 = split.column().split(percentage=borrar_btn_width)			
-	split_1.column().operator(addon_properties_name + ".remove_template", text="X")
+	split_1.column().operator(addon_properties_name + ".remove_template", text="", icon="X")
 	
 	split_2 = split_1.split(percentage=0.25)
 	split_2.column().label("Plantillas")
 	split_2.column().prop(addon_properties, "template", text="")
-	split.column().operator(addon_properties_name + ".load_template", text="Cargar")
+	split.column().operator(addon_properties_name + ".load_template", text="Cargar", icon="FILE_REFRESH")
 				
 	split = layout.row().split(percentage=0.80)
 	split_3 = split.column().split(percentage=borrar_btn_width)
@@ -46,12 +46,12 @@ def draw_template_panel(addon_panel, addon_properties, addon_properties_name):
 	
 	split_5 = split_4.split(align=True, percentage=0.90)
 	split_5.column(align=True).prop(addon_properties, "new_template_name", text="")
-	clear_template_name_operator = split_5.column(align=True).operator(addon_properties_name + ".set_template_name", text="X")
+	clear_template_name_operator = split_5.column(align=True).operator(addon_properties_name + ".set_template_name", text="", icon="X")
 	clear_template_name_operator.action = "CLEAR"
-	load_template_name_operator = split_5.column(align=True).operator(addon_properties_name + ".set_template_name", text="↓")
+	load_template_name_operator = split_5.column(align=True).operator(addon_properties_name + ".set_template_name", text="", icon="NLA_PUSHDOWN")
 	load_template_name_operator.action = "LOAD"
 	
-	split.column().operator(addon_properties_name + ".add_template", text="Guardar")
+	split.column().operator(addon_properties_name + ".add_template", text="Guardar", icon="SAVE_COPY")
 	
 	if len([tmpl for tmpl in addon_properties.template_data if tmpl["name"] == addon_properties.new_template_name ]) > 0:
 		split = layout.row().split(percentage=0.30)

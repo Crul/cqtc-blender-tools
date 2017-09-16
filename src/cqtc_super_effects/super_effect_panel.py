@@ -15,47 +15,9 @@ class SuperEffectPanel(cqtc_panel.CqtcPanel):
 		layout.row().prop(context.scene.super_effect, "template")
 		layout.row().prop(context.scene.super_effect, "effect_type")
 		
-		split = layout.split(percentage=0.25)
-		split.column().prop(context.scene.super_effect, "effect_length_type", text="")
-		if context.scene.super_effect.effect_length_type == "FRAMES":
-			split.column().prop(context.scene.super_effect, "effect_length")
-		else:
-			split.column().prop(context.scene.super_effect, "effect_length_percentage")
-		
 		split = layout.row().split()
 		split.prop(context.scene.super_effect, "image_alignment")
 		split.prop(context.scene.super_effect, "image_alignment_margin")
-			
-		row = layout.row()
-		row.scale_y = 1.5
-		row.prop(context.scene.super_effect, "config_expanded",
-			icon="TRIA_DOWN" if context.scene.super_effect.config_expanded else "TRIA_RIGHT",
-			icon_only=False
-		)
-		if context.scene.super_effect.config_expanded:
-			split = layout.row().split()
-			split.prop(context.scene.super_effect, "apply_to_sound")
-			if context.scene.super_effect.apply_to_sound:
-				split.prop(context.scene.super_effect, "overlap_sound")
-			
-			layout.row().prop(context.scene.super_effect, "color")
-			layout.row().prop(context.scene.super_effect, "delay_image")
-			layout.row().prop(context.scene.super_effect, "speed_factor")
-			layout.row().prop(context.scene.super_effect, "sound_file")
-			self.draw_animatable_prop(context, "position_x")
-			self.draw_animatable_prop(context, "position_y")
-			self.draw_animatable_prop(context, "zoom")
-			self.draw_animatable_prop(context, "opacity")			
-			self.draw_animatable_prop(context, "offset_x")
-			self.draw_animatable_prop(context, "offset_y")
-			self.draw_animatable_prop(context, "blur_x")
-			self.draw_animatable_prop(context, "blur_y")
-			
-			layout.row().prop(context.scene.super_effect, "constant_speed")
-			layout.row().prop(context.scene.super_effect, "reverse_out_effect")
-			layout.row().prop(context.scene.super_effect, "mirror_horizontal_out_effect")
-			layout.row().prop(context.scene.super_effect, "mirror_vertical_out_effect")
-			
 		
 		self.draw_selected_sequences_info(layout, context)
 		
@@ -91,17 +53,112 @@ class SuperEffectPanel(cqtc_panel.CqtcPanel):
 		
 		cqtc_templates.draw_template_panel(self, context.scene.super_effect, "super_effect")
 	
+		row = layout.row()
+		row.prop(context.scene.super_effect, "config_expanded",
+			icon="TRIA_DOWN" if context.scene.super_effect.config_expanded else "TRIA_RIGHT",
+			icon_only=False
+		)
+		if context.scene.super_effect.config_expanded:
+			split = layout.split(percentage=0.25)
+			split.column().prop(context.scene.super_effect, "effect_length_type", text="")
+			
+			is_in_frames = (context.scene.super_effect.effect_length_type == "FRAMES")
+			effect_length_propert = "effect_length" if is_in_frames else "effect_length_percentage"
+			split.column().prop(context.scene.super_effect, effect_length_propert)
+			
+			self.draw_animatable_prop(context, is_in_frames, "position_x")
+			self.draw_animatable_prop(context, is_in_frames, "position_y")
+			self.draw_animatable_prop(context, is_in_frames, "zoom")
+			self.draw_animatable_prop(context, is_in_frames, "opacity")			
+			self.draw_animatable_prop(context, is_in_frames, "offset_x")
+			self.draw_animatable_prop(context, is_in_frames, "offset_y")
+			self.draw_animatable_prop(context, is_in_frames, "blur_x")
+			self.draw_animatable_prop(context, is_in_frames, "blur_y")
+			
+			split = layout.row().split()
+			split.prop(context.scene.super_effect, "apply_to_sound")
+			if context.scene.super_effect.apply_to_sound:
+				split.prop(context.scene.super_effect, "overlap_sound")
+			
+			layout.row().prop(context.scene.super_effect, "reverse_out_effect")
+			layout.row().prop(context.scene.super_effect, "mirror_horizontal_out_effect")
+			layout.row().prop(context.scene.super_effect, "mirror_vertical_out_effect")
+			
+			layout.row().prop(context.scene.super_effect, "delay_image")
+			layout.row().prop(context.scene.super_effect, "speed_factor")
+			layout.row().prop(context.scene.super_effect, "sound_file")
+			layout.row().prop(context.scene.super_effect, "color")
 	
-	def draw_animatable_prop(self, context, prop_name):
+	
+	def draw_animatable_prop(self, context, is_in_frames, property_name):
 		layout = self.layout
-		split = layout.split(percentage=0.475)
-		split.column().prop(context.scene.super_effect, "initial_%s" % prop_name)
-		is_animated_prop_name = "%s_animated" % prop_name
 		
-		if getattr(context.scene.super_effect, is_animated_prop_name):
-			split = split.column().split(percentage=0.047619)
-			split.column().prop(context.scene.super_effect, is_animated_prop_name, text="")
-			split.column().prop(context.scene.super_effect, "final_%s" % prop_name)
+		property_enabled_name = "%s_enabled" % property_name
+		if property_enabled_name not in dir(context.scene.super_effect):
+			print("Property '%s' not found" % property_enabled_name)
+			
+		property_items_name = "%s_items" % property_name
+		if property_items_name not in dir(context.scene.super_effect):
+			print("Property '%s' not found" % property_items_name)
+		
+		if not getattr(context.scene.super_effect, property_enabled_name):
+			layout.row().prop(context.scene.super_effect, property_enabled_name)
+			return
+		
+		property_items = getattr(context.scene.super_effect, property_items_name)
+		property_items_length = len(property_items)
+		position_property = "position_in_frames" if is_in_frames else "position_in_percentage"
+		if property_items_length < 2:
+			self.draw_single_item_prop(context, property_name, position_property, property_enabled_name, property_items)
 		else:
-			split.column().prop(context.scene.super_effect, is_animated_prop_name)
+			self.multiple_item_prop(context, property_name, position_property, property_enabled_name, property_items)
 	
+	
+	def draw_single_item_prop(self, context, property_name, position_property, property_enabled_name, property_items):
+		layout = self.layout
+		
+		split = layout.split(percentage=0.25)
+		split.column().prop(context.scene.super_effect, property_enabled_name)
+		
+		if len(property_items):
+			split = split.column().split(0.9)
+			row = split.column().row()
+			row.column().prop(property_items[0], position_property)
+			row.column().prop(property_items[0], "value", text="Valor")
+		
+		row = split.column().row()
+		add_property_operator = row.operator("super_effect.modify_property", text="+")
+		add_property_operator.property_name = property_name
+		add_property_operator.operation = "add"
+	
+	
+	def multiple_item_prop(self, context, property_name, position_property, property_enabled_name, property_items):
+		layout = self.layout
+
+		layout.row().prop(context.scene.super_effect, property_enabled_name)
+		split = layout.split(percentage=0.05)
+		split.column()
+		
+		split = split.column().split(percentage=0.1)
+		left_col = split.column()
+		right_col = split.column()
+		
+		for item_index, item in enumerate(property_items):
+			split = right_col.split(percentage=0.9)
+			prop_col = split.column()
+			prop_split = prop_col.split(percentage=0.8)
+			
+			row = prop_split.column().row()
+			row.column().prop(item, position_property)
+			row.column().prop(item, "value", text="Valor")
+			prop_split.column().prop(item, "interpolation_type", text="")
+			
+			prop_col = split.column()
+			remove_property_operator = left_col.operator("super_effect.modify_property", text="", icon="X")
+			remove_property_operator.property_name = property_name
+			remove_property_operator.operation = "remove"
+			remove_property_operator.index_to_remove = item_index
+		
+		add_property_operator = prop_col.operator("super_effect.modify_property", text="", icon="PLUS")
+		add_property_operator.property_name = property_name
+		add_property_operator.operation = "add"

@@ -13,7 +13,8 @@ class Property:
 		subtype = None,
 		items = None,
 		update = None,
-		precision = None
+		precision = None,
+		type = None
 	):
 		return default
 
@@ -36,3 +37,6 @@ class FloatVectorProperty(Property):
 	r = 0
 	g = 0
 	b = 0
+
+class CollectionProperty(Property):
+	pass

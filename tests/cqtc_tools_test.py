@@ -34,7 +34,7 @@ class TestCqtcTools(BpyTestBase):
 		
 		panel.draw(mock_bpy_context)
 		
-		expected_label_calls = [ mock.call("7 selected strips") ]
+		expected_label_calls = [ mock.call(" 7 selected strips", icon="SEQUENCE") ]
 		assert expected_label_calls == panel.layout.label.call_args_list
 		expected_operator_calls = [
 			mock.call("cqtc_tools.change_channel", text="Subir strips"),

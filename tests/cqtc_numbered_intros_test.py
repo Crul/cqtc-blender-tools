@@ -53,7 +53,7 @@ class TestCqtcTools(BpyTestBase):
 			mock.call(mock_numbered_intro, "transition_length"),
 		]
 		assert expected_row_prop_calls == panel.layout.prop.call_args_list
-		expected_label_calls = [ mock.call("7 selected strips") ]
+		expected_label_calls = [ mock.call(" 7 selected strips", icon="SEQUENCE") ]
 		assert expected_label_calls == panel.layout.label.call_args_list
 		assert 2.0 == panel.layout.scale_y
 		expected_operator_calls = [ mock.call("numbered_intro.create", text="Create Numbered Intros") ]
