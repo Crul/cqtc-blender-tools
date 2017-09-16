@@ -22,22 +22,6 @@ effect_list = [
 	DoubleVerticalSlideCloseEffect("double_vertical_slide_close"),
 ]
 
-interpolation_type_value_by_name = {
-	"CONSTANT": "CONSTANT",
-	"LINEAR": "LINEAR",
-	"BEZIER": "BEZIER",
-	"SINUSOIDAL": "SINE",
-	"QUADRATIC": "QUAD",
-	"CUBIC": "CUBIC",
-	"QUARTIC": "QUART",
-	"QUINTIC": "QUINT",
-	"EXPONENTIAL": "EXPO",
-	"CIRCULAR": "CIRC",
-	"BACK": "BACK",
-	"BOUNCE": "BOUNCE",
-	"ELASTIC": "ELASTIC",
-}
-
 plain_properties = [
 	"name",
 	"effect_type",
@@ -143,7 +127,7 @@ class SuperEffectIntegerPropertyItem(bpy.types.PropertyGroup):
 	
 	value = bpy.props.IntProperty(name="Valor de la propiedad", default=0, min=-10000, max=10000, step=5)
 	
-	interpolation_type_items = [(interpolation_type_value_by_name[opt.name.upper()], opt.name, opt.description, opt.icon, index) for index, opt 
+	interpolation_type_items = [(opt.identifier, opt.name, opt.description, opt.icon, index) for index, opt 
 			in enumerate(bpy.types.GRAPH_OT_interpolation_type.bl_rna.properties['type'].enum_items)]
 			
 	interpolation_type = bpy.props.EnumProperty(
@@ -160,7 +144,7 @@ class SuperEffectPositiveFloatPropertyItem(bpy.types.PropertyGroup):
 	
 	value = bpy.props.FloatProperty(name="Valor de la propiedad", default=1, min=-0, max=100, step=1)
 	
-	interpolation_type_items = [(interpolation_type_value_by_name[opt.name.upper()], opt.name, opt.description, opt.icon, index) for index, opt 
+	interpolation_type_items = [(opt.identifier, opt.name, opt.description, opt.icon, index) for index, opt 
 			in enumerate(bpy.types.GRAPH_OT_interpolation_type.bl_rna.properties['type'].enum_items)]
 			
 	interpolation_type = bpy.props.EnumProperty(
@@ -177,7 +161,7 @@ class SuperEffectFactorPropertyItem(bpy.types.PropertyGroup):
 	
 	value = bpy.props.FloatProperty(name="Valor de la propiedad", default=1, min=-0, max=1, step=0.1, subtype="FACTOR")
 	
-	interpolation_type_items = [(interpolation_type_value_by_name[opt.name.upper()], opt.name, opt.description, opt.icon, index) for index, opt 
+	interpolation_type_items = [(opt.identifier, opt.name, opt.description, opt.icon, index) for index, opt 
 			in enumerate(bpy.types.GRAPH_OT_interpolation_type.bl_rna.properties['type'].enum_items)]
 			
 	interpolation_type = bpy.props.EnumProperty(

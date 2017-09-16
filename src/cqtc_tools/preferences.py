@@ -47,20 +47,14 @@ class CqtcToolsPreferences(bpy.types.AddonPreferences):
 		description="Cambiar tipo de fundido al añadir una strip",
 		default=False
 	)
+	
+	blend_type_items = [(opt.identifier, opt.name, opt.description, opt.icon, opt.value)
+		for opt in bpy.types.Sequence.bl_rna.properties['blend_type'].enum_items]
+	
 	blend_type_for_new_sequences = bpy.props.EnumProperty(
 		name="Tipo de fundidos",
 		description = "Tipo de fundido para nuevas strips",
-		items=[
-			("ALPHA_OVER", "Alpha Over", "Alpha Over"),
-			("ALPHA_UNDER", "Alpha Under", "Alpha Under"),
-			("REPLACE", "Replace", "Replace"),
-			("CROSS", "Cross", "Cross"),
-			("ADD", "Add", "Add"),
-			("SUBTRACT", "Subtract", "Subtract"),
-			("GAMMA_CROSS", "Gamma Cross", "Gamma Cross"),
-			("MULTIPLY", "Multiply", "Multiply"),
-			("OVER_DROP", "Over Drop", "Over Drop"),
-		]
+		items=blend_type_items
 	)
 	
 	def draw(self, context):
