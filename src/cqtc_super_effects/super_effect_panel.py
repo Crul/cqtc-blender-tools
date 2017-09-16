@@ -16,9 +16,15 @@ class SuperEffectPanel(cqtc_panel.CqtcPanel):
 		scene = context.scene
 				
 		layout.row().prop(context.scene.super_effect, "template")
+		
+		split = layout.split(percentage=0.33)
+		split.column().prop(context.scene.super_effect, "effect_length_type", text="")
+		is_in_frames = (context.scene.super_effect.effect_length_type == "FRAMES")
+		effect_length_propert = "effect_length" if is_in_frames else "effect_length_percentage"
+		split.column().prop(context.scene.super_effect, effect_length_propert)
 		layout.row().prop(context.scene.super_effect, "effect_type")
 		
-		split = layout.row().split()
+		split = layout.row().split(percentage=0.66)
 		split.prop(context.scene.super_effect, "image_alignment")
 		split.prop(context.scene.super_effect, "image_alignment_margin")
 		
@@ -55,20 +61,13 @@ class SuperEffectPanel(cqtc_panel.CqtcPanel):
 		create_transition_operator.operation_type = "TRANSITION"
 		
 		cqtc_templates.draw_template_panel(self, context.scene.super_effect, "super_effect")
-	
+		
 		row = layout.row()
 		row.prop(context.scene.super_effect, "config_expanded",
 			icon="TRIA_DOWN" if context.scene.super_effect.config_expanded else "TRIA_RIGHT",
 			icon_only=False
 		)
 		if context.scene.super_effect.config_expanded:
-			split = layout.split(percentage=0.25)
-			split.column().prop(context.scene.super_effect, "effect_length_type", text="")
-			
-			is_in_frames = (context.scene.super_effect.effect_length_type == "FRAMES")
-			effect_length_propert = "effect_length" if is_in_frames else "effect_length_percentage"
-			split.column().prop(context.scene.super_effect, effect_length_propert)
-			
 			self.draw_animatable_prop(context, is_in_frames, "position_x")
 			self.draw_animatable_prop(context, is_in_frames, "position_y")
 			self.draw_animatable_prop(context, is_in_frames, "zoom")
@@ -138,7 +137,7 @@ class SuperEffectPanel(cqtc_panel.CqtcPanel):
 	
 	def multiple_item_prop(self, context, property_name, position_property, property_enabled_name, property_items):
 		layout = self.layout
-
+		
 		layout.row().prop(context.scene.super_effect, property_enabled_name)
 		split = layout.split(percentage=0.05)
 		split.column()

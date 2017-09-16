@@ -55,7 +55,40 @@ animatable_properties = [
 excluded_from_template_properties = ["image_alignment", "image_alignment_margin"]
 
 def get_super_effect_template_options(scene, context):
-	return sorted(context.scene.super_effect.template_options, key=lambda opt: opt[0].lower())
+	default_group = "Otros"
+	default_group_icon = "FORCE_VERTIX"
+	groups_info = [
+		("ES Pantalla partida", "E/S Pantallas partidas", "SPLITSCREEN"),
+		("ES Esquina", "E/S Esquinas", "MOD_ARRAY"),
+		("ES Empujar", "E/S Empujar", "SCREEN_BACK"),
+		("ES ", "E/S Otras Entradas / Salidas", "IPO"),
+		("TR ", "Transiciones", "NLA"),
+		("FI ", "Fijos", "PAUSE"),
+		("JC ", "Juan Carlos", "MOD_PARTICLES"),
+	]
+	options = []
+	group_index = 0
+	for group_info in groups_info:
+		group = group_info[0]
+		group_title = group_info[1]
+		group_icon = group_info[2]
+		group_options = sorted([ opt for opt in context.scene.super_effect.template_options
+			if (opt[0].startswith(group) and opt not in options) ], key=lambda opt: opt[0])
+		
+		if not len(group_options):
+			continue
+		
+		options.append(('', group_title, group_title, group_icon, group_index))
+		options += group_options
+		group_index += 1
+	
+	default_group_options = [ opt for opt in context.scene.super_effect.template_options if opt not in options ]
+	if len(context.scene.super_effect.template_options) != len(default_group_options):
+		options.append(('', default_group, default_group, default_group_icon, group_index))
+	
+	options += default_group_options
+	
+	return options
 
 
 def load_template(self, context):
@@ -122,7 +155,7 @@ def get_property_enabled_callback(property_name):
 
 
 class SuperEffectIntegerPropertyItem(bpy.types.PropertyGroup):
-	position_in_frames = bpy.props.IntProperty(name="Posición", description = "Posición del valor en frames", default=0, min=1, max=10000, step=5)
+	position_in_frames = bpy.props.IntProperty(name="Posición", description = "Posición del valor en frames", default=0, min=0, max=10000, step=5)
 	position_in_percentage = bpy.props.FloatProperty(name="Posición", description = "Posición del valor en porcentaje", default=0, min=0, max=100, step=1, subtype="PERCENTAGE")
 	
 	value = bpy.props.IntProperty(name="Valor de la propiedad", default=0, min=-10000, max=10000, step=5)
@@ -139,7 +172,7 @@ class SuperEffectIntegerPropertyItem(bpy.types.PropertyGroup):
 
 
 class SuperEffectPositiveFloatPropertyItem(bpy.types.PropertyGroup):
-	position_in_frames = bpy.props.IntProperty(name="Posición", description = "Posición del valor en frames", default=0, min=1, max=10000, step=5)
+	position_in_frames = bpy.props.IntProperty(name="Posición", description = "Posición del valor en frames", default=0, min=0, max=10000, step=5)
 	position_in_percentage = bpy.props.FloatProperty(name="Posición", description = "Posición del valor en porcentaje", default=0, min=0, max=100, step=1, subtype="PERCENTAGE")
 	
 	value = bpy.props.FloatProperty(name="Valor de la propiedad", default=1, min=-0, max=100, step=1)
@@ -156,7 +189,7 @@ class SuperEffectPositiveFloatPropertyItem(bpy.types.PropertyGroup):
 
 
 class SuperEffectFactorPropertyItem(bpy.types.PropertyGroup):
-	position_in_frames = bpy.props.IntProperty(name="Posición", description = "Posición del valor en frames", default=0, min=1, max=10000, step=5)
+	position_in_frames = bpy.props.IntProperty(name="Posición", description = "Posición del valor en frames", default=0, min=0, max=10000, step=5)
 	position_in_percentage = bpy.props.FloatProperty(name="Posición", description = "Posición del valor en porcentaje", default=0, min=0, max=100, step=1, subtype="PERCENTAGE")
 	
 	value = bpy.props.FloatProperty(name="Valor de la propiedad", default=1, min=-0, max=1, step=0.1, subtype="FACTOR")
@@ -192,7 +225,7 @@ class SuperEffectProperties(bpy.types.PropertyGroup):
 				("PERCENTAGE", "En Porcentaje", "Duración medida en porcentaje de la tira")
 			]
 		)
-		
+	
 	effect_length = bpy.props.IntProperty(name="Duración del efecto", default=22, min=1, max=10000, step=5)
 	effect_length_percentage = bpy.props.FloatProperty(name="Duración del efecto (%)", default=10, min=1, max=100, step=5, subtype="PERCENTAGE")
 	
@@ -252,7 +285,7 @@ class SuperEffectProperties(bpy.types.PropertyGroup):
 			]
 		)
 	image_alignment_margin = bpy.props.IntProperty(name="Margen para imágenes", default=0, min=-1920, max=1920, step=10)
-		
+	
 	template_expanded = bpy.props.BoolProperty(name="Plantillas", default=True)
 	
 	template = bpy.props.EnumProperty(
@@ -266,7 +299,7 @@ class SuperEffectProperties(bpy.types.PropertyGroup):
 	override_template = bpy.props.BoolProperty(name="Sobreescribir Plantilla", default=False)
 	
 	template_data = templates.load_templates()
-	template_options = [ (tmpl["name"], tmpl["name"], "Plantilla personalizada") for tmpl in template_data ]
+	template_options = [ (tmpl["name"], tmpl["name"], "Plantilla personalizada", "", tmpl_index) for tmpl_index, tmpl in enumerate(template_data) ]
 	
 	def get_effect(self):
 		return [e for e in effect_list if e.effect_key == self.effect_type][0]
@@ -297,7 +330,7 @@ class SuperEffectProperties(bpy.types.PropertyGroup):
 				dict_values[plain_property] = getattr(self, plain_property)
 			except Exception as e: # TODO
 				print(plain_property, e)
-	
+		
 		for animatable_property in animatable_properties:
 			enabled_property_name = "%s_enabled" % animatable_property
 			dict_values[enabled_property_name] = getattr(self, enabled_property_name)
@@ -321,7 +354,7 @@ class SuperEffectProperties(bpy.types.PropertyGroup):
 		for plain_property in plain_properties:
 			if plain_property not in excluded_from_template_properties:
 				setattr(self, plain_property, dict_values[plain_property])
-	
+		
 		self.color.r = dict_values["color"][0]
 		self.color.g = dict_values["color"][1]
 		self.color.b = dict_values["color"][2]
@@ -339,6 +372,5 @@ class SuperEffectProperties(bpy.types.PropertyGroup):
 				item_collection[-1].position_in_frames = item["position_in_frames"]
 				item_collection[-1].position_in_percentage = item["position_in_percentage"]
 				item_collection[-1].interpolation_type = item["interpolation_type"]
-		
 		
 		return self
