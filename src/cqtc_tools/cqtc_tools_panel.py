@@ -7,6 +7,9 @@ class CqtcToolsPanel(cqtc_panel.CqtcPanel):
 	bl_region_type = "WINDOW"
 	bl_context = "render"
 
+	def draw_header(self, context):
+		self.layout.label(" ", icon="PREFERENCES")
+	
 	def draw(self, context):
 		layout = self.layout
 		

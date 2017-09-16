@@ -1,12 +1,15 @@
-import bpy.types
+import cqtc_panel
 import cqtc_templates
 
-class SubtitlesPanel(bpy.types.Panel):
+class SubtitlesPanel(cqtc_panel.CqtcPanel):
 	bl_label = "Añadir Subtítulos"
 	bl_idname = "SCENE_PT_subtitle"
 	bl_space_type = "PROPERTIES"
 	bl_region_type = "WINDOW"
 	bl_context = "render"
+
+	def draw_header(self, context):
+		self.layout.label(" ", icon="SORTALPHA")
 	
 	def draw(self, context):
 		layout = self.layout
@@ -21,7 +24,6 @@ class SubtitlesPanel(bpy.types.Panel):
 		row.operator("subtitle.create")
 		
 		row = layout.row()
-		row.scale_y = 1.5
 		row.prop(context.scene.subtitle, "config_expanded",
 			icon="TRIA_DOWN" if context.scene.subtitle.config_expanded else "TRIA_RIGHT",
 			icon_only=False
@@ -33,7 +35,6 @@ class SubtitlesPanel(bpy.types.Panel):
 			layout.row().prop(context.scene.subtitle, "external_margin")
 			
 			row = layout.row()
-			row.scale_y = 1.5
 			row.prop(context.scene.subtitle, "font_expanded",
 				icon="TRIA_DOWN" if context.scene.subtitle.font_expanded else "TRIA_RIGHT",
 				icon_only=False

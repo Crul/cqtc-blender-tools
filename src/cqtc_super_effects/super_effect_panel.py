@@ -8,6 +8,9 @@ class SuperEffectPanel(cqtc_panel.CqtcPanel):
 	bl_region_type = "WINDOW"
 	bl_context = "render"
 
+	def draw_header(self, context):
+		self.layout.label(" ", icon="PARTICLES")
+	
 	def draw(self, context):
 		layout = self.layout
 		scene = context.scene
@@ -122,13 +125,13 @@ class SuperEffectPanel(cqtc_panel.CqtcPanel):
 		split.column().prop(context.scene.super_effect, property_enabled_name)
 		
 		if len(property_items):
-			split = split.column().split(0.9)
+			split = split.column().split(0.8866)
 			row = split.column().row()
 			row.column().prop(property_items[0], position_property)
 			row.column().prop(property_items[0], "value", text="Valor")
 		
-		row = split.column().row()
-		add_property_operator = row.operator("super_effect.modify_property", text="", icon="PLUS")
+		col = split.column()
+		add_property_operator = col.operator("super_effect.modify_property", text="", icon="PLUS")
 		add_property_operator.property_name = property_name
 		add_property_operator.operation = "add"
 	
