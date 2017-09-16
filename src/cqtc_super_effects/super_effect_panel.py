@@ -72,6 +72,7 @@ class SuperEffectPanel(cqtc_panel.CqtcPanel):
 			self.draw_animatable_prop(context, is_in_frames, "opacity")			
 			self.draw_animatable_prop(context, is_in_frames, "offset_x")
 			self.draw_animatable_prop(context, is_in_frames, "offset_y")
+			self.draw_animatable_prop(context, is_in_frames, "rotation")
 			self.draw_animatable_prop(context, is_in_frames, "blur_x")
 			self.draw_animatable_prop(context, is_in_frames, "blur_y")
 			
@@ -127,7 +128,7 @@ class SuperEffectPanel(cqtc_panel.CqtcPanel):
 			row.column().prop(property_items[0], "value", text="Valor")
 		
 		row = split.column().row()
-		add_property_operator = row.operator("super_effect.modify_property", text="+")
+		add_property_operator = row.operator("super_effect.modify_property", text="", icon="PLUS")
 		add_property_operator.property_name = property_name
 		add_property_operator.operation = "add"
 	

@@ -1,4 +1,5 @@
 import cqtc_bpy
+import math
 
 global_scale_x = 1920
 global_scale_y = int(global_scale_x * (1080/1920))		
@@ -6,6 +7,45 @@ effectable_strip_types = ["COLOR","IMAGE","MOVIE","SCENE","TRANSFORM","CROSS","G
 transitionable_strip_types = ["COLOR","IMAGE","MOVIE","SCENE","TRANSFORM","CROSS","GAUSSIAN_BLUR","SPEED","META"]
 sound_capable_strip_types = ["COLOR","IMAGE","MOVIE","TRANSFORM","CROSS","GAUSSIAN_BLUR","SPEED"]
 
+def get_rotation_values_fn(item, previous):
+	item_value = item.value
+	if abs(item_value) <= 360:
+		return [-item_value]
+	
+	if previous is None:
+		value = (item_value % 360) + (360 if item_value >= 360 else 0)
+		return [-value]
+	
+	previous_value = previous.value
+	
+	current_value = item_value
+	values = []
+	
+	full_increments = (abs(item_value - previous_value) // 360)
+	initial_partial_increment = ((item_value - previous_value) % 360 != 0)
+	
+	is_first_step_bigger_than_360 = abs(previous_value - math.copysign(360, item_value)) > 360
+	remove_one_increment = (not initial_partial_increment)
+	if remove_one_increment:
+		full_increments -= 1
+	
+	if is_first_step_bigger_than_360:
+		full_increments -= 1
+	
+	inc_range = range(full_increments)
+	#print("\n", full_increments, initial_partial_increment, is_first_step_bigger_than_360, list(inc_range))
+	for inc in inc_range:
+		if inc > 0 or (not initial_partial_increment and previous_value != 0 and not is_first_step_bigger_than_360):
+			values.append(0)
+		values.append(-math.copysign(360, item_value))
+	
+	values.append(0)
+	value = math.copysign((item_value % 360) + (360 if abs(item_value % 360) == 0 else 0), item_value)
+	values.append(-value)
+	
+	return values
+
+		
 class SuperEffectCreator():
 	
 	def create(self, context, operation_type, add_color_to_transition=False):
@@ -326,16 +366,17 @@ class SuperEffectCreator():
 			base_offset_x = 0
 			base_offset_y = 0
 		
-		get_offset_x_fn = lambda value : (base_offset_x + (global_scale_x * value / 100))
-		get_offset_y_fn = lambda value : (base_offset_y + (global_scale_y * value / 100))
+		get_offset_x_values_fn = lambda item, previous : [(base_offset_x + (global_scale_x * item.value / 100))]
+		get_offset_y_values_fn = lambda item, previous : [(base_offset_y + (global_scale_y * item.value / 100))]
 		
 		animatable_properties_info = [
 			(sequence, sequence, "translate_start_x", "position_x", {"is_horizontal_mirrorable"}),
 			(sequence, sequence, "translate_start_y", "position_y", {"is_vertical_mirrorable"}),
 			(sequence, sequence, "scale_start_x", "zoom", {}),
 			(sequence, sequence, "blend_alpha", "opacity", {}),
-			(sequence, sequence.transform, "offset_x", "offset_x", {"is_horizontal_mirrorable": True, "get_value_fn": get_offset_x_fn }),
-			(sequence, sequence.transform, "offset_y", "offset_y", {"is_vertical_mirrorable": True, "get_value_fn": get_offset_y_fn })
+			(sequence, sequence.transform, "offset_x", "offset_x", {"is_horizontal_mirrorable": True, "get_values_fn": get_offset_x_values_fn }),
+			(sequence, sequence.transform, "offset_y", "offset_y", {"is_vertical_mirrorable": True, "get_values_fn": get_offset_y_values_fn }),
+			(sequence, sequence, "rotation_start", "rotation", { "get_values_fn": get_rotation_values_fn })
 		]
 		self.__set_animatable_properties(context, animatable_properties_info, is_in, start_frame, final_frame)
 		
@@ -518,7 +559,7 @@ class SuperEffectCreator():
 		for sequence, obj, seq_attr, super_effect_prop, options in animatable_properties_info:
 			is_horizontal_mirrorable = "is_horizontal_mirrorable" in options
 			is_vertical_mirrorable = "is_vertical_mirrorable" in options
-			get_value_fn = options["get_value_fn"] if "get_value_fn" in options else lambda value : value
+			get_values_fn = options["get_values_fn"] if "get_values_fn" in options else lambda item, previous : [item.value]
 			
 			self.__set_animatable_property(context,
 				sequence,
@@ -530,7 +571,7 @@ class SuperEffectCreator():
 				is_in,
 				is_horizontal_mirrorable=is_horizontal_mirrorable,
 				is_vertical_mirrorable=is_vertical_mirrorable,
-				get_value_fn=get_value_fn)
+				get_values_fn=get_values_fn)
 	
 	
 	def __set_animatable_property(self,
@@ -544,7 +585,7 @@ class SuperEffectCreator():
 		is_in,
 		is_vertical_mirrorable=False,
 		is_horizontal_mirrorable=False,
-		get_value_fn=lambda value : value
+		get_values_fn=lambda item, previous : [item.value]
 	):
 		is_property_enabled = getattr(context.scene.super_effect, "%s_enabled" % super_effect_prop)
 		if not is_property_enabled:
@@ -561,14 +602,15 @@ class SuperEffectCreator():
 		if is_reversed:
 			property_items = list(reversed(property_items))
 		
+		previous_item = None
+		previous_position = None
 		for item_index, property_item in enumerate(property_items):
-			value = get_value_fn(property_item.value)
+			values = get_values_fn(property_item, previous_item)
 			if is_mirrored:
-				value = -value
-			
-			setattr(obj, seq_attr, value)
+				values = [-value for value in values]
 			
 			if property_items_length < 2:
+				setattr(obj, seq_attr, values[-1])
 				continue
 						
 			if is_in_frames:
@@ -583,12 +625,43 @@ class SuperEffectCreator():
 				position = final_frame - position_in_frames
 				interpolation_type = (property_items[item_index+1].interpolation_type if (item_index < property_items_length - 1) else None)
 			
+			if len(values) > 1:
+				last_previous_position = previous_position
+				self.__set_keyframe_interpolation_type(context, sequence, seq_attr, last_previous_position, "LINEAR")
+					
+				for value_index, value in enumerate(values[:-1]):
+					if value == 0:
+						extra_value_position = last_previous_position + 1
+					else:
+						total_length = (position - last_previous_position)
+						pending_steps = ((len(values) - (value_index - 1)) // 2)
+						current_step = (total_length // pending_steps) if pending_steps > 0 else total_length
+						
+						extra_value_position = last_previous_position + current_step
+						
+					setattr(obj, seq_attr, value)
+					obj.keyframe_insert(seq_attr, index=-1, frame=extra_value_position)
+					interpolation_type = (previous_item.interpolation_type if (value_index == (len(values) - 2)) else "LINEAR")
+					self.__set_keyframe_interpolation_type(context, sequence, seq_attr, extra_value_position, interpolation_type)
+					
+					last_previous_position = extra_value_position
+			
+			setattr(obj, seq_attr, values[-1])
 			obj.keyframe_insert(seq_attr, index=-1, frame=position)
 			
-			if interpolation_type:
-				fcurve_data_path = "sequence_editor.sequences_all[\"%s\"].%s" % (sequence.name, seq_attr)
-				fcurves = [fcurve for fcurve in context.scene.animation_data.action.fcurves if fcurve.data_path == fcurve_data_path]
-				for fcurve in fcurves:
-					keyframe_points = [keyframe_point for keyframe_point in fcurve.keyframe_points if keyframe_point.co[0] == position]
-					for keyframe_point in keyframe_points:
-						keyframe_point.interpolation = interpolation_type
+			self.__set_keyframe_interpolation_type(context, sequence, seq_attr, position, interpolation_type)
+			
+			previous_item = property_item
+			previous_position = position
+	
+	
+	def __set_keyframe_interpolation_type(self, context, sequence, seq_attr, position, interpolation_type):
+		if not interpolation_type:
+			return
+		
+		fcurve_data_path = "sequence_editor.sequences_all[\"%s\"].%s" % (sequence.name, seq_attr)
+		fcurves = [fcurve for fcurve in context.scene.animation_data.action.fcurves if fcurve.data_path == fcurve_data_path]
+		for fcurve in fcurves:
+			keyframe_points = [keyframe_point for keyframe_point in fcurve.keyframe_points if keyframe_point.co[0] == position]
+			for keyframe_point in keyframe_points:
+				keyframe_point.interpolation = interpolation_type

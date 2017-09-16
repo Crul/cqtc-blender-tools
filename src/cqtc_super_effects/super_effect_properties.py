@@ -64,7 +64,8 @@ animatable_properties = [
 	"offset_x",
 	"offset_y",
 	"blur_x",
-	"blur_y"
+	"blur_y",
+	"rotation"
 ]
 
 excluded_from_template_properties = ["image_alignment", "image_alignment_margin"]
@@ -138,7 +139,7 @@ def get_property_enabled_callback(property_name):
 
 class SuperEffectIntegerPropertyItem(bpy.types.PropertyGroup):
 	position_in_frames = bpy.props.IntProperty(name="Posición", description = "Posición del valor en frames", default=0, min=1, max=10000, step=5)
-	position_in_percentage = bpy.props.FloatProperty(name="Posición", description = "Posición del valor en porcentaje", default=0, min=1, max=100, step=1, subtype="PERCENTAGE")
+	position_in_percentage = bpy.props.FloatProperty(name="Posición", description = "Posición del valor en porcentaje", default=0, min=0, max=100, step=1, subtype="PERCENTAGE")
 	
 	value = bpy.props.IntProperty(name="Valor de la propiedad", default=0, min=-10000, max=10000, step=5)
 	
@@ -155,7 +156,7 @@ class SuperEffectIntegerPropertyItem(bpy.types.PropertyGroup):
 
 class SuperEffectPositiveFloatPropertyItem(bpy.types.PropertyGroup):
 	position_in_frames = bpy.props.IntProperty(name="Posición", description = "Posición del valor en frames", default=0, min=1, max=10000, step=5)
-	position_in_percentage = bpy.props.FloatProperty(name="Posición", description = "Posición del valor en porcentaje", default=0, min=1, max=100, step=1, subtype="PERCENTAGE")
+	position_in_percentage = bpy.props.FloatProperty(name="Posición", description = "Posición del valor en porcentaje", default=0, min=0, max=100, step=1, subtype="PERCENTAGE")
 	
 	value = bpy.props.FloatProperty(name="Valor de la propiedad", default=1, min=-0, max=100, step=1)
 	
@@ -172,7 +173,7 @@ class SuperEffectPositiveFloatPropertyItem(bpy.types.PropertyGroup):
 
 class SuperEffectFactorPropertyItem(bpy.types.PropertyGroup):
 	position_in_frames = bpy.props.IntProperty(name="Posición", description = "Posición del valor en frames", default=0, min=1, max=10000, step=5)
-	position_in_percentage = bpy.props.FloatProperty(name="Posición", description = "Posición del valor en porcentaje", default=0, min=1, max=100, step=1, subtype="PERCENTAGE")
+	position_in_percentage = bpy.props.FloatProperty(name="Posición", description = "Posición del valor en porcentaje", default=0, min=0, max=100, step=1, subtype="PERCENTAGE")
 	
 	value = bpy.props.FloatProperty(name="Valor de la propiedad", default=1, min=-0, max=1, step=0.1, subtype="FACTOR")
 	
@@ -238,6 +239,9 @@ class SuperEffectProperties(bpy.types.PropertyGroup):
 	offset_y_enabled = bpy.props.BoolProperty(name="Activar Offset Y", default=False, update=get_property_enabled_callback("offset_y"))
 	offset_y_items = bpy.props.CollectionProperty(name="Valores Offset Y", type=SuperEffectIntegerPropertyItem)
 	
+	rotation_enabled = bpy.props.BoolProperty(name="Activar Rotación", default=False, update=get_property_enabled_callback("rotation"))
+	rotation_items = bpy.props.CollectionProperty(name="Valores Rotación", type=SuperEffectIntegerPropertyItem)
+	
 	blur_x_enabled = bpy.props.BoolProperty(name="Activar Desenfoque X", default=False, update=get_property_enabled_callback("blur_x"))
 	blur_x_items = bpy.props.CollectionProperty(name="Valores Desenfoque X", type=SuperEffectIntegerPropertyItem)
 	
@@ -293,7 +297,8 @@ class SuperEffectProperties(bpy.types.PropertyGroup):
 			self.zoom_enabled or \
 			self.opacity_enabled or \
 			self.offset_x_enabled or \
-			self.offset_y_enabled)
+			self.offset_y_enabled or \
+			self.rotation_enabled)
 	
 	def is_blur_required(self):
 		return (self.blur_x_enabled or self.blur_y_enabled)
@@ -304,11 +309,14 @@ class SuperEffectProperties(bpy.types.PropertyGroup):
 		}
 		
 		for plain_property in plain_properties:
-			dict_values[plain_property] = getattr(self, plain_property)
+			try:
+				dict_values[plain_property] = getattr(self, plain_property)
+			except Exception as e: # TODO
+				print(plain_property, e)
 	
 		for animatable_property in animatable_properties:
 			enabled_property_name = "%s_enabled" % animatable_property
-			dict[enabled_property_name] = getattr(self, enabled_property_name)
+			dict_values[enabled_property_name] = getattr(self, enabled_property_name)
 			
 			item_dict_array = []
 			items_property_name = "%s_items" % animatable_property
@@ -321,10 +329,10 @@ class SuperEffectProperties(bpy.types.PropertyGroup):
 					"interpolation_type": item.interpolation_type,
 				})
 			
-			dict[items_property_name] = item_dict_array
+			dict_values[items_property_name] = item_dict_array
 		
 		return dict_values
-		
+	
 	def from_dict(self, dict_values):
 		for plain_property in plain_properties:
 			if plain_property not in excluded_from_template_properties:
