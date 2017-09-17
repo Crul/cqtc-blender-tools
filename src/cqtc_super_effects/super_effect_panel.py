@@ -57,7 +57,7 @@ class SuperEffectPanel(cqtc_panel.CqtcPanel):
 		row = col.row(align=True)
 		row.scale_y = 1.5
 		create_transition_operator = row.operator("super_effect.create", text="Transición CON color", icon="SEQ_SPLITVIEW")
-		create_color_transition_operator.add_color_to_transition = True
+		create_transition_operator.add_color_to_transition = True
 		create_transition_operator.operation_type = "TRANSITION"
 		
 		cqtc_templates.draw_template_panel(self, context.scene.super_effect, "super_effect")
