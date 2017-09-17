@@ -3,7 +3,7 @@ import bpy.ops
 tmp_channel = 30
 max_channel = 20
 
-def align_image(context, sequence):
+def align_image(context, sequence, image_alignment, image_alignment_margin):
 	if sequence.type != "IMAGE" or len(sequence.elements) == 0:
 		return
 		
@@ -11,9 +11,6 @@ def align_image(context, sequence):
 	if image_element.orig_width == context.scene.render.resolution_x and image_element.orig_height == context.scene.render.resolution_y:
 		return
 
-	image_alignment = context.scene.super_effect.image_alignment
-	image_alignment_margin = context.scene.super_effect.image_alignment_margin
-	
 	sequence.use_translation = True
 	sequence.blend_type = "ALPHA_OVER"
 	sequence.transform.offset_x = (context.scene.render.resolution_x/2 - image_element.orig_width/2)
@@ -102,8 +99,7 @@ def get_available_channel_in_range(context, channel_range, start_frame, final_fr
 	return None
 
 
-def overlap_strips(context, seq1, seq2, seq1_sound, seq2_sound):
-	effect_length = context.scene.super_effect.effect_length
+def overlap_strips(context, effect_length, seq1, seq2, seq1_sound, seq2_sound):
 	
 	while(seq1.type in ["TRANSFORM","CROSS","GAUSSIAN_BLUR"]):
 		seq1 = seq1.input_1
@@ -142,26 +138,6 @@ def overlap_strips(context, seq1, seq2, seq1_sound, seq2_sound):
 		seq2_sound.channel = tmp_channel
 		seq2_sound.channel = get_available_channel_in_position(context, seq2.frame_final_start - effect_length, seq2.frame_final_end, seq2_sound_channel)
 		seq2_sound.frame_final_start -= effect_length
-
-
-def set_interpolation_type(context):
-	if context.scene.animation_data.action is None:
-		return
-	
-	old_area_type = context.area.type
-	context.area.type = "GRAPH_EDITOR"
-	context.scene.update()
-
-	try:
-		if context.scene.super_effect.constant_speed:
-			bpy.ops.graph.interpolation_type(type="LINEAR")
-		else:
-			bpy.ops.graph.interpolation_type(type="BEZIER")
-	except: 
-		pass
-		
-	context.area.type = old_area_type
-	context.scene.update()
 
 
 def unselect_children(sequence):

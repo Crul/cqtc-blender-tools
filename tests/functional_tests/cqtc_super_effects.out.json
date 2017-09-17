@@ -83,8 +83,8 @@
 					"blend_alpha": 0.51,
 					"use_translation": true,
 					"transform" : {
-						"offset_x": 1182.2,
-						"offset_y":  787.8
+						"offset_x": 1171.2,
+						"offset_y":  766.8
 					}
 				}
 			]
@@ -133,15 +133,7 @@
 					"blend_type": "ALPHA_OVER",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
-					"translate_start_x": 121,
-					"translate_start_y": 191,
-					"scale_start_x": 1.2,
-					"blend_alpha": 0.9,
-					"transform" : {
-						"offset_x": 2948.6,
-						"offset_y": 1803.0
-					}
+					"frame_final_duration": 100
 				}
 			],
 			"expected_calls": {
@@ -154,10 +146,10 @@
 					{ "sequence": "MySequence", "name": "scale_start_x", "frame": 133, "value": 1.2 },
 					{ "sequence": "MySequence", "name": "blend_alpha", "frame":  83, "value": 0.2 },
 					{ "sequence": "MySequence", "name": "blend_alpha", "frame": 133, "value": 0.9 },
-					{ "sequence": "MySequence.transform", "name": "offset_x", "frame":  83, "value": 1028.6 },
-					{ "sequence": "MySequence.transform", "name": "offset_x", "frame": 133, "value": 2948.6 },
-					{ "sequence": "MySequence.transform", "name": "offset_y", "frame":  83, "value":  798.6 },
-					{ "sequence": "MySequence.transform", "name": "offset_y", "frame": 133, "value": 1803.0 }
+					{ "sequence": "MySequence.transform", "name": "offset_x", "frame":  83, "value": 1017.6 },
+					{ "sequence": "MySequence.transform", "name": "offset_x", "frame": 133, "value": 2937.6 },
+					{ "sequence": "MySequence.transform", "name": "offset_y", "frame":  83, "value":  777.6 },
+					{ "sequence": "MySequence.transform", "name": "offset_y", "frame": 133, "value": 1782.0 }
 				]
 			}
 		},
@@ -888,8 +880,7 @@
 					"blend_type": "ALPHA_OVER",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
-					"translate_start_x": 121
+					"frame_final_duration": 100
 				}
 			],
 			"expected_calls": {
@@ -951,8 +942,8 @@
 					"scale_start_x": 0.1,
 					"blend_alpha": 0.2,
 					"transform" : {
-						"offset_x": 1028.6,
-						"offset_y": 798.6
+						"offset_x": 1017.6,
+						"offset_y":  777.6
 					}
 				}
 			],
@@ -966,10 +957,10 @@
 					{ "sequence": "MySequence", "name": "scale_start_x", "frame": 133, "value": 0.1 },
 					{ "sequence": "MySequence", "name": "blend_alpha", "frame":  83, "value": 0.9 },
 					{ "sequence": "MySequence", "name": "blend_alpha", "frame": 133, "value": 0.2 },
-					{ "sequence": "MySequence.transform", "name": "offset_x", "frame":  83, "value": 2948.6 },
-					{ "sequence": "MySequence.transform", "name": "offset_x", "frame": 133, "value": 1028.6 },
-					{ "sequence": "MySequence.transform", "name": "offset_y", "frame":  83, "value": 1803.0 },
-					{ "sequence": "MySequence.transform", "name": "offset_y", "frame": 133, "value":  798.6 }
+					{ "sequence": "MySequence.transform", "name": "offset_x", "frame":  83, "value": 2937.6 },
+					{ "sequence": "MySequence.transform", "name": "offset_x", "frame": 133, "value": 1017.6 },
+					{ "sequence": "MySequence.transform", "name": "offset_y", "frame":  83, "value": 1782.0 },
+					{ "sequence": "MySequence.transform", "name": "offset_y", "frame": 133, "value":  777.6 }
 				]
 			}
 		},
@@ -1019,15 +1010,7 @@
 					"blend_type": "ALPHA_OVER",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
-					"translate_start_x": -121,
-					"translate_start_y": 191,
-					"scale_start_x": 1.2,
-					"blend_alpha": 0.9,
-					"transform" : {
-						"offset_x": -2948.6,
-						"offset_y": 1803.0
-					}
+					"frame_final_duration": 100
 				}
 			],
 			"expected_calls": {
@@ -1040,10 +1023,10 @@
 					{ "sequence": "MySequence", "name": "scale_start_x", "frame": 133, "value": 1.2 },
 					{ "sequence": "MySequence", "name": "blend_alpha", "frame":  83, "value": 0.2 },
 					{ "sequence": "MySequence", "name": "blend_alpha", "frame": 133, "value": 0.9 },
-					{ "sequence": "MySequence.transform", "name": "offset_x", "frame":  83, "value": -1028.6 },
-					{ "sequence": "MySequence.transform", "name": "offset_x", "frame": 133, "value": -2948.6 },
-					{ "sequence": "MySequence.transform", "name": "offset_y", "frame":  83, "value":   798.6 },
-					{ "sequence": "MySequence.transform", "name": "offset_y", "frame": 133, "value":  1803.0 }
+					{ "sequence": "MySequence.transform", "name": "offset_x", "frame":  83, "value": -1017.6 },
+					{ "sequence": "MySequence.transform", "name": "offset_x", "frame": 133, "value": -2937.6 },
+					{ "sequence": "MySequence.transform", "name": "offset_y", "frame":  83, "value":   777.6 },
+					{ "sequence": "MySequence.transform", "name": "offset_y", "frame": 133, "value":  1782.0 }
 				]
 			}
 		},
@@ -1093,15 +1076,7 @@
 					"blend_type": "ALPHA_OVER",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
-					"translate_start_x": 121,
-					"translate_start_y": -191,
-					"scale_start_x": 1.2,
-					"blend_alpha": 0.9,
-					"transform" : {
-						"offset_x": 2948.6,
-						"offset_y": -1803.0
-					}
+					"frame_final_duration": 100
 				}
 			],
 			"expected_calls": {
@@ -1114,10 +1089,10 @@
 					{ "sequence": "MySequence", "name": "scale_start_x", "frame": 133, "value": 1.2 },
 					{ "sequence": "MySequence", "name": "blend_alpha", "frame":  83, "value": 0.2 },
 					{ "sequence": "MySequence", "name": "blend_alpha", "frame": 133, "value": 0.9 },
-					{ "sequence": "MySequence.transform", "name": "offset_x", "frame":  83, "value":  1028.6 },
-					{ "sequence": "MySequence.transform", "name": "offset_x", "frame": 133, "value":  2948.6 },
-					{ "sequence": "MySequence.transform", "name": "offset_y", "frame":  83, "value":  -798.6 },
-					{ "sequence": "MySequence.transform", "name": "offset_y", "frame": 133, "value": -1803.0 }
+					{ "sequence": "MySequence.transform", "name": "offset_x", "frame":  83, "value":  1017.6 },
+					{ "sequence": "MySequence.transform", "name": "offset_x", "frame": 133, "value":  2937.6 },
+					{ "sequence": "MySequence.transform", "name": "offset_y", "frame":  83, "value":  -777.6 },
+					{ "sequence": "MySequence.transform", "name": "offset_y", "frame": 133, "value": -1782.0 }
 				]
 			}
 		}

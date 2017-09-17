@@ -7,9 +7,15 @@ class AnimationData:
 class Area:
 	type = ""
 
-class Render:
-	resolution_x = 1920
-	resolution_y = 1080
+class BlRna():
+	def __init__(self):
+		self.properties = {
+			"type": BlRnaEnumType(),
+			"blend_type": BlRnaEnumType()
+		}
+
+class BlRnaEnumType:
+	enum_items = []
 
 class Context:
 	selected_sequences = []
@@ -25,12 +31,20 @@ class Graph:
 	def interpolation_type(self, type):
 		pass
 
+class GraphOtInterpolationType:
+	def __init__(self):
+		self.bl_rna = BlRna()
+
 class KeyframePoint:
 	select_control_point = True
 
 class Operator:
 	def report(self, foo1, foo2):
 		pass
+
+class Render:
+	resolution_x = 1920
+	resolution_y = 1080
 
 class Scene:
 	super_effect = None
@@ -74,6 +88,8 @@ class SequenceTransform:
 
 class Sequence:
 	
+	bl_rna = BlRna()
+	
 	def __init__(self,
 		frame_final_start,
 		frame_final_end,
@@ -87,6 +103,7 @@ class Sequence:
 		self.elements = []
 		self.input_1 = None
 		self.channel = 0
+		self.translate_start_x = 0
 		self.frame_final_start = frame_final_start
 		self.frame_final_end = frame_final_end
 		self._frame_start = frame_final_start - frame_offset_start
@@ -172,3 +189,5 @@ Panel = object
 PropertyGroup = object
 
 AddonPreferences = object
+
+GRAPH_OT_interpolation_type = GraphOtInterpolationType()

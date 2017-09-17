@@ -1,8 +1,7 @@
 {
 	"common": {
-		"operator": { "operation_type": "TRANSITION" },
+		"operator": { "operation_type": "TRANSITION", "add_color_to_transition": true },
 		"super_effect": {
-			"add_color_to_transition": true,
 			"effect_type": "no_effect",
 			"effect_length": 16,
 			"delay_image": 0
@@ -305,6 +304,7 @@
 		},
 		{	"name": "test TRANSITION with color create transition with transform animation",
 			"super_effect": {
+				"effect_length": 8,
 				"initial_position_x": 21,
 				"position_x_animated": true,
 				"final_position_x": 121,
@@ -634,6 +634,7 @@
 		},
 		{	"name": "test TRANSITION with color create transition with mirror_horizontal_out_effect",
 			"super_effect": {
+				"effect_length": 8,
 				"mirror_horizontal_out_effect": true,
 				"initial_position_x": 21,
 				"position_x_animated": true,
@@ -768,6 +769,7 @@
 		},
 		{	"name": "test TRANSITION with color create transition with mirror_vertical_out_effect",
 			"super_effect": {
+				"effect_length": 8,
 				"mirror_vertical_out_effect": true,
 				"initial_position_x": 21,
 				"position_x_animated": true,

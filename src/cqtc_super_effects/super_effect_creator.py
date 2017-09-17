@@ -1,21 +1,63 @@
 import cqtc_bpy
+import math
 
 global_scale_x = 1920
 global_scale_y = int(global_scale_x * (1080/1920))		
-effectable_strip_types = ["COLOR","IMAGE","MOVIE","SCENE","TRANSFORM","CROSS","GAUSSIAN_BLUR"]
-transitionable_strip_types = ["COLOR","IMAGE","MOVIE","SCENE","TRANSFORM","CROSS","GAUSSIAN_BLUR"]
-sound_capable_strip_types = ["COLOR","IMAGE","MOVIE","TRANSFORM","CROSS","GAUSSIAN_BLUR"]
+effectable_strip_types = ["COLOR","IMAGE","MOVIE","SCENE","TRANSFORM","CROSS","GAUSSIAN_BLUR","SPEED","META"]
+transitionable_strip_types = ["COLOR","IMAGE","MOVIE","SCENE","TRANSFORM","CROSS","GAUSSIAN_BLUR","SPEED","META"]
+sound_capable_strip_types = ["COLOR","IMAGE","MOVIE","TRANSFORM","CROSS","GAUSSIAN_BLUR","SPEED"]
 
+def get_rotation_values_fn(item, previous):
+	item_value = item.value
+	if abs(item_value) <= 360:
+		return [-item_value]
+	
+	if previous is None:
+		value = (item_value % 360) + (360 if item_value >= 360 else 0)
+		return [-value]
+	
+	previous_value = previous.value
+	
+	current_value = item_value
+	values = []
+	
+	full_increments = (abs(item_value - previous_value) // 360)
+	initial_partial_increment = ((item_value - previous_value) % 360 != 0)
+	
+	is_first_step_bigger_than_360 = abs(previous_value - math.copysign(360, item_value)) > 360
+	remove_one_increment = (not initial_partial_increment)
+	if remove_one_increment:
+		full_increments -= 1
+	
+	if is_first_step_bigger_than_360:
+		full_increments -= 1
+	
+	inc_range = range(full_increments)
+	#print("\n", full_increments, initial_partial_increment, is_first_step_bigger_than_360, list(inc_range))
+	for inc in inc_range:
+		if inc > 0 or (not initial_partial_increment and previous_value != 0 and not is_first_step_bigger_than_360):
+			values.append(0)
+		values.append(-math.copysign(360, item_value))
+	
+	values.append(0)
+	value = math.copysign((item_value % 360) + (360 if abs(item_value % 360) == 0 else 0), item_value)
+	values.append(-value)
+	
+	return values
+
+		
 class SuperEffectCreator():
 	
-	def create(self, context, operation_type):
+	def create(self, context, operation_type, add_color_to_transition=False):
 		error = self.__validate_global(context, operation_type)
 		if error:
 			return error
 		
 		for sequence in context.selected_sequences.copy():
 			cqtc_bpy.unselect_children(sequence)
-			cqtc_bpy.align_image(context, sequence)
+			image_alignment = context.scene.super_effect.image_alignment
+			image_alignment_margin = context.scene.super_effect.image_alignment_margin
+			cqtc_bpy.align_image(context, sequence, image_alignment, image_alignment_margin)
 		
 		for in_or_out in ["IN", "OUT"]:
 			if (in_or_out in operation_type):
@@ -24,7 +66,7 @@ class SuperEffectCreator():
 					return error
 		
 		if (operation_type == "TRANSITION"):
-			error = self.__create_transition(context)
+			error = self.__create_transition(context, add_color_to_transition)
 			if error:
 				return error
 	
@@ -101,7 +143,8 @@ class SuperEffectCreator():
 			return "Para añadir una transición sin color intermedio las tiras deben solaparse o ser consecutivas"
 			
 		if seq1.frame_final_end == seq2.frame_final_start:
-			return cqtc_bpy.overlap_strips(context, seq1, seq2, seq1_sound, seq2_sound)
+			effect_length = context.scene.super_effect.effect_length
+			return cqtc_bpy.overlap_strips(context, effect_length, seq1, seq2, seq1_sound, seq2_sound)
 	
 	
 	def __validate_transition_with_color(self, seq1, seq2):
@@ -122,9 +165,33 @@ class SuperEffectCreator():
 		selected_sequences = context.selected_sequences.copy()			
 		for sequence in selected_sequences:
 			self.__create_in_or_out_strip_effect(context, effect, is_in, sequence)
+			self.__create_in_or_out_strip_sound_effect(context, sequence)
+						
+	
+	def __create_in_or_out_strip_sound_effect(self, context, sequence):
+		sound_file = context.scene.super_effect.sound_file
+		if not sound_file:
+			return
+		
+		if sequence.type not in sound_capable_strip_types:
+			return
+		
+		sound_strip = context.scene.sequence_editor.sequences.new_sound(sequence.name + "_SonidoEfecto", sound_file, -1, sequence.frame_final_start)
+		sound_strip.select = False
+		
+		sound_final_frame = sound_strip.frame_final_end
+		while sound_final_frame < sequence.frame_final_end:
+			sound_strip = context.scene.sequence_editor.sequences.new_sound(sequence.name + "_SonidoEfecto", sound_file, -1, sound_final_frame + 1)					
+			sound_strip.select = False
+			sound_final_frame = sound_strip.frame_final_end
+			
+		if sound_strip.frame_final_end > sequence.frame_final_end:
+			sound_strip.frame_final_end = sequence.frame_final_end
 	
 	
 	def __create_in_or_out_strip_effect(self, context, effect, is_in, sequence):
+
+		sequence = self.__add_speed_strip(context, sequence)
 
 		delay_image = context.scene.super_effect.delay_image
 		effect_length = context.scene.super_effect.effect_length \
@@ -166,11 +233,11 @@ class SuperEffectCreator():
 			sequence.select = True
 	
 	
-	def __create_transition(self, context):
+	def __create_transition(self, context, add_color_to_transition):
 		error = self.__validate_transition(context)
 		if error:
 			return error
-
+		
 		selected_not_sound_sequences = [s for s in context.selected_sequences if s.type in transitionable_strip_types]
 		strip_tmp_1 = selected_not_sound_sequences[0]
 		strip_tmp_2 = selected_not_sound_sequences[1]
@@ -180,10 +247,10 @@ class SuperEffectCreator():
 		seq2 = strip_tmp_2 if is_seq1_before_seq2 else strip_tmp_1
 		
 		(seq1_sound, seq2_sound) = self.__get_transition_sound_sequences(context, seq1, seq2)
-			
-		if context.scene.super_effect.add_color_to_transition:
+		
+		if add_color_to_transition:
 			return self.__create_transition_with_color(context, seq1, seq2, seq1_sound, seq2_sound)
-			
+		
 		else:
 			return self.__create_transition_without_color(context, seq1, seq2, seq1_sound, seq2_sound)
 	
@@ -195,7 +262,7 @@ class SuperEffectCreator():
 			
 		start_frame = seq2.frame_final_start
 		final_frame = seq1.frame_final_end
-			
+		
 		seq1 = self.__add_blur_strip(context, seq1, start_frame, final_frame, is_in=False)
 		seq1 = self.__add_transform_strip(context, seq1, start_frame, final_frame, is_in=False)
 		seq2 = self.__add_blur_strip(context, seq2, start_frame, final_frame, is_in=True)
@@ -247,6 +314,32 @@ class SuperEffectCreator():
 			self.__apply_consecutive_sound_transition(seq1_sound, seq2_sound, start_frame, final_frame, half_effect_length)
 	
 	
+	def __add_speed_strip(self, context, sequence):
+		is_speed_required = (context.scene.super_effect.speed_factor != 1)
+		if not is_speed_required:
+			return sequence
+	
+		speed_factor = context.scene.super_effect.speed_factor
+		sequence_to_return = sequence
+		if sequence.type in ["MOVIE","SCENE","TRANSFORM","GAUSSIAN_BLUR","META"]:
+			original_sequence = sequence
+			(sequence, sequence_to_return) = self.__create_or_get_existing_effect_strip(sequence, context, "SPEED", "_Speed")
+			sequence.use_default_fade = False
+			sequence.speed_factor = speed_factor
+			
+			if speed_factor > 0:
+				sequence_new_length = (original_sequence.frame_final_duration / speed_factor)
+				original_sequence.frame_final_end = (original_sequence.frame_final_start + sequence_new_length)
+			
+		elif sequence.type == "SOUND":
+			sequence.pitch = speed_factor
+			if speed_factor > 0:
+				sequence_new_length = (sequence.frame_final_duration / speed_factor)
+				sequence.frame_final_end = (sequence.frame_final_start + sequence_new_length)
+			
+		return sequence_to_return
+	
+	
 	def __add_transform_strip(self, context, sequence, start_frame, final_frame, is_in):
 		is_transform_required = context.scene.super_effect.is_transform_required()
 		if not is_transform_required:
@@ -258,22 +351,35 @@ class SuperEffectCreator():
 		sequence.use_uniform_scale = True
 		sequence.use_translation = True
 		
-		original_offset_x = sequence.transform.offset_x
-		get_offset_x_fn = lambda value : (original_offset_x + (global_scale_x * value / 100))
-		original_offset_y = sequence.transform.offset_y
-		get_offset_y_fn = lambda value : (original_offset_y + (global_scale_y * value / 100))
+		is_small_image = (sequence.type == "IMAGE" 
+			and len(sequence.elements) > 0
+			and (
+				sequence.elements[0].orig_width != context.scene.render.resolution_x
+				or sequence.elements[0].orig_height != context.scene.render.resolution_y
+			)
+		)
+		if is_small_image:
+			# TODO OUT offset_x / offset_y effect on small images
+			base_offset_x = sequence.transform.offset_x
+			base_offset_y = sequence.transform.offset_y
+		else:
+			base_offset_x = 0
+			base_offset_y = 0
+		
+		get_offset_x_values_fn = lambda item, previous : [(base_offset_x + (global_scale_x * item.value / 100))]
+		get_offset_y_values_fn = lambda item, previous : [(base_offset_y + (global_scale_y * item.value / 100))]
 		
 		animatable_properties_info = [
-			(sequence, "translate_start_x", "position_x", {"is_horizontal_mirrorable"}),
-			(sequence, "translate_start_y", "position_y", {"is_vertical_mirrorable"}),
-			(sequence, "scale_start_x", "zoom", {}),
-			(sequence, "blend_alpha", "opacity", {}),
-			(sequence.transform, "offset_x", "offset_x", {"is_horizontal_mirrorable": True, "get_value_fn": get_offset_x_fn }),
-			(sequence.transform, "offset_y", "offset_y", {"is_vertical_mirrorable": True, "get_value_fn": get_offset_y_fn })
+			(sequence, sequence, "translate_start_x", "position_x", {"is_horizontal_mirrorable"}),
+			(sequence, sequence, "translate_start_y", "position_y", {"is_vertical_mirrorable"}),
+			(sequence, sequence, "scale_start_x", "zoom", {}),
+			(sequence, sequence, "blend_alpha", "opacity", {}),
+			(sequence, sequence.transform, "offset_x", "offset_x", {"is_horizontal_mirrorable": True, "get_values_fn": get_offset_x_values_fn }),
+			(sequence, sequence.transform, "offset_y", "offset_y", {"is_vertical_mirrorable": True, "get_values_fn": get_offset_y_values_fn }),
+			(sequence, sequence, "rotation_start", "rotation", { "get_values_fn": get_rotation_values_fn })
 		]
 		self.__set_animatable_properties(context, animatable_properties_info, is_in, start_frame, final_frame)
 		
-		cqtc_bpy.set_interpolation_type(context)
 		cqtc_bpy.select_keyframe_points(context, selected_keyframes)
 		
 		return sequence_to_return
@@ -286,11 +392,13 @@ class SuperEffectCreator():
 		
 		selected_keyframes = cqtc_bpy.deselect_selected_keyframe_points(context)
 		(sequence, sequence_to_return) = self.__create_or_get_existing_effect_strip(sequence, context, "GAUSSIAN_BLUR", "_Blur")
-
-		animatable_properties_info = [ (sequence, "size_x", "blur_x", {}), (sequence, "size_y", "blur_y", {}) ]
+		
+		animatable_properties_info = [
+			(sequence, sequence, "size_x", "blur_x", {}),
+			(sequence, sequence, "size_y", "blur_y", {})
+		]
 		self.__set_animatable_properties(context, animatable_properties_info, is_in, start_frame, final_frame)
 		
-		cqtc_bpy.set_interpolation_type(context)
 		cqtc_bpy.select_keyframe_points(context, selected_keyframes)
 		
 		return sequence_to_return
@@ -395,12 +503,17 @@ class SuperEffectCreator():
 		if is_effect_strip:
 			return sequence, sequence
 		
-		is_effect_strip_child = (("input_1" in dir(sequence))
-			and (sequence.input_1 is not None and sequence.input_1.type == effect_type))
+		is_effect_strip_child =  False
+		tmp_sequence = sequence
+		while "input_1" in dir(tmp_sequence):
+			tmp_sequence = tmp_sequence.input_1
+			is_effect_strip_child = (tmp_sequence is not None and tmp_sequence.type == effect_type)
+			if is_effect_strip_child:
+				break
 		
 		if is_effect_strip_child:
 			sequence_to_return = sequence
-			sequence = sequence.input_1
+			sequence = tmp_sequence
 			
 		else:
 			original_sequence = sequence
@@ -443,12 +556,13 @@ class SuperEffectCreator():
 			start_frame += delay_image
 			final_frame += delay_image
 		
-		for obj, seq_attr, super_effect_prop, options in animatable_properties_info:
+		for sequence, obj, seq_attr, super_effect_prop, options in animatable_properties_info:
 			is_horizontal_mirrorable = "is_horizontal_mirrorable" in options
 			is_vertical_mirrorable = "is_vertical_mirrorable" in options
-			get_value_fn = options["get_value_fn"] if "get_value_fn" in options else lambda value : value
+			get_values_fn = options["get_values_fn"] if "get_values_fn" in options else lambda item, previous : [item.value]
 			
 			self.__set_animatable_property(context,
+				sequence,
 				obj,
 				seq_attr,
 				super_effect_prop,
@@ -457,44 +571,100 @@ class SuperEffectCreator():
 				is_in,
 				is_horizontal_mirrorable=is_horizontal_mirrorable,
 				is_vertical_mirrorable=is_vertical_mirrorable,
-				get_value_fn=get_value_fn)
+				get_values_fn=get_values_fn)
 	
 	
 	def __set_animatable_property(self,
 		context,
+		sequence,
 		obj,
 		seq_attr,
 		super_effect_prop,
 		start_frame,
-		end_frame,
+		final_frame,
 		is_in,
 		is_vertical_mirrorable=False,
 		is_horizontal_mirrorable=False,
-		get_value_fn=lambda value : value
+		get_values_fn=lambda item, previous : [item.value]
 	):
-		initial_value = get_value_fn(getattr(context.scene.super_effect, "initial_%s" % super_effect_prop))
-		final_value = get_value_fn(getattr(context.scene.super_effect, "final_%s" % super_effect_prop))
-		is_animated_value = getattr(context.scene.super_effect, "%s_animated" % super_effect_prop)
-		
-		setattr(obj, seq_attr, initial_value)		
-		if not is_animated_value:
+		is_property_enabled = getattr(context.scene.super_effect, "%s_enabled" % super_effect_prop)
+		if not is_property_enabled:
 			return
-	
-		is_reversed =  ((not is_in) and context.scene.super_effect.reverse_out_effect)
-		is_horizontal_mirrored = (is_horizontal_mirrorable and (not is_in) and context.scene.super_effect.mirror_horizontal_out_effect)
-		is_vertical_mirrored = (is_vertical_mirrorable and(not is_in) and context.scene.super_effect.mirror_vertical_out_effect)
 		
+		super_effect = context.scene.super_effect
+		is_in_frames = (super_effect.effect_length_type == "FRAMES")
+		is_reversed = ((not is_in) and super_effect.reverse_out_effect)
+		is_horizontal_mirrored = (is_horizontal_mirrorable and (not is_in) and super_effect.mirror_horizontal_out_effect)
+		is_vertical_mirrored = (is_vertical_mirrorable and(not is_in) and super_effect.mirror_vertical_out_effect)
+		is_mirrored = (is_horizontal_mirrored or is_vertical_mirrored)
+				
+		property_items = getattr(super_effect, "%s_items" % super_effect_prop)
+		property_items_length = len(property_items)
 		if is_reversed:
-			setattr(obj, seq_attr, final_value)
-
-		if is_horizontal_mirrored or is_vertical_mirrored:
-			setattr(obj, seq_attr, -getattr(obj, seq_attr))
-			
-		obj.keyframe_insert(seq_attr, index=-1, frame=start_frame)
+			property_items = list(reversed(property_items))
 		
-		setattr(obj, seq_attr, final_value if not is_reversed else initial_value)
-		
-		if is_horizontal_mirrored or is_vertical_mirrored:
-			setattr(obj, seq_attr, -getattr(obj, seq_attr))
+		previous_item = None
+		previous_position = None
+		for item_index, property_item in enumerate(property_items):
+			values = get_values_fn(property_item, previous_item)
+			if is_mirrored:
+				values = [-value for value in values]
 			
-		obj.keyframe_insert(seq_attr, index=-1, frame=end_frame)
+			if property_items_length < 2:
+				setattr(obj, seq_attr, values[-1])
+				continue
+			
+			if is_in_frames:
+				effect_length_in_frames = super_effect.effect_length
+			else:
+				effect_length_in_frames = (sequence.frame_final_duration * super_effect.effect_length_percentage / 100)
+			
+			position_in_frames = int(effect_length_in_frames * property_item.position_in_percentage / 100)
+			
+			if is_in or not is_reversed:
+				position = start_frame + position_in_frames
+				interpolation_type = property_item.interpolation_type
+			else:
+				position = final_frame - position_in_frames
+				interpolation_type = (property_items[item_index+1].interpolation_type if (item_index < property_items_length - 1) else None)
+			
+			if len(values) > 1:
+				last_previous_position = previous_position
+				self.__set_keyframe_interpolation_type(context, sequence, seq_attr, last_previous_position, "LINEAR")
+					
+				for value_index, value in enumerate(values[:-1]):
+					if value == 0:
+						extra_value_position = last_previous_position + 1
+					else:
+						total_length = (position - last_previous_position)
+						pending_steps = ((len(values) - (value_index - 1)) // 2)
+						current_step = (total_length // pending_steps) if pending_steps > 0 else total_length
+						
+						extra_value_position = last_previous_position + current_step
+						
+					setattr(obj, seq_attr, value)
+					obj.keyframe_insert(seq_attr, index=-1, frame=extra_value_position)
+					interpolation_type = (previous_item.interpolation_type if (value_index == (len(values) - 2)) else "LINEAR")
+					self.__set_keyframe_interpolation_type(context, sequence, seq_attr, extra_value_position, interpolation_type)
+					
+					last_previous_position = extra_value_position
+			
+			setattr(obj, seq_attr, values[-1])
+			obj.keyframe_insert(seq_attr, index=-1, frame=position)
+			
+			self.__set_keyframe_interpolation_type(context, sequence, seq_attr, position, interpolation_type)
+			
+			previous_item = property_item
+			previous_position = position
+	
+	
+	def __set_keyframe_interpolation_type(self, context, sequence, seq_attr, position, interpolation_type):
+		if not interpolation_type:
+			return
+		
+		fcurve_data_path = "sequence_editor.sequences_all[\"%s\"].%s" % (sequence.name, seq_attr)
+		fcurves = [fcurve for fcurve in context.scene.animation_data.action.fcurves if fcurve.data_path == fcurve_data_path]
+		for fcurve in fcurves:
+			keyframe_points = [keyframe_point for keyframe_point in fcurve.keyframe_points if keyframe_point.co[0] == position]
+			for keyframe_point in keyframe_points:
+				keyframe_point.interpolation = interpolation_type
