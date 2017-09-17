@@ -630,7 +630,7 @@ class SuperEffectCreator():
 			
 			if len(values) > 1:
 				last_previous_position = previous_position
-				self.__set_keyframe_interpolation_type(context, sequence, seq_attr, last_previous_position, "LINEAR")
+				cqtc_bpy.set_keyframe_interpolation_type(context, sequence, seq_attr, last_previous_position, "LINEAR")
 					
 				for value_index, value in enumerate(values[:-1]):
 					if value == 0:
@@ -645,26 +645,14 @@ class SuperEffectCreator():
 					setattr(obj, seq_attr, value)
 					obj.keyframe_insert(seq_attr, index=-1, frame=extra_value_position)
 					interpolation_type = (previous_item.interpolation_type if (value_index == (len(values) - 2)) else "LINEAR")
-					self.__set_keyframe_interpolation_type(context, sequence, seq_attr, extra_value_position, interpolation_type)
+					cqtc_bpy.set_keyframe_interpolation_type(context, sequence, seq_attr, extra_value_position, interpolation_type)
 					
 					last_previous_position = extra_value_position
 			
 			setattr(obj, seq_attr, values[-1])
 			obj.keyframe_insert(seq_attr, index=-1, frame=position)
 			
-			self.__set_keyframe_interpolation_type(context, sequence, seq_attr, position, interpolation_type)
+			cqtc_bpy.set_keyframe_interpolation_type(context, sequence, seq_attr, position, interpolation_type)
 			
 			previous_item = property_item
 			previous_position = position
-	
-	
-	def __set_keyframe_interpolation_type(self, context, sequence, seq_attr, position, interpolation_type):
-		if not interpolation_type:
-			return
-		
-		fcurve_data_path = "sequence_editor.sequences_all[\"%s\"].%s" % (sequence.name, seq_attr)
-		fcurves = [fcurve for fcurve in context.scene.animation_data.action.fcurves if fcurve.data_path == fcurve_data_path]
-		for fcurve in fcurves:
-			keyframe_points = [keyframe_point for keyframe_point in fcurve.keyframe_points if keyframe_point.co[0] == position]
-			for keyframe_point in keyframe_points:
-				keyframe_point.interpolation = interpolation_type

@@ -140,6 +140,18 @@ def overlap_strips(context, effect_length, seq1, seq2, seq1_sound, seq2_sound):
 		seq2_sound.frame_final_start -= effect_length
 
 
+def set_keyframe_interpolation_type(context, sequence, seq_attr, position, interpolation_type):
+	if not interpolation_type:
+		return
+	
+	fcurve_data_path = "sequence_editor.sequences_all[\"%s\"].%s" % (sequence.name, seq_attr)
+	fcurves = [fcurve for fcurve in context.scene.animation_data.action.fcurves if fcurve.data_path == fcurve_data_path]
+	for fcurve in fcurves:
+		keyframe_points = [keyframe_point for keyframe_point in fcurve.keyframe_points if keyframe_point.co[0] == position]
+		for keyframe_point in keyframe_points:
+			keyframe_point.interpolation = interpolation_type
+
+
 def unselect_children(sequence):
 	if "input_1" not in dir(sequence) or sequence.input_1 is None:
 		return
