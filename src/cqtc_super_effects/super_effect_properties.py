@@ -58,10 +58,10 @@ def get_super_effect_template_options(scene, context):
 	default_group = "Otros"
 	default_group_icon = "FORCE_VERTIX"
 	groups_info = [
-		("ES Pantalla partida", "E/S Pantallas partidas", "SPLITSCREEN"),
-		("ES Esquina", "E/S Esquinas", "MOD_ARRAY"),
-		("ES Empujar", "E/S Empujar", "SCREEN_BACK"),
-		("ES ", "E/S Otras Entradas / Salidas", "IPO"),
+		("ES Pantalla partida ", "E/S Pant. Partida", "SPLITSCREEN"),
+		("ES Esquina ", "E/S Esquinas", "MOD_ARRAY"),
+		("ES Empujar ", "E/S Empujar", "SCREEN_BACK"),
+		("ES ", "E/S Otras", "IPO"),
 		("TR ", "Transiciones", "NLA"),
 		("FI ", "Fijos", "PAUSE"),
 		("JC ", "Juan Carlos", "MOD_PARTICLES"),
@@ -88,7 +88,28 @@ def get_super_effect_template_options(scene, context):
 	
 	options += default_group_options
 	
-	return options
+	clean_options = []
+	last_group_pattern = ''
+	for option in options:
+		clean_option = option
+		is_group = (option[0] == '')
+		if is_group:
+			group_pattern = [group_info[0] for group_info in groups_info if group_info[1] == option[1]]
+			if len(group_pattern):
+				last_group_pattern = group_pattern[0]
+			else:
+				last_group_pattern = ''
+		elif last_group_pattern:
+			clean_name = option[1][len(last_group_pattern):].capitalize()
+			clean_option = (
+				option[0],
+				clean_name[0].upper() + clean_name[1:],
+				option[2]
+			)
+		
+		clean_options.append(clean_option)
+	
+	return clean_options
 
 
 def load_template(self, context):
@@ -294,7 +315,7 @@ class SuperEffectProperties(bpy.types.PropertyGroup):
 	override_template = bpy.props.BoolProperty(name="Sobreescribir Plantilla", default=False)
 	
 	template_data = templates.load_templates()
-	template_options = [ (tmpl["name"], tmpl["name"], "Plantilla personalizada", "", tmpl_index) for tmpl_index, tmpl in enumerate(template_data) ]
+	template_options = [ (tmpl["name"], tmpl["name"], "Plantilla personalizada") for tmpl_index, tmpl in enumerate(template_data) ]
 	
 	def get_effect(self):
 		return [e for e in effect_list if e.effect_key == self.effect_type][0]
