@@ -880,8 +880,7 @@
 					"blend_type": "ALPHA_OVER",
 					"channel": 1,
 					"select": true,
-					"frame_final_duration": 100,
-					"translate_start_x": 121
+					"frame_final_duration": 100
 				}
 			],
 			"expected_calls": {

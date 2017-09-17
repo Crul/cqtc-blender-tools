@@ -591,13 +591,14 @@ class SuperEffectCreator():
 		if not is_property_enabled:
 			return
 		
-		is_in_frames = (context.scene.super_effect.effect_length_type == "FRAMES")
-		is_reversed = ((not is_in) and context.scene.super_effect.reverse_out_effect)
-		is_horizontal_mirrored = (is_horizontal_mirrorable and (not is_in) and context.scene.super_effect.mirror_horizontal_out_effect)
-		is_vertical_mirrored = (is_vertical_mirrorable and(not is_in) and context.scene.super_effect.mirror_vertical_out_effect)
+		super_effect = context.scene.super_effect
+		is_in_frames = (super_effect.effect_length_type == "FRAMES")
+		is_reversed = ((not is_in) and super_effect.reverse_out_effect)
+		is_horizontal_mirrored = (is_horizontal_mirrorable and (not is_in) and super_effect.mirror_horizontal_out_effect)
+		is_vertical_mirrored = (is_vertical_mirrorable and(not is_in) and super_effect.mirror_vertical_out_effect)
 		is_mirrored = (is_horizontal_mirrored or is_vertical_mirrored)
 				
-		property_items = getattr(context.scene.super_effect, "%s_items" % super_effect_prop)
+		property_items = getattr(super_effect, "%s_items" % super_effect_prop)
 		property_items_length = len(property_items)
 		if is_reversed:
 			property_items = list(reversed(property_items))
@@ -612,11 +613,13 @@ class SuperEffectCreator():
 			if property_items_length < 2:
 				setattr(obj, seq_attr, values[-1])
 				continue
-						
+			
 			if is_in_frames:
-				position_in_frames = property_item.position_in_frames
+				effect_length_in_frames = super_effect.effect_length
 			else:
-				position_in_frames = (sequence.frame_final_duration * property_item.position_in_percentage / 100)
+				effect_length_in_frames = (sequence.frame_final_duration * super_effect.effect_length_percentage / 100)
+			
+			position_in_frames = int(effect_length_in_frames * property_item.position_in_percentage / 100)
 			
 			if is_in or not is_reversed:
 				position = start_frame + position_in_frames

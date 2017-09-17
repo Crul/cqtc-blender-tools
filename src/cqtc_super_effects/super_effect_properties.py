@@ -121,12 +121,10 @@ class ModifyPropertyItemsOperator(CqtcOperator):
 		collection_length = len(collection)
 		if collection_length == 2:
 			collection[1].position_in_percentage = context.scene.super_effect.effect_length_percentage
-			collection[1].position_in_frames = context.scene.super_effect.effect_length
 			collection[1].interpolation_type = collection[0].interpolation_type
 			collection[1].value = collection[0].value
 		elif collection_length > 2:
 			collection[-1].position_in_percentage = collection[-2].position_in_percentage
-			collection[-1].position_in_frames = collection[-2].position_in_frames
 			collection[-1].interpolation_type = collection[-2].interpolation_type
 			collection[-1].value = collection[-2].value
 	
@@ -155,7 +153,6 @@ def get_property_enabled_callback(property_name):
 
 
 class SuperEffectIntegerPropertyItem(bpy.types.PropertyGroup):
-	position_in_frames = bpy.props.IntProperty(name="Posición", description = "Posición del valor en frames", default=0, min=0, max=10000, step=5)
 	position_in_percentage = bpy.props.FloatProperty(name="Posición", description = "Posición del valor en porcentaje", default=0, min=0, max=100, step=1, subtype="PERCENTAGE")
 	
 	value = bpy.props.IntProperty(name="Valor de la propiedad", default=0, min=-10000, max=10000, step=5)
@@ -172,7 +169,6 @@ class SuperEffectIntegerPropertyItem(bpy.types.PropertyGroup):
 
 
 class SuperEffectPositiveFloatPropertyItem(bpy.types.PropertyGroup):
-	position_in_frames = bpy.props.IntProperty(name="Posición", description = "Posición del valor en frames", default=0, min=0, max=10000, step=5)
 	position_in_percentage = bpy.props.FloatProperty(name="Posición", description = "Posición del valor en porcentaje", default=0, min=0, max=100, step=1, subtype="PERCENTAGE")
 	
 	value = bpy.props.FloatProperty(name="Valor de la propiedad", default=1, min=-0, max=100, step=1)
@@ -189,7 +185,6 @@ class SuperEffectPositiveFloatPropertyItem(bpy.types.PropertyGroup):
 
 
 class SuperEffectFactorPropertyItem(bpy.types.PropertyGroup):
-	position_in_frames = bpy.props.IntProperty(name="Posición", description = "Posición del valor en frames", default=0, min=0, max=10000, step=5)
 	position_in_percentage = bpy.props.FloatProperty(name="Posición", description = "Posición del valor en porcentaje", default=0, min=0, max=100, step=1, subtype="PERCENTAGE")
 	
 	value = bpy.props.FloatProperty(name="Valor de la propiedad", default=1, min=-0, max=1, step=0.1, subtype="FACTOR")
@@ -341,7 +336,6 @@ class SuperEffectProperties(bpy.types.PropertyGroup):
 			for item in item_collection:
 				item_dict_array.append({
 					"value": item.value,
-					"position_in_frames": item.position_in_frames,
 					"position_in_percentage": item.position_in_percentage,
 					"interpolation_type": item.interpolation_type,
 				})
@@ -369,7 +363,6 @@ class SuperEffectProperties(bpy.types.PropertyGroup):
 			for item in dict_values[items_property_name]:
 				item_collection.add()
 				item_collection[-1].value = item["value"]
-				item_collection[-1].position_in_frames = item["position_in_frames"]
 				item_collection[-1].position_in_percentage = item["position_in_percentage"]
 				item_collection[-1].interpolation_type = item["interpolation_type"]
 		

@@ -80,7 +80,6 @@ def get_test_data(tests_data, common_data, original_test_data):
 			if is_prop_enabled:
 				prop_items.append({
 					"value": initial_value,
-					"position_in_frames": 0,
 					"position_in_percentage": 0,
 					"interpolation_type": "BEZIER"
 				})
@@ -89,8 +88,7 @@ def get_test_data(tests_data, common_data, original_test_data):
 				final_value = test_data["super_effect"][final_value_prop_name]
 				prop_items.append({
 					"value": final_value,
-					"position_in_frames": test_data["super_effect"]["effect_length"],
-					"position_in_percentage": test_data["super_effect"]["effect_length_percentage"] if "effect_length_percentage" in test_data["super_effect"] else 100,
+					"position_in_percentage": 100,
 					"interpolation_type": "BEZIER"
 				})
 			
@@ -161,7 +159,6 @@ class TestCqtcSuperEffectsFunctional:
 			for item_data in test_data["super_effect"][items_prop_name]:
 				item = mock.MagicMock()
 				item.value = item_data["value"]
-				item.position_in_frames = item_data["position_in_frames"]
 				item.position_in_percentage = item_data["position_in_percentage"]
 				item.interpolation_type = item_data["interpolation_type"]
 				property_items.append(item)

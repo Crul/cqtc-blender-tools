@@ -110,14 +110,13 @@ class SuperEffectPanel(cqtc_panel.CqtcPanel):
 		
 		property_items = getattr(context.scene.super_effect, property_items_name)
 		property_items_length = len(property_items)
-		position_property = "position_in_frames" if is_in_frames else "position_in_percentage"
 		if property_items_length < 2:
-			self.draw_single_item_prop(context, property_name, position_property, property_enabled_name, property_items)
+			self.draw_single_item_prop(context, property_name, property_enabled_name, property_items)
 		else:
-			self.multiple_item_prop(context, property_name, position_property, property_enabled_name, property_items)
+			self.multiple_item_prop(context, property_name, property_enabled_name, property_items)
 	
 	
-	def draw_single_item_prop(self, context, property_name, position_property, property_enabled_name, property_items):
+	def draw_single_item_prop(self, context, property_name, property_enabled_name, property_items):
 		layout = self.layout
 		
 		split = layout.split(percentage=0.25)
@@ -126,7 +125,7 @@ class SuperEffectPanel(cqtc_panel.CqtcPanel):
 		if len(property_items):
 			split = split.column().split(0.8866)
 			row = split.column().row()
-			row.column().prop(property_items[0], position_property)
+			row.column().prop(property_items[0], "position_in_percentage")
 			row.column().prop(property_items[0], "value", text="Valor")
 		
 		col = split.column()
@@ -135,7 +134,7 @@ class SuperEffectPanel(cqtc_panel.CqtcPanel):
 		add_property_operator.operation = "add"
 	
 	
-	def multiple_item_prop(self, context, property_name, position_property, property_enabled_name, property_items):
+	def multiple_item_prop(self, context, property_name, property_enabled_name, property_items):
 		layout = self.layout
 		
 		layout.row().prop(context.scene.super_effect, property_enabled_name)
@@ -152,7 +151,7 @@ class SuperEffectPanel(cqtc_panel.CqtcPanel):
 			prop_split = prop_col.split(percentage=0.8)
 			
 			row = prop_split.column().row()
-			row.column().prop(item, position_property)
+			row.column().prop(item, "position_in_percentage")
 			row.column().prop(item, "value", text="Valor")
 			prop_split.column().prop(item, "interpolation_type", text="")
 			
