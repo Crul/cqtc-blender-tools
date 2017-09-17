@@ -13,6 +13,8 @@ camera_ortho_scale = global_scale_x
 light_position_z  = 10
 bgr_position_z = -0.1
 
+marquee_margin_x = (global_scale_x / 4)
+
 class CreateSubtitleOperator(CqtcOperator):
 	bl_idname = "subtitle.create"
 	bl_label = "Crear subitulos"
@@ -46,6 +48,11 @@ class CreateSubtitleOperator(CqtcOperator):
 		font_path = context.scene.subtitle.font_path
 		if font_path != "" and not os.path.isfile(font_path):
 			return "No se ha encontrado el fichero " + font_path
+			
+		is_marquee = context.scene.subtitle.is_marquee
+		position = context.scene.subtitle.position
+		if is_marquee and (position not in ["bottom", "top", "center"]):
+			return "Las marquesinas solo pueden colocarse Arriba, Abajo o en el Centro"
 	
 	
 	def create_subtitle_scene(self, context):	
@@ -54,6 +61,7 @@ class CreateSubtitleOperator(CqtcOperator):
 		scene_name = context.scene.subtitle.scene_name
 		text = context.scene.subtitle.text
 		position = context.scene.subtitle.position
+		is_marquee = context.scene.subtitle.is_marquee
 		font_path = context.scene.subtitle.font_path
 		font_color = context.scene.subtitle.font_color
 		font_size = context.scene.subtitle.font_size
@@ -67,6 +75,7 @@ class CreateSubtitleOperator(CqtcOperator):
 		
 		text_scene = bpy.data.scenes.new(scene_name)
 		text_scene.render.alpha_mode = "TRANSPARENT"
+		text_scene.render.resolution_percentage = 100
 		context.screen.scene = text_scene
 		
 		old_area_type = context.area.type
@@ -81,35 +90,41 @@ class CreateSubtitleOperator(CqtcOperator):
 		
 		txt_object.data.size = font_size
 		txt_object.data.space_line = font_spacing
-		if ("right" in position):
-			txt_object.data.align_x = "RIGHT"
-		elif ("left" in position):
-			txt_object.data.align_x = "LEFT"
-		else:
-			txt_object.data.align_x = "CENTER"
-		
 		txt_object.data.body = text
 		
-		context.scene.update()
-		
-		max_text_width = width * global_scale_x
-		text_width = min(txt_object.dimensions.x, max_text_width)
-		
-		if text_width == max_text_width:
-			txt_object.data.text_boxes[0].width = text_width
-			txt_position_x = -(text_width/2)
-		else:
-			if ("right" in position):
-				txt_position_x = +(text_width/2)
-			elif ("left" in position):
-				txt_position_x = -(text_width/2)
-			else:
-				txt_position_x = 0
-		
-		txt_object.location = txt_position_x, 0, 0
-				
 		font_material = cqtc_bpy.create_material("font_material", font_color, (1,1,1), 1)
 		txt_object.data.materials.append(font_material)
+		
+		if not is_marquee:
+			if ("right" in position):
+				txt_object.data.align_x = "RIGHT"
+			elif ("left" in position):
+				txt_object.data.align_x = "LEFT"
+			else:
+				txt_object.data.align_x = "CENTER"
+		
+			context.scene.update()
+			
+			max_text_width = width * global_scale_x
+			text_width = min(txt_object.dimensions.x, max_text_width)
+			if text_width == max_text_width:
+				txt_object.data.text_boxes[0].width = text_width
+				txt_position_x = -(text_width/2)
+			else:
+				if ("right" in position):
+					txt_position_x = +(text_width/2)
+				elif ("left" in position):
+					txt_position_x = -(text_width/2)
+				else:
+					txt_position_x = 0
+				
+			txt_object.location = txt_position_x, 0, 0
+			
+		else:
+			txt_object.data.align_x = "CENTER"
+			txt_object.location = 0, 0, 0
+			context.scene.update()
+			text_width = txt_object.dimensions.x
 		
 		context.scene.update()
 		
@@ -119,13 +134,18 @@ class CreateSubtitleOperator(CqtcOperator):
 			bgr_object = context.object
 			bpy.ops.object.origin_set(type="ORIGIN_GEOMETRY", center="BOUNDS")
 			
-			bgr_dimensions_x = text_width + (2 * internal_margin)
-			bgr_dimensions_z = bgr_object.dimensions.z
-			bgr_object.dimensions = bgr_dimensions_x, bgr_dimensions_y, bgr_dimensions_z
-			
 			bgr_material = cqtc_bpy.create_material("bgr_material", bgr_color, (1,1,1), bgr_alpha)
 			bgr_object.show_transparent = True
 			bgr_object.data.materials.append(bgr_material)
+			
+			bgr_dimensions_x = text_width + (2 * internal_margin)
+			bgr_dimensions_z = bgr_object.dimensions.z
+			
+			if not is_marquee:
+				bgr_object.dimensions = bgr_dimensions_x, bgr_dimensions_y, bgr_dimensions_z
+			else:
+				bgr_dimensions_x += (2 * global_scale_x) + (2 * marquee_margin_x)
+				bgr_object.dimensions = bgr_dimensions_x, bgr_dimensions_y, bgr_dimensions_z
 		
 		delta_x = 0
 		delta_y = 0
@@ -141,16 +161,24 @@ class CreateSubtitleOperator(CqtcOperator):
 		if ("left" in position):
 			delta_x = -((global_scale_x / 2 - (external_margin * 2)) - (bgr_dimensions_x / 2))
 		
-		txt_object.location.x += delta_x
-		txt_object.location.y += delta_y
-		if create_bgr:
-			bgr_object.location.x += delta_x
-			bgr_object.location.y += delta_y
+		if not is_marquee:
+			txt_object.location.x += delta_x
+			txt_object.location.y += delta_y
+			if create_bgr:
+				bgr_object.location.x += delta_x
+				bgr_object.location.y += delta_y
 		
 		bpy.ops.object.camera_add()
-		context.object.location.z = camera_position_z
-		context.object.data.type = "ORTHO"
-		context.object.data.ortho_scale = camera_ortho_scale
+		camera = context.object
+		camera.location.z = camera_position_z
+		camera.data.type = "ORTHO"
+		
+		if not is_marquee:
+			camera.data.ortho_scale = camera_ortho_scale
+		else:
+			text_scene.render.resolution_x = bgr_dimensions_x
+			text_scene.render.resolution_y = bgr_dimensions_y
+			camera.data.ortho_scale = bgr_dimensions_x
 		
 		lamp_data = bpy.data.lamps.new(name="New Lamp", type="SUN")
 		lamp_object = bpy.data.objects.new(name="New Lamp", object_data=lamp_data)
@@ -176,15 +204,41 @@ class CreateSubtitleOperator(CqtcOperator):
 		scene_name = context.scene.subtitle.scene_name
 		strip_channel = context.scene.subtitle.strip_channel
 		strip_length = context.scene.subtitle.strip_length
+		is_marquee = context.scene.subtitle.is_marquee
 		current_frame = context.screen.scene.frame_current
 		
 		if context.scene.sequence_editor is None:
 			context.scene.sequence_editor_create()
-			
-		available_channel = cqtc_bpy.get_available_channel_in_position(context, current_frame, current_frame + strip_length)
-		text_strip = context.scene.sequence_editor.sequences.new_scene(scene_name, text_scene, available_channel, current_frame)
+		
+		start_frame = current_frame
+		final_frame = start_frame + strip_length
+		
+		available_channel = cqtc_bpy.get_available_channel_in_position(context, start_frame, final_frame)
+		text_strip = context.scene.sequence_editor.sequences.new_scene(scene_name, text_scene, available_channel, start_frame)
 			
 		text_strip.blend_type = "ALPHA_OVER"
-		text_strip.frame_final_end = current_frame + strip_length
-	
+		text_strip.frame_final_end = final_frame
+		
+		if is_marquee:
+			text_strip.use_translation = True
+			position = context.scene.subtitle.position
+			external_margin = context.scene.subtitle.external_margin
+			
+			size_x = text_strip.scene.render.resolution_x
+			size_y = text_strip.scene.render.resolution_y
+			
+			if position == "center":
+				text_strip.transform.offset_y = (global_scale_y - (size_y / 2) - (global_scale_y / 2))
+			elif position == "top":
+				text_strip.transform.offset_y = (global_scale_y - size_y) - external_margin
+			elif position == "bottom":
+				text_strip.transform.offset_y = external_margin
+			
+			text_strip.transform.keyframe_insert("offset_x", index=-1, frame=start_frame)
+			cqtc_bpy.set_keyframe_interpolation_type(context, text_strip, "transform.offset_x", start_frame, "LINEAR")
+			text_strip.transform.offset_x = -(size_x - global_scale_x)
+			text_strip.transform.keyframe_insert("offset_x", index=-1, frame=final_frame)
+			cqtc_bpy.set_keyframe_interpolation_type(context, text_strip, "transform.offset_x", final_frame, "LINEAR")
+			
+			
 	
