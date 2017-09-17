@@ -6,6 +6,7 @@ global_scale_y = int(global_scale_x * (1080/1920))
 effectable_strip_types = ["COLOR","IMAGE","MOVIE","SCENE","TRANSFORM","CROSS","GAUSSIAN_BLUR","SPEED","META"]
 transitionable_strip_types = ["COLOR","IMAGE","MOVIE","SCENE","TRANSFORM","CROSS","GAUSSIAN_BLUR","SPEED","META"]
 sound_capable_strip_types = ["COLOR","IMAGE","MOVIE","TRANSFORM","CROSS","GAUSSIAN_BLUR","SPEED"]
+speedable_not_sound_strip_types = ["MOVIE","SCENE","TRANSFORM","CROSS","GAUSSIAN_BLUR","META"]
 
 def get_rotation_values_fn(item, previous):
 	item_value = item.value
@@ -321,13 +322,20 @@ class SuperEffectCreator():
 	
 		speed_factor = context.scene.super_effect.speed_factor
 		sequence_to_return = sequence
-		if sequence.type in ["MOVIE","SCENE","TRANSFORM","GAUSSIAN_BLUR","META"]:
-			original_sequence = sequence
+
+		if sequence.type in speedable_not_sound_strip_types:
 			(sequence, sequence_to_return) = self.__create_or_get_existing_effect_strip(sequence, context, "SPEED", "_Speed")
 			sequence.use_default_fade = False
 			sequence.speed_factor = speed_factor
 			
 			if speed_factor > 0:
+				original_sequence = sequence
+				tmp_sequence = sequence
+				while "input_1" in dir(original_sequence) and original_sequence.input_1 is not None:
+					tmp_sequence = tmp_sequence.input_1
+					if tmp_sequence.type in ["MOVIE","SCENE","META"]:
+						original_sequence = tmp_sequence
+				
 				sequence_new_length = (original_sequence.frame_final_duration / speed_factor)
 				original_sequence.frame_final_end = (original_sequence.frame_final_start + sequence_new_length)
 			
