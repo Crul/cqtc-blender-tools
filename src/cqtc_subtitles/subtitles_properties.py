@@ -12,7 +12,7 @@ default_internal_margin = 25
 default_external_margin = 45
 
 def get_subtitle_template_options(scene, context):
-	return context.scene.subtitle.template_options
+	return sorted(context.scene.subtitle.template_options, key= lambda opt : opt[0].lower())
 
 def load_template(self, context):
 	bpy.ops.subtitle.load_template()
