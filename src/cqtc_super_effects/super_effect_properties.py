@@ -328,7 +328,6 @@ class SuperEffectProperties(bpy.types.PropertyGroup):
 			self.position_x_enabled or \
 			self.position_y_enabled or \
 			self.zoom_enabled or \
-			self.opacity_enabled or \
 			self.offset_x_enabled or \
 			self.offset_y_enabled or \
 			self.rotation_enabled)

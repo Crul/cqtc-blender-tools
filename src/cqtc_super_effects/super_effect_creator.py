@@ -193,7 +193,7 @@ class SuperEffectCreator():
 	def __create_in_or_out_strip_effect(self, context, effect, is_in, sequence):
 
 		sequence = self.__add_speed_strip(context, sequence)
-
+		
 		delay_image = context.scene.super_effect.delay_image
 		effect_length = context.scene.super_effect.effect_length \
 			if context.scene.super_effect.effect_length_type == "FRAMES" \
@@ -209,8 +209,11 @@ class SuperEffectCreator():
 		
 		if context.scene.super_effect.apply_to_sound:
 			self.__apply_effect_sound_transition(sequence, start_frame, final_frame, effect_length, is_in)
-	
+		
 		if sequence.type in effectable_strip_types:
+			animatable_properties_info = [ (sequence, sequence, "blend_alpha", "opacity", {}) ]
+			self.__set_animatable_properties(context, animatable_properties_info, is_in, start_frame, final_frame)
+			
 			original_sequence = sequence
 			sequence = self.__add_transform_strip(context, sequence, start_frame, final_frame, is_in)
 			sequence = self.__add_blur_strip(context, sequence, start_frame, final_frame, is_in)
@@ -404,7 +407,7 @@ class SuperEffectCreator():
 		animatable_properties_info = [
 			(sequence, sequence, "size_x", "blur_x", {}),
 			(sequence, sequence, "size_y", "blur_y", {}),
-			(sequence, sequence, "blend_alpha", "opacity", {})
+			(sequence, sequence, "blend_alpha", "opacity", {}) 
 		]
 		self.__set_animatable_properties(context, animatable_properties_info, is_in, start_frame, final_frame)
 		
