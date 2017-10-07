@@ -60,11 +60,14 @@ class SuperEffectCreator():
 			image_alignment_margin = context.scene.super_effect.image_alignment_margin
 			cqtc_bpy.align_image(context, sequence, image_alignment, image_alignment_margin)
 		
+		is_second_in_or_out = False
 		for in_or_out in ["IN", "OUT"]:
 			if (in_or_out in operation_type):
-				error = self.__create_in_or_out_effect(context, in_or_out)
+				error = self.__create_in_or_out_effect(context, in_or_out, is_second_in_or_out)
 				if error:
 					return error
+					
+				is_second_in_or_out = True
 		
 		if (operation_type == "TRANSITION"):
 			error = self.__create_transition(context, add_color_to_transition)
@@ -153,7 +156,7 @@ class SuperEffectCreator():
 			return "Para añadir una transición con color intermedio las tiras no pueden solaparse"
 	
 	
-	def __create_in_or_out_effect(self, context, in_or_out):
+	def __create_in_or_out_effect(self, context, in_or_out, is_second_in_or_out):
 		is_in = (in_or_out == "IN")
 		error = self.__validate_in_or_out_effect(context, is_in)
 		if error:
@@ -165,8 +168,10 @@ class SuperEffectCreator():
 		
 		selected_sequences = context.selected_sequences.copy()			
 		for sequence in selected_sequences:
-			self.__create_in_or_out_strip_effect(context, effect, is_in, sequence)
-			self.__create_in_or_out_strip_sound_effect(context, sequence)
+			self.__create_in_or_out_strip_effect(context, effect, is_in, sequence, is_second_in_or_out)
+			
+			if not is_second_in_or_out:
+				self.__create_in_or_out_strip_sound_effect(context, sequence)
 						
 	
 	def __create_in_or_out_strip_sound_effect(self, context, sequence):
@@ -190,9 +195,10 @@ class SuperEffectCreator():
 			sound_strip.frame_final_end = sequence.frame_final_end
 	
 	
-	def __create_in_or_out_strip_effect(self, context, effect, is_in, sequence):
+	def __create_in_or_out_strip_effect(self, context, effect, is_in, sequence, is_second_in_or_out):
 
-		sequence = self.__add_speed_strip(context, sequence)
+		if not is_second_in_or_out:
+			sequence = self.__add_speed_strip(context, sequence)
 		
 		delay_image = context.scene.super_effect.delay_image
 		effect_length = context.scene.super_effect.effect_length \
