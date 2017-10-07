@@ -403,7 +403,8 @@ class SuperEffectCreator():
 		
 		animatable_properties_info = [
 			(sequence, sequence, "size_x", "blur_x", {}),
-			(sequence, sequence, "size_y", "blur_y", {})
+			(sequence, sequence, "size_y", "blur_y", {}),
+			(sequence, sequence, "blend_alpha", "opacity", {})
 		]
 		self.__set_animatable_properties(context, animatable_properties_info, is_in, start_frame, final_frame)
 		
