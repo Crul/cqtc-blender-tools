@@ -56,6 +56,7 @@ def set_new_scenes_properties(new_sequences, prefs, scene):
 
 def set_proxy_settings(new_sequences, prefs):
 	auto_proxy = prefs.auto_proxy_settings_for_new_movies
+	uncheck_use_overwrite_proxy = prefs.uncheck_use_overwrite_proxy
 	if not auto_proxy:
 		return
 	
@@ -70,6 +71,9 @@ def set_proxy_settings(new_sequences, prefs):
 	for sequence in new_proxyable_seqs:
 		sequence.use_proxy = True
 		sequence.proxy.quality = quality
+		if uncheck_use_overwrite_proxy:
+			sequence.proxy.use_overwrite = False
+		
 		if build_size_prop_name in dir(sequence.proxy):
 			setattr(sequence.proxy, build_size_prop_name, True)
 

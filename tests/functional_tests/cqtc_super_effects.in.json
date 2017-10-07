@@ -140,6 +140,8 @@
 			],
 			"expected_calls": {
 				"sequences_keyframe_insert_values": [
+					{ "sequence": "MySequence", "name": "blend_alpha", "frame": 42, "value": 0.2 },
+					{ "sequence": "MySequence", "name": "blend_alpha", "frame": 92, "value": 0.9 },
 					{ "sequence": "MySequence", "name": "translate_start_x", "frame": 42, "value":  21 },
 					{ "sequence": "MySequence", "name": "translate_start_x", "frame": 92, "value": 121 },
 					{ "sequence": "MySequence", "name": "translate_start_y", "frame": 42, "value":  51 },
@@ -948,6 +950,8 @@
 			],
 			"expected_calls": {
 				"sequences_keyframe_insert_values": [
+					{ "sequence": "MySequence", "name": "blend_alpha", "frame": 42, "value": 0.2 },
+					{ "sequence": "MySequence", "name": "blend_alpha", "frame": 92, "value": 0.9 },
 					{ "sequence": "MySequence", "name": "translate_start_x", "frame": 42, "value":  21 },
 					{ "sequence": "MySequence", "name": "translate_start_x", "frame": 92, "value": 121 },
 					{ "sequence": "MySequence", "name": "translate_start_y", "frame": 42, "value":  51 },
@@ -1014,6 +1018,8 @@
 			],
 			"expected_calls": {
 				"sequences_keyframe_insert_values": [
+					{ "sequence": "MySequence", "name": "blend_alpha", "frame": 42, "value": 0.2 },
+					{ "sequence": "MySequence", "name": "blend_alpha", "frame": 92, "value": 0.9 },
 					{ "sequence": "MySequence", "name": "translate_start_x", "frame": 42, "value":  21 },
 					{ "sequence": "MySequence", "name": "translate_start_x", "frame": 92, "value": 121 },
 					{ "sequence": "MySequence", "name": "translate_start_y", "frame": 42, "value":  51 },
@@ -1080,6 +1086,8 @@
 			],
 			"expected_calls": {
 				"sequences_keyframe_insert_values": [
+					{ "sequence": "MySequence", "name": "blend_alpha", "frame": 42, "value": 0.2 },
+					{ "sequence": "MySequence", "name": "blend_alpha", "frame": 92, "value": 0.9 },
 					{ "sequence": "MySequence", "name": "translate_start_x", "frame": 42, "value":  21 },
 					{ "sequence": "MySequence", "name": "translate_start_x", "frame": 92, "value": 121 },
 					{ "sequence": "MySequence", "name": "translate_start_y", "frame": 42, "value":  51 },

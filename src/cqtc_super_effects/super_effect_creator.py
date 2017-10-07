@@ -6,6 +6,7 @@ global_scale_y = int(global_scale_x * (1080/1920))
 effectable_strip_types = ["COLOR","IMAGE","MOVIE","SCENE","TRANSFORM","CROSS","GAUSSIAN_BLUR","SPEED","META"]
 transitionable_strip_types = ["COLOR","IMAGE","MOVIE","SCENE","TRANSFORM","CROSS","GAUSSIAN_BLUR","SPEED","META"]
 sound_capable_strip_types = ["COLOR","IMAGE","MOVIE","TRANSFORM","CROSS","GAUSSIAN_BLUR","SPEED"]
+speedable_not_sound_strip_types = ["MOVIE","SCENE","TRANSFORM","CROSS","GAUSSIAN_BLUR","META"]
 
 def get_rotation_values_fn(item, previous):
 	item_value = item.value
@@ -59,11 +60,14 @@ class SuperEffectCreator():
 			image_alignment_margin = context.scene.super_effect.image_alignment_margin
 			cqtc_bpy.align_image(context, sequence, image_alignment, image_alignment_margin)
 		
+		is_second_in_or_out = False
 		for in_or_out in ["IN", "OUT"]:
 			if (in_or_out in operation_type):
-				error = self.__create_in_or_out_effect(context, in_or_out)
+				error = self.__create_in_or_out_effect(context, in_or_out, is_second_in_or_out)
 				if error:
 					return error
+					
+				is_second_in_or_out = True
 		
 		if (operation_type == "TRANSITION"):
 			error = self.__create_transition(context, add_color_to_transition)
@@ -152,7 +156,7 @@ class SuperEffectCreator():
 			return "Para añadir una transición con color intermedio las tiras no pueden solaparse"
 	
 	
-	def __create_in_or_out_effect(self, context, in_or_out):
+	def __create_in_or_out_effect(self, context, in_or_out, is_second_in_or_out):
 		is_in = (in_or_out == "IN")
 		error = self.__validate_in_or_out_effect(context, is_in)
 		if error:
@@ -164,8 +168,10 @@ class SuperEffectCreator():
 		
 		selected_sequences = context.selected_sequences.copy()			
 		for sequence in selected_sequences:
-			self.__create_in_or_out_strip_effect(context, effect, is_in, sequence)
-			self.__create_in_or_out_strip_sound_effect(context, sequence)
+			self.__create_in_or_out_strip_effect(context, effect, is_in, sequence, is_second_in_or_out)
+			
+			if not is_second_in_or_out:
+				self.__create_in_or_out_strip_sound_effect(context, sequence)
 						
 	
 	def __create_in_or_out_strip_sound_effect(self, context, sequence):
@@ -189,10 +195,11 @@ class SuperEffectCreator():
 			sound_strip.frame_final_end = sequence.frame_final_end
 	
 	
-	def __create_in_or_out_strip_effect(self, context, effect, is_in, sequence):
+	def __create_in_or_out_strip_effect(self, context, effect, is_in, sequence, is_second_in_or_out):
 
-		sequence = self.__add_speed_strip(context, sequence)
-
+		if not is_second_in_or_out:
+			sequence = self.__add_speed_strip(context, sequence)
+		
 		delay_image = context.scene.super_effect.delay_image
 		effect_length = context.scene.super_effect.effect_length \
 			if context.scene.super_effect.effect_length_type == "FRAMES" \
@@ -208,8 +215,11 @@ class SuperEffectCreator():
 		
 		if context.scene.super_effect.apply_to_sound:
 			self.__apply_effect_sound_transition(sequence, start_frame, final_frame, effect_length, is_in)
-	
+		
 		if sequence.type in effectable_strip_types:
+			animatable_properties_info = [ (sequence, sequence, "blend_alpha", "opacity", {}) ]
+			self.__set_animatable_properties(context, animatable_properties_info, is_in, start_frame, final_frame)
+			
 			original_sequence = sequence
 			sequence = self.__add_transform_strip(context, sequence, start_frame, final_frame, is_in)
 			sequence = self.__add_blur_strip(context, sequence, start_frame, final_frame, is_in)
@@ -321,13 +331,20 @@ class SuperEffectCreator():
 	
 		speed_factor = context.scene.super_effect.speed_factor
 		sequence_to_return = sequence
-		if sequence.type in ["MOVIE","SCENE","TRANSFORM","GAUSSIAN_BLUR","META"]:
-			original_sequence = sequence
+
+		if sequence.type in speedable_not_sound_strip_types:
 			(sequence, sequence_to_return) = self.__create_or_get_existing_effect_strip(sequence, context, "SPEED", "_Speed")
 			sequence.use_default_fade = False
 			sequence.speed_factor = speed_factor
 			
 			if speed_factor > 0:
+				original_sequence = sequence
+				tmp_sequence = sequence
+				while "input_1" in dir(original_sequence) and original_sequence.input_1 is not None:
+					tmp_sequence = tmp_sequence.input_1
+					if tmp_sequence.type in ["MOVIE","SCENE","META"]:
+						original_sequence = tmp_sequence
+				
 				sequence_new_length = (original_sequence.frame_final_duration / speed_factor)
 				original_sequence.frame_final_end = (original_sequence.frame_final_start + sequence_new_length)
 			
@@ -395,7 +412,8 @@ class SuperEffectCreator():
 		
 		animatable_properties_info = [
 			(sequence, sequence, "size_x", "blur_x", {}),
-			(sequence, sequence, "size_y", "blur_y", {})
+			(sequence, sequence, "size_y", "blur_y", {}),
+			(sequence, sequence, "blend_alpha", "opacity", {}) 
 		]
 		self.__set_animatable_properties(context, animatable_properties_info, is_in, start_frame, final_frame)
 		
