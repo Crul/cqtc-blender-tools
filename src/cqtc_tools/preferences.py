@@ -21,6 +21,12 @@ class CqtcToolsPreferences(bpy.types.AddonPreferences):
 		default="^e.*"
 	)
 	
+	uncheck_use_overwrite_proxy = bpy.props.BoolProperty(
+		name="Desmarcar 'Sobreescribir proxy'",
+		description="Desmarca la opción 'Sobreescribir' del proxy para las nuevas tiras",
+		default=False
+	)
+	
 	auto_proxy_settings_for_new_movies = bpy.props.BoolProperty(
 		name="Configurar proxy",
 		description="Configurar proxy al añadir una película",
@@ -69,6 +75,9 @@ class CqtcToolsPreferences(bpy.types.AddonPreferences):
 			"auto_use_sequence_for_new_scenes",
 			["use_sequence_for_new_scenes_pattern"]
 		)
+		
+		self.draw_option(layout, "uncheck_use_overwrite_proxy")
+		
 		self.draw_option(layout,
 			"auto_proxy_settings_for_new_movies",
 			["proxy_quality_for_new_movies", "proxy_size_for_new_movies"]
