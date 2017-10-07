@@ -77,6 +77,7 @@ class SubtitlesProperties(bpy.types.PropertyGroup):
 			"scene_name": self.scene_name,
 			"text": self.text,
 			"position": self.position,
+			"is_marquee": self.is_marquee,
 			"font_path": self.font_path,
 			"font_color": (self.font_color.r, self.font_color.g, self.font_color.b),
 			"font_size": self.font_size,
@@ -101,6 +102,7 @@ class SubtitlesProperties(bpy.types.PropertyGroup):
 			self.text = tmpl["text"]
 			
 		self.position = tmpl["position"]
+		self.is_marquee = tmpl["is_marquee"] if "is_marquee" in tmpl else False
 		self.font_path = tmpl["font_path"]
 		self.font_color.r = tmpl["font_color"][0]
 		self.font_color.g = tmpl["font_color"][1]
