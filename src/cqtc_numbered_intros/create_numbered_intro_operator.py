@@ -103,7 +103,7 @@ class CreateNumberedIntroOperator(CqtcOperator):
 	
 	
 	def get_numbered_intro_image_fullpath(self, numbered_intro_number):
-		if numbered_intro_number < 9:
+		if numbered_intro_number < 10:
 			numbered_intro_image = numbered_intro_file_template % numbered_intro_number
 		else:
 			numbered_intro_image = numbered_intro_n_file
