@@ -213,7 +213,7 @@ class CreateSubtitleOperator(CqtcOperator):
 		start_frame = current_frame
 		final_frame = start_frame + strip_length
 		
-		available_channel = cqtc_bpy.get_available_channel_in_position(context, start_frame, final_frame)
+		available_channel = cqtc_bpy.get_available_channel_in_position(context, start_frame, final_frame, start_channel=strip_channel)
 		text_strip = context.scene.sequence_editor.sequences.new_scene(scene_name, text_scene, available_channel, start_frame)
 			
 		text_strip.blend_type = "ALPHA_OVER"
