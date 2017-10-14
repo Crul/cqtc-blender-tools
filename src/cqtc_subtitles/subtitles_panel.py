@@ -15,6 +15,8 @@ class SubtitlesPanel(cqtc_panel.CqtcPanel):
 		layout = self.layout
 		scene = context.scene
 		
+		layout.row().prop(context.scene.subtitle, "template")
+		
 		layout.row().prop(context.scene.subtitle, "scene_name")
 		layout.row().prop(context.scene.subtitle, "text")
 		
@@ -35,41 +37,49 @@ class SubtitlesPanel(cqtc_panel.CqtcPanel):
 		)
 		
 		if context.scene.subtitle.config_expanded:
-			layout.row().prop(context.scene.subtitle, "width")
-			layout.row().prop(context.scene.subtitle, "internal_margin")
-			layout.row().prop(context.scene.subtitle, "external_margin")
+			split = layout.row().split(percentage=0.02)
+			empty_col = split.column()
+			config_col = split.column()
+				
+			config_col.row().prop(context.scene.subtitle, "width")
+			config_col.row().prop(context.scene.subtitle, "internal_margin")
+			config_col.row().prop(context.scene.subtitle, "external_margin")
 			
-			row = layout.row()
+			row = config_col.row()
 			row.prop(context.scene.subtitle, "font_expanded",
 				icon="TRIA_DOWN" if context.scene.subtitle.font_expanded else "TRIA_RIGHT",
 				icon_only=False
 			)
 			
 			if context.scene.subtitle.font_expanded:
-				split = layout.row().split(percentage=0.05)
-				col = split.column()
-				col = split.column()
-				
-				col.row().prop(context.scene.subtitle, "font_color")
-				col.row().prop(context.scene.subtitle, "font_size")
-				col.row().prop(context.scene.subtitle, "font_bevel_depth")
-				col.row().prop(context.scene.subtitle, "font_spacing")
-				col.row().prop(context.scene.subtitle, "font_path")
+				split = config_col.row().split(percentage=0.02)
+				empty_col = split.column()
+				box = split.column().box()
+				box.row().prop(context.scene.subtitle, "font_color")
+				box.row().prop(context.scene.subtitle, "font_size")
+				box.row().prop(context.scene.subtitle, "font_bevel_depth")
+				box.row().prop(context.scene.subtitle, "font_spacing")
+				box.row().prop(context.scene.subtitle, "font_path")
 			
 			
-			layout.row().prop(context.scene.subtitle, "create_bgr")
+			box = config_col.box()
+			box.row().prop(context.scene.subtitle, "create_bgr")
 			if context.scene.subtitle.create_bgr:
-				split = layout.row().split(percentage=0.05)
+				split = box.row().split(percentage=0.05)
 				col = split.column()
 				col = split.column()
 				
 				col.row().prop(context.scene.subtitle, "bgr_color")
 				col.row().prop(context.scene.subtitle, "bgr_alpha")
 			
-			layout.row().prop(context.scene.subtitle, "create_strip")
-			
+			box = config_col.box()
+			box.row().prop(context.scene.subtitle, "create_strip")
 			if context.scene.subtitle.create_strip:
-				layout.row().prop(context.scene.subtitle, "strip_channel")
-				layout.row().prop(context.scene.subtitle, "strip_length")
+				split = box.row().split(percentage=0.05)
+				col = split.column()
+				col = split.column()
+				
+				col.row().prop(context.scene.subtitle, "strip_channel")
+				col.row().prop(context.scene.subtitle, "strip_length")
 		
 		cqtc_templates.draw_template_panel(self, context.scene.subtitle, "subtitle")
