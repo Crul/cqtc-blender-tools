@@ -61,6 +61,10 @@ class SubtitlesPanel(cqtc_panel.CqtcPanel):
 				box.row().prop(context.scene.subtitle, "font_spacing")
 				box.row().prop(context.scene.subtitle, "font_path")
 			
+				box.row().prop(context.scene.subtitle, "font_has_border")
+				if context.scene.subtitle.font_has_border:
+					box.row().prop(context.scene.subtitle, "font_border_size")
+					box.row().prop(context.scene.subtitle, "font_border_color")
 			
 			box = config_col.box()
 			box.row().prop(context.scene.subtitle, "create_bgr")

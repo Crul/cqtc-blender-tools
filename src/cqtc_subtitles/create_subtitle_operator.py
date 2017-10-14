@@ -4,6 +4,7 @@ import cqtc_bpy
 from cqtc_operator import CqtcOperator
 
 scene_prefix = "tx"
+scene_border_suffix = "Borde"
 global_scale_x = 1920
 global_scale_y = global_scale_x * (1080/1920)
 
@@ -25,10 +26,12 @@ class CreateSubtitleOperator(CqtcOperator):
 		if error:
 			return self.return_error(error)
 		
-		context.scene.subtitle.scene_name = scene_prefix + context.scene.subtitle.scene_name
-		
-		text_scene = self.create_subtitle_scene(context)
-		self.create_scene_strip(context, text_scene)
+		font_has_border = context.scene.subtitle.font_has_border
+		if font_has_border:
+			self.create_subtitle(context, is_border_bgr=True)
+			self.create_subtitle(context, is_border_over=True)
+		else:
+			self.create_subtitle(context)
 		
 		context.scene.subtitle.scene_name = ""
 		context.scene.subtitle.text = ""
@@ -36,10 +39,20 @@ class CreateSubtitleOperator(CqtcOperator):
 		return {"FINISHED"}
 	
 	
+	def create_subtitle(self, context, is_border_bgr=False, is_border_over=False):
+		text_scene = self.create_subtitle_scene(context, is_border_bgr, is_border_over)
+		self.create_scene_strip(context, text_scene)
+	
+
 	def validate_data(self, context):
-		scene_name = context.scene.subtitle.scene_name
-		if ((scene_prefix + scene_name) in bpy.data.scenes):
-			return "Ya existe una escena llamada " + (scene_prefix + scene_name)
+		scene_names = [ self.get_scene_name(context) ]
+		font_has_border = context.scene.subtitle.font_has_border
+		if font_has_border:
+			scene_names.append(self.get_border_scene_name(scene_names[0]))
+		
+		for scene_name in scene_names:
+			if scene_name in bpy.data.scenes:
+				return "Ya existe una escena llamada " + scene_name
 		
 		text = context.scene.subtitle.text
 		if (scene_name == "" or text == ""):
@@ -58,21 +71,29 @@ class CreateSubtitleOperator(CqtcOperator):
 		if fullscreen_width and (position not in ["bottom", "top", "center"]):
 			return "Los subtítulos de ancho 100% solo pueden colocarse Arriba, Abajo o en el Centro"
 	
-	
-	def create_subtitle_scene(self, context):	
+		
+	def create_subtitle_scene(self, context, is_border_bgr, is_border_over):
 		current_scene = context.scene
 		
-		scene_name = context.scene.subtitle.scene_name
+		scene_name = self.get_scene_name(context)
+		if is_border_bgr:
+			scene_name = self.get_border_scene_name(scene_name)
+		
 		text = context.scene.subtitle.text
 		position = context.scene.subtitle.position
 		is_marquee = context.scene.subtitle.is_marquee
 		fullscreen_width = context.scene.subtitle.fullscreen_width
 		font_path = context.scene.subtitle.font_path
-		font_color = context.scene.subtitle.font_color
+		if is_border_bgr:
+			font_color = context.scene.subtitle.font_border_color
+		else:
+			font_color = context.scene.subtitle.font_color
 		font_size = context.scene.subtitle.font_size
 		font_bevel_depth = context.scene.subtitle.font_bevel_depth
+		if is_border_bgr:
+			font_bevel_depth += context.scene.subtitle.font_border_size
 		font_spacing = context.scene.subtitle.font_spacing
-		create_bgr = context.scene.subtitle.create_bgr
+		create_bgr = not is_border_over and context.scene.subtitle.create_bgr
 		bgr_color = context.scene.subtitle.bgr_color
 		bgr_alpha = context.scene.subtitle.bgr_alpha / 100
 		width = context.scene.subtitle.width / 100
@@ -134,8 +155,19 @@ class CreateSubtitleOperator(CqtcOperator):
 			text_width = txt_object.dimensions.x
 		
 		context.scene.update()
+	
+		if not is_marquee:
+			if fullscreen_width:
+				bgr_dimensions_x = global_scale_x
+			else:
+				bgr_dimensions_x = text_width + (2 * internal_margin)
 		
+		else:
+			bgr_dimensions_x = text_width + (2 * internal_margin)
+			bgr_dimensions_x += (2 * global_scale_x) + (2 * marquee_margin_x)
+			
 		bgr_dimensions_y = txt_object.dimensions.y + (2 * internal_margin)
+		
 		if create_bgr:	
 			bpy.ops.mesh.primitive_plane_add(location=(0,0,bgr_position_z))
 			bgr_object = context.object
@@ -146,19 +178,7 @@ class CreateSubtitleOperator(CqtcOperator):
 			bgr_object.data.materials.append(bgr_material)
 			
 			bgr_dimensions_z = bgr_object.dimensions.z
-			
-			if not is_marquee:
-				if fullscreen_width:
-					bgr_dimensions_x = global_scale_x
-				else:
-					bgr_dimensions_x = text_width + (2 * internal_margin)
-				
-				bgr_object.dimensions = bgr_dimensions_x, bgr_dimensions_y, bgr_dimensions_z
-				
-			else:
-				bgr_dimensions_x = text_width + (2 * internal_margin)
-				bgr_dimensions_x += (2 * global_scale_x) + (2 * marquee_margin_x)
-				bgr_object.dimensions = bgr_dimensions_x, bgr_dimensions_y, bgr_dimensions_z
+			bgr_object.dimensions = bgr_dimensions_x, bgr_dimensions_y, bgr_dimensions_z
 		
 		delta_x = 0
 		delta_y = 0
@@ -252,6 +272,11 @@ class CreateSubtitleOperator(CqtcOperator):
 			text_strip.transform.offset_x = -(size_x - global_scale_x)
 			text_strip.transform.keyframe_insert("offset_x", index=-1, frame=final_frame)
 			cqtc_bpy.set_keyframe_interpolation_type(context, text_strip, "transform.offset_x", final_frame, "LINEAR")
-			
-			
 	
+	
+	def get_scene_name(self, context):
+		return scene_prefix + context.scene.subtitle.scene_name
+
+	
+	def get_border_scene_name(self, scene_name):
+		return scene_name + scene_border_suffix
