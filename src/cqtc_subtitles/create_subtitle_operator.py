@@ -70,6 +70,7 @@ class CreateSubtitleOperator(CqtcOperator):
 		font_path = context.scene.subtitle.font_path
 		font_color = context.scene.subtitle.font_color
 		font_size = context.scene.subtitle.font_size
+		font_bevel_depth = context.scene.subtitle.font_bevel_depth
 		font_spacing = context.scene.subtitle.font_spacing
 		create_bgr = context.scene.subtitle.create_bgr
 		bgr_color = context.scene.subtitle.bgr_color
@@ -96,6 +97,7 @@ class CreateSubtitleOperator(CqtcOperator):
 		txt_object.data.size = font_size
 		txt_object.data.space_line = font_spacing
 		txt_object.data.body = text
+		txt_object.data.bevel_depth = font_bevel_depth
 		
 		font_material = cqtc_bpy.create_material("font_material", font_color, (1,1,1), 1)
 		txt_object.data.materials.append(font_material)

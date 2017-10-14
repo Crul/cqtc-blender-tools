@@ -7,6 +7,7 @@ if not os.path.isfile(default_font):
 	default_font = r"c:\windows\Fonts\Curlz_MT.ttf"
 
 default_font_size = 150
+default_font_bevel_depth = 0
 default_font_spacing = 0.7
 default_internal_margin = 25
 default_external_margin = 45
@@ -43,6 +44,7 @@ class SubtitlesProperties(bpy.types.PropertyGroup):
 	font_path = bpy.props.StringProperty(name="Fuente", subtype="FILE_PATH", description="Fuente", default=default_font)
 	font_color = bpy.props.FloatVectorProperty(name="Color texto", subtype="COLOR", default=(0.0, 0.0, 0.0), min=0.0, max=1.0, description="color picker")
 	font_size = bpy.props.IntProperty(name="Tamaño", default=default_font_size, min=1, max=500, step=1)
+	font_bevel_depth = bpy.props.FloatProperty(name="Nivel negrita", default=default_font_bevel_depth, min=0, max=5, step=0.5)
 	font_spacing = bpy.props.FloatProperty(name="Espaciado", default=default_font_spacing, min=0, max=2, step=0.1)
 	width = bpy.props.FloatProperty(name="Ancho", default=90.0, min=0, max=100, step=10, precision=2, subtype="PERCENTAGE")
 	internal_margin = bpy.props.IntProperty(name="Margen interior", default=default_internal_margin, min=0, max=1000, step=1)
@@ -83,6 +85,7 @@ class SubtitlesProperties(bpy.types.PropertyGroup):
 			"font_path": self.font_path,
 			"font_color": (self.font_color.r, self.font_color.g, self.font_color.b),
 			"font_size": self.font_size,
+			"font_bevel_depth": self.font_bevel_depth,
 			"font_spacing": self.font_spacing,
 			"create_bgr": self.create_bgr,
 			"bgr_color": (self.bgr_color.r, self.bgr_color.g, self.bgr_color.b),
@@ -111,6 +114,7 @@ class SubtitlesProperties(bpy.types.PropertyGroup):
 		self.font_color.g = tmpl["font_color"][1]
 		self.font_color.b = tmpl["font_color"][2]
 		self.font_size = tmpl["font_size"]
+		self.font_bevel_depth = tmpl["font_bevel_depth"] if "font_bevel_depth" in tmpl else default_font_bevel_depth
 		self.font_spacing = tmpl["font_spacing"]
 		self.create_bgr = tmpl["create_bgr"]
 		self.bgr_color.r = tmpl["bgr_color"][0]

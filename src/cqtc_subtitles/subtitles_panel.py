@@ -52,6 +52,7 @@ class SubtitlesPanel(cqtc_panel.CqtcPanel):
 				
 				col.row().prop(context.scene.subtitle, "font_color")
 				col.row().prop(context.scene.subtitle, "font_size")
+				col.row().prop(context.scene.subtitle, "font_bevel_depth")
 				col.row().prop(context.scene.subtitle, "font_spacing")
 				col.row().prop(context.scene.subtitle, "font_path")
 			
