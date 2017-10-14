@@ -110,7 +110,7 @@ class CreateSubtitleOperator(CqtcOperator):
 		
 			context.scene.update()
 			
-			max_text_width = width * global_scale_x
+			max_text_width = width * global_scale_x - (external_margin * 2) - (internal_margin * 2)
 			text_width = min(txt_object.dimensions.x, max_text_width)
 			if text_width == max_text_width:
 				txt_object.data.text_boxes[0].width = text_width
