@@ -18,9 +18,11 @@ class SubtitlesPanel(cqtc_panel.CqtcPanel):
 		layout.row().prop(context.scene.subtitle, "scene_name")
 		layout.row().prop(context.scene.subtitle, "text")
 		
-		split = layout.split(percentage=0.66)
+		split = layout.split(percentage=0.33)
 		split.prop(context.scene.subtitle, "position")
 		split.prop(context.scene.subtitle, "is_marquee")
+		if not context.scene.subtitle.is_marquee:
+			split.prop(context.scene.subtitle, "fullscreen_width")
 		
 		row = layout.row()
 		row.scale_y = 2.0

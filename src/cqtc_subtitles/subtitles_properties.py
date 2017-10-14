@@ -39,6 +39,7 @@ class SubtitlesProperties(bpy.types.PropertyGroup):
 		)
 	
 	is_marquee = bpy.props.BoolProperty(name="Marquesina", default=False)
+	fullscreen_width = bpy.props.BoolProperty(name="Ancho 100%", default=False)
 	font_path = bpy.props.StringProperty(name="Fuente", subtype="FILE_PATH", description="Fuente", default=default_font)
 	font_color = bpy.props.FloatVectorProperty(name="Color texto", subtype="COLOR", default=(0.0, 0.0, 0.0), min=0.0, max=1.0, description="color picker")
 	font_size = bpy.props.IntProperty(name="Tamaño", default=default_font_size, min=1, max=500, step=1)
@@ -78,6 +79,7 @@ class SubtitlesProperties(bpy.types.PropertyGroup):
 			"text": self.text,
 			"position": self.position,
 			"is_marquee": self.is_marquee,
+			"fullscreen_width": self.fullscreen_width,
 			"font_path": self.font_path,
 			"font_color": (self.font_color.r, self.font_color.g, self.font_color.b),
 			"font_size": self.font_size,
@@ -103,6 +105,7 @@ class SubtitlesProperties(bpy.types.PropertyGroup):
 			
 		self.position = tmpl["position"]
 		self.is_marquee = tmpl["is_marquee"] if "is_marquee" in tmpl else False
+		self.fullscreen_width = tmpl["fullscreen_width"] if "fullscreen_width" in tmpl else False
 		self.font_path = tmpl["font_path"]
 		self.font_color.r = tmpl["font_color"][0]
 		self.font_color.g = tmpl["font_color"][1]
@@ -129,21 +132,25 @@ class SubtitlesProperties(bpy.types.PropertyGroup):
 		
 		length = bpy.context.scene.subtitle.strip_length
 		prueba_data = [
-			["Centro", "Prueba centro", "center", length, False],
+			["Centro", "Prueba centro", "center", length, False, False],
 			
-			["Arriba",    "Prueba arriba",    "top", 0, False],
-			["Abajo",     "Prueba abajo",     "bottom", 0, False],
-			["Izquierda", "Prueba izquierda", "left", 0, False],
-			["Derecha",   "Prueba derecha",   "right", length, False],
+			["Arriba",    "Prueba arriba",    "top", 0, False, False],
+			["Abajo",     "Prueba abajo",     "bottom", 0, False, False],
+			["Izquierda", "Prueba izquierda", "left", 0, False, False],
+			["Derecha",   "Prueba derecha",   "right", length, False, False],
 			
-			["ArribaIzq", "Prueba arriba izq", "top_left", 0, False],
-			["ArribaDch", "Prueba arriba dch", "top_right", 0, False],
-			["AbajoIzq",  "Prueba abajo izq",  "bottom_left", 0, False],
-			["AbajoDch",  "Prueba abajo dch",  "bottom_right", length, False],
+			["ArribaIzq", "Prueba arriba izq", "top_left", 0, False, False],
+			["ArribaDch", "Prueba arriba dch", "top_right", 0, False, False],
+			["AbajoIzq",  "Prueba abajo izq",  "bottom_left", 0, False, False],
+			["AbajoDch",  "Prueba abajo dch",  "bottom_right", length, False, False],
 			
-			["MarquesinaArriba",  "Prueba marquesina arriba",  "top", 0, True],
-			["MarquesinaCentro",  "Prueba marquesina centro",  "center", 0, True],
-			["MarquesinaAbajo",  "Prueba marquesina abajo",  "bottom", length, True],
+			["MarquesinaArriba",  "Prueba marquesina arriba",  "top", 0, True, False],
+			["MarquesinaCentro",  "Prueba marquesina centro",  "center", 0, True, False],
+			["MarquesinaAbajo",   "Prueba marquesina abajo",   "bottom", length, True, False],
+			
+			["CentroSinAjustar", "Prueba centro sin ajustar", "center", 0, False, True],
+			["ArribaSinAjustar", "Prueba arriba sin ajustar", "top", 0, False, True],
+			["AbajoSinAjustar",  "Prueba abajo sin ajustar",  "bottom", length, False, True],
 		]
 		
 		bpy.context.screen.scene.frame_current = 1
@@ -152,19 +159,22 @@ class SubtitlesProperties(bpy.types.PropertyGroup):
 			bpy.context.scene.subtitle.text = prueba[1]
 			bpy.context.scene.subtitle.position = prueba[2]
 			bpy.context.scene.subtitle.is_marquee = prueba[4]
+			bpy.context.scene.subtitle.fullscreen_width = prueba[5]
 			bpy.context.scene.subtitle.width = single_line_width
 			bpy.ops.subtitle.create()
 			bpy.context.screen.scene.frame_current += prueba[3]
 		
 		for prueba in prueba_data:
 			is_marquee = prueba[4]
-			if is_marquee:
+			fullscreen_width = prueba[5]
+			if is_marquee or fullscreen_width:
 				continue
 			
 			bpy.context.scene.subtitle.scene_name = test_scene_prefix + prueba[0] + "ML"
 			bpy.context.scene.subtitle.text = prueba[1] + " multi línea bla bla bla bla"
 			bpy.context.scene.subtitle.position = prueba[2]
 			bpy.context.scene.subtitle.is_marquee = False
+			bpy.context.scene.subtitle.fullscreen_width = False
 			bpy.context.scene.subtitle.width = multi_line_width
 			bpy.ops.subtitle.create()
 			bpy.context.screen.scene.frame_current += prueba[3]

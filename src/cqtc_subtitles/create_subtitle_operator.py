@@ -44,15 +44,19 @@ class CreateSubtitleOperator(CqtcOperator):
 		text = context.scene.subtitle.text
 		if (scene_name == "" or text == ""):
 			return "Debe indicar el nombre de la escena y el texto del subtítulo."
-			
+		
 		font_path = context.scene.subtitle.font_path
 		if font_path != "" and not os.path.isfile(font_path):
 			return "No se ha encontrado el fichero " + font_path
-			
+		
 		is_marquee = context.scene.subtitle.is_marquee
 		position = context.scene.subtitle.position
 		if is_marquee and (position not in ["bottom", "top", "center"]):
 			return "Las marquesinas solo pueden colocarse Arriba, Abajo o en el Centro"
+		
+		fullscreen_width = context.scene.subtitle.fullscreen_width
+		if fullscreen_width and (position not in ["bottom", "top", "center"]):
+			return "Los subtítulos de ancho 100% solo pueden colocarse Arriba, Abajo o en el Centro"
 	
 	
 	def create_subtitle_scene(self, context):	
@@ -62,6 +66,7 @@ class CreateSubtitleOperator(CqtcOperator):
 		text = context.scene.subtitle.text
 		position = context.scene.subtitle.position
 		is_marquee = context.scene.subtitle.is_marquee
+		fullscreen_width = context.scene.subtitle.fullscreen_width
 		font_path = context.scene.subtitle.font_path
 		font_color = context.scene.subtitle.font_color
 		font_size = context.scene.subtitle.font_size
@@ -138,12 +143,18 @@ class CreateSubtitleOperator(CqtcOperator):
 			bgr_object.show_transparent = True
 			bgr_object.data.materials.append(bgr_material)
 			
-			bgr_dimensions_x = text_width + (2 * internal_margin)
 			bgr_dimensions_z = bgr_object.dimensions.z
 			
 			if not is_marquee:
+				if fullscreen_width:
+					bgr_dimensions_x = global_scale_x
+				else:
+					bgr_dimensions_x = text_width + (2 * internal_margin)
+				
 				bgr_object.dimensions = bgr_dimensions_x, bgr_dimensions_y, bgr_dimensions_z
+				
 			else:
+				bgr_dimensions_x = text_width + (2 * internal_margin)
 				bgr_dimensions_x += (2 * global_scale_x) + (2 * marquee_margin_x)
 				bgr_object.dimensions = bgr_dimensions_x, bgr_dimensions_y, bgr_dimensions_z
 		
