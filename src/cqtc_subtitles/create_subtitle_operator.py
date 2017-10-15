@@ -28,8 +28,9 @@ class CreateSubtitleOperator(CqtcOperator):
 		
 		font_has_border = context.scene.subtitle.font_has_border
 		if font_has_border:
-			self.create_subtitle(context, is_border_bgr=True)
-			self.create_subtitle(context, is_border_over=True)
+			txt_border_object = self.create_subtitle(context, is_border_bgr=True)
+			txt_text_object = self.create_subtitle(context, is_border_over=True)
+			txt_border_object.location.y = txt_text_object.location.y
 		else:
 			self.create_subtitle(context)
 		
@@ -40,8 +41,10 @@ class CreateSubtitleOperator(CqtcOperator):
 	
 	
 	def create_subtitle(self, context, is_border_bgr=False, is_border_over=False):
-		text_scene = self.create_subtitle_scene(context, is_border_bgr, is_border_over)
+		text_scene, txt_object = self.create_subtitle_scene(context, is_border_bgr, is_border_over)
 		self.create_scene_strip(context, text_scene)
+		
+		return txt_object
 	
 
 	def validate_data(self, context):
@@ -227,7 +230,7 @@ class CreateSubtitleOperator(CqtcOperator):
 		context.area.type = old_area_type
 		context.screen.scene = current_scene
 		
-		return text_scene
+		return text_scene, txt_object
 	
 	
 	def create_scene_strip(self, context, text_scene):
