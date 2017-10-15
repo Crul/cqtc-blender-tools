@@ -18,6 +18,14 @@ def get_subtitle_template_options(scene, context):
 def load_template(self, context):
 	bpy.ops.subtitle.load_template()
 
+def set_create_bgr_if_fullscreen_width(self, context):
+	if context.scene.subtitle.fullscreen_width:
+		context.scene.subtitle.create_bgr = True
+
+def set_fullscreen_width_if_not_create_bgr(self, context):
+	if not context.scene.subtitle.create_bgr:
+		context.scene.subtitle.fullscreen_width = False
+
 class SubtitlesProperties(bpy.types.PropertyGroup):
 	scene_name = bpy.props.StringProperty(name="Nombre escena", description="Nombre de la escena")
 	text = bpy.props.StringProperty(name="Texto", description="Texto")
@@ -40,7 +48,7 @@ class SubtitlesProperties(bpy.types.PropertyGroup):
 		)
 	
 	is_marquee = bpy.props.BoolProperty(name="Marquesina", default=False)
-	fullscreen_width = bpy.props.BoolProperty(name="Ancho 100%", default=False)
+	fullscreen_width = bpy.props.BoolProperty(name="Ancho 100%", default=False, update=set_create_bgr_if_fullscreen_width)
 	font_path = bpy.props.StringProperty(name="Fuente", subtype="FILE_PATH", description="Fuente", default=default_font)
 	font_color = bpy.props.FloatVectorProperty(name="Color texto", subtype="COLOR", default=(0.0, 0.0, 0.0), min=0.0, max=1.0)
 	font_size = bpy.props.IntProperty(name="Tamaño", default=default_font_size, min=1, max=500, step=1)
@@ -57,7 +65,7 @@ class SubtitlesProperties(bpy.types.PropertyGroup):
 	
 	font_expanded = bpy.props.BoolProperty(name="Fuente", default=True)
 	
-	create_bgr = bpy.props.BoolProperty(name="Fondo", default=True)
+	create_bgr = bpy.props.BoolProperty(name="Fondo", default=True, update=set_fullscreen_width_if_not_create_bgr)
 	bgr_color = bpy.props.FloatVectorProperty(name="Color fondo", subtype="COLOR", default=(1.0, 1.0, 1.0), min=0.0, max=1.0)
 	bgr_alpha = bpy.props.FloatProperty(name="Opacidad fondo", default=75.0, min=0, max=100, step=5, precision=2, subtype="PERCENTAGE")
 	
