@@ -45,7 +45,17 @@ class CreateNumberedIntroOperator(CqtcOperator):
 				
 				for sequence in sequences_to_move:
 					try:
-						sequence.frame_start += adjustment
+						if sequence.type in ("COLOR","IMAGE","MOVIE","SCENE","META","SOUND"):
+							sequence.frame_start += adjustment	
+						else:
+							fcurve_data_path = "sequence_editor.sequences_all[\"%s\"]." % (sequence.name)
+							fcurves = [fcurve for fcurve in context.scene.animation_data.action.fcurves if fcurve.data_path.startswith(fcurve_data_path)]
+							for fcurve in fcurves:
+								for keyframe_point in fcurve.keyframe_points:
+									keyframe_point.co[0] += adjustment
+									keyframe_point.handle_left[0] += adjustment
+									keyframe_point.handle_right[0] += adjustment
+							
 					except AttributeError as ae:
 						pass
 			
