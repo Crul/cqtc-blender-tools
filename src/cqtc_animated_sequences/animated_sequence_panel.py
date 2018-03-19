@@ -22,6 +22,7 @@ class AnimatedSequencePanel(cqtc_panel.CqtcPanel):
 		
 		layout.row().prop(context.scene.animated_sequence, "add_last_image_if_marker_exists")
 		layout.row().prop(context.scene.animated_sequence, "remove_markers")
+		layout.row().prop(context.scene.animated_sequence, "strip_channel")
 		
 		row = layout.row()
 		row.scale_y = 2.0

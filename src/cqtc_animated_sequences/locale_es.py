@@ -11,4 +11,5 @@ translations = {
 	("*", "End marker not found"): "No se ha encontrado el marcador de fin",
 	("*", "Add last image if third marker exists"): "Añadir imagen final si existe 3er marcador",
 	("*", "Remove markers"): "Borrar marcadores",
+	("*", "Strip channel"): "Canal del strip",
 }

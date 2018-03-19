@@ -84,7 +84,8 @@ class CreateAnimatedSequenceOperator(CqtcOperator):
 			else:
 				break
 
-		available_channel = cqtc_bpy.get_available_channel_in_position(context, initial_frame, final_frame)
+		strip_channel = context.scene.animated_sequence.strip_channel
+		available_channel = cqtc_bpy.get_available_channel_in_position(context, initial_frame, final_frame, strip_channel)
 		
 		old_area_type = context.area.type
 		context.area.type = "SEQUENCE_EDITOR"

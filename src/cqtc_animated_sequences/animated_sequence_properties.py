@@ -8,3 +8,4 @@ class AnimatedSequenceProperties(bpy.types.PropertyGroup):
 	to_image = bpy.props.IntProperty(name="To image", default=99, min=1, max=99, step=1)
 	add_last_image_if_marker_exists = bpy.props.BoolProperty(name="Add last image if third marker exists", default=True)
 	remove_markers = bpy.props.BoolProperty(name="Remove markers", default=True)
+	strip_channel = bpy.props.IntProperty(name="Strip channel", default=1, min=1, max=20, step=1)
