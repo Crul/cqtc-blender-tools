@@ -1,7 +1,10 @@
 from cqtc_operator import CqtcOperator
 import cqtc_bpy
 import os.path
+import re
 import bpy.ops
+
+number_tag_regex = re.compile('\#+')
 
 class CreateAnimatedSequenceOperator(CqtcOperator):
 	bl_idname = "animated_sequence.create"
@@ -32,7 +35,8 @@ class CreateAnimatedSequenceOperator(CqtcOperator):
 
 		sequence_path = context.scene.animated_sequence.sequence_path
 		base_name = context.scene.animated_sequence.base_name
-		image_full_path = os.path.join(sequence_path, self.get_image_name(base_name, from_image))
+		template_name = self.get_image_name_template(base_name)
+		image_full_path = os.path.join(sequence_path, self.get_image_name(template_name, from_image))
 		if not os.path.isfile(image_full_path):
 			return "%s: %s" % (self.translate("File not found"), image_full_path)
 		
@@ -74,7 +78,8 @@ class CreateAnimatedSequenceOperator(CqtcOperator):
 		images_final_frame = initial_frame + (5 * (to_image - from_image + 1))
 		final_frame = (markers[1].frame if (markers[2] is None) else markers[2].frame)
 
-		image_names = [ self.get_image_name(base_name, image_number)
+		template_name = self.get_image_name_template(base_name)
+		image_names = [ self.get_image_name(template_name, image_number)
 			for image_number in range(from_image, to_image + 1) ]
 
 		image_files = []
@@ -122,5 +127,17 @@ class CreateAnimatedSequenceOperator(CqtcOperator):
 				context.scene.timeline_markers.remove(marker)
 
 
-	def get_image_name(self, base_name, image_number):
-		return base_name + str(image_number).zfill(2) + ".png"
+	def get_image_name_template(self, base_name):
+		if "#" in base_name:
+			return base_name
+
+		return base_name + "##.png"
+	
+	
+	def get_image_name(self, template_name, image_number):
+		number_tag_search = number_tag_regex.search(template_name)
+		if number_tag_search is None:
+			return template_name
+		
+		number_tag = number_tag_search.group()
+		return template_name.replace(number_tag,  str(image_number).zfill(len(number_tag)))
