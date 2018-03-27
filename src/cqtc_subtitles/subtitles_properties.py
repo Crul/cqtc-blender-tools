@@ -1,6 +1,7 @@
 import bpy
 import os
 from . import templates
+from cqtc_operator import CqtcOperator
 
 default_font = r"c:\windows\Fonts\CURLZ___.TTF"
 if not os.path.isfile(default_font):
@@ -11,6 +12,7 @@ default_font_bevel_depth = 0
 default_font_spacing = 0.7
 default_internal_margin = 25
 default_external_margin = 45
+max_icons_allowed = 5
 
 def get_subtitle_template_options(scene, context):
 	return sorted(context.scene.subtitle.template_options, key= lambda opt : opt[0].lower())
@@ -25,6 +27,54 @@ def set_create_bgr_if_fullscreen_width(self, context):
 def set_fullscreen_width_if_not_create_bgr(self, context):
 	if not context.scene.subtitle.create_bgr:
 		context.scene.subtitle.fullscreen_width = False
+
+class ModifyIconOperator(CqtcOperator):
+	bl_idname = "subtitles.modify_icon"
+	bl_label = "Modificar icono"
+	operation = bpy.props.StringProperty(name="Operación", description="add | remove")
+	index_to_remove = bpy.props.IntProperty(name="Índice del elemento", description="Índice del elemento a eliminar")
+	
+	def execute(self, context):
+		if self.operation.lower() == "add":
+			collection = context.scene.subtitle.icons
+			collection.add()
+			collection[-1].icon_index = "-"
+			
+		elif self.operation.lower() == "remove":
+			context.scene.subtitle.icons.remove(self.index_to_remove)
+		
+		return {"FINISHED"}
+
+def clean_icon_name(filename):
+	return filename.replace(".png", "") \
+		.replace("á", "a") \
+		.replace("é", "e") \
+		.replace("í", "i") \
+		.replace("ó", "o") \
+		.replace("ú", "u") \
+		.replace("Á", "A") \
+		.replace("É", "E") \
+		.replace("Í", "I") \
+		.replace("Ó", "O") \
+		.replace("Ú", "U") \
+		.replace("ñ", "n") \
+		.replace("Ñ", "N") \
+		.replace("ü", "u") \
+		.replace("Ü", "U")
+
+def get_icons_options(self, context):	
+	original_icon_files = context.scene.subtitle.get_original_icon_files(context)
+	icon_files = [( str(index), clean_icon_name(filename), "", index )
+		for index, filename in enumerate(original_icon_files) ]
+	
+	return [("-", "- Ninguno -", "Más pipas", -1)] + icon_files
+
+class SubtitlesIconProperty(bpy.types.PropertyGroup):
+	icon_index = bpy.props.EnumProperty(
+			name = "Iconos",
+			description = "Iconos",
+			items = get_icons_options
+		)
 
 class SubtitlesProperties(bpy.types.PropertyGroup):
 	scene_name = bpy.props.StringProperty(name="Nombre escena", description="Nombre de la escena")
@@ -60,8 +110,16 @@ class SubtitlesProperties(bpy.types.PropertyGroup):
 	
 	font_spacing = bpy.props.FloatProperty(name="Espaciado", default=default_font_spacing, min=0, max=2, step=0.1)
 	width = bpy.props.FloatProperty(name="Ancho", default=90.0, min=0, max=100, step=10, precision=2, subtype="PERCENTAGE")
-	internal_margin = bpy.props.IntProperty(name="Margen interior", default=default_internal_margin, min=0, max=1000, step=1)
-	external_margin = bpy.props.IntProperty(name="Margen exterior", default=default_external_margin, min=0, max=1000, step=1)
+	
+	internal_margin_top = bpy.props.IntProperty(name="Margen interior superior", default=default_internal_margin, min=0, max=1000, step=1)
+	internal_margin_left = bpy.props.IntProperty(name="Margen interior izquierdo", default=default_internal_margin, min=0, max=1000, step=1)
+	internal_margin_right = bpy.props.IntProperty(name="Margen interior derecho", default=default_internal_margin, min=0, max=1000, step=1)
+	internal_margin_bottom = bpy.props.IntProperty(name="Margen interior inferior", default=default_internal_margin, min=0, max=1000, step=1)
+	
+	external_margin_top = bpy.props.IntProperty(name="Margen exterior superior", default=default_external_margin, min=0, max=1000, step=1)
+	external_margin_left = bpy.props.IntProperty(name="Margen exterior izquierdo", default=default_external_margin, min=0, max=1000, step=1)
+	external_margin_right = bpy.props.IntProperty(name="Margen exterior derecho", default=default_external_margin, min=0, max=1000, step=1)
+	external_margin_bottom = bpy.props.IntProperty(name="Margen exterior inferior", default=default_external_margin, min=0, max=1000, step=1)
 	
 	font_expanded = bpy.props.BoolProperty(name="Fuente", default=True)
 	
@@ -72,6 +130,8 @@ class SubtitlesProperties(bpy.types.PropertyGroup):
 	create_strip = bpy.props.BoolProperty(name="Crear strip", default=True)
 	strip_channel = bpy.props.IntProperty(name="Canal del Strip", default=1, min=1, max=20, step=1)
 	strip_length = bpy.props.IntProperty(name="Longitud del Strip", default=100, min=1, max=2000, step=20)
+	
+	icons = bpy.props.CollectionProperty(name="Iconos", type=SubtitlesIconProperty)
 	
 	template_expanded = bpy.props.BoolProperty(name="Plantillas", default=True)
 	
@@ -107,8 +167,14 @@ class SubtitlesProperties(bpy.types.PropertyGroup):
 			"bgr_color": (self.bgr_color.r, self.bgr_color.g, self.bgr_color.b),
 			"bgr_alpha": self.bgr_alpha,
 			"width": self.width,
-			"internal_margin": self.internal_margin,
-			"external_margin": self.external_margin,
+			"internal_margin_top": self.internal_margin_top,
+			"internal_margin_left": self.internal_margin_left,
+			"internal_margin_right": self.internal_margin_right,
+			"internal_margin_bottom": self.internal_margin_bottom,			
+			"external_margin_top": self.external_margin_top,
+			"external_margin_left": self.external_margin_left,
+			"external_margin_right": self.external_margin_right,
+			"external_margin_bottom": self.external_margin_bottom,
 			"create_strip": self.create_strip,
 			"strip_channel": self.strip_channel,
 			"strip_length": self.strip_length,
@@ -143,11 +209,29 @@ class SubtitlesProperties(bpy.types.PropertyGroup):
 		self.bgr_color.b = tmpl["bgr_color"][2]
 		self.bgr_alpha = tmpl["bgr_alpha"]
 		self.width = tmpl["width"]
-		self.internal_margin = tmpl["internal_margin"]
-		self.external_margin = tmpl["external_margin"]
+		self.internal_margin_top = tmpl["internal_margin_top"] if "internal_margin_top" in tmpl else tmpl["internal_margin"]
+		self.internal_margin_left = tmpl["internal_margin_left"] if "internal_margin_left" in tmpl else tmpl["internal_margin"]
+		self.internal_margin_right = tmpl["internal_margin_right"] if "internal_margin_right" in tmpl else tmpl["internal_margin"]
+		self.internal_margin_bottom = tmpl["internal_margin_bottom"] if "internal_margin_bottom" in tmpl else tmpl["internal_margin"]
+		self.external_margin_top = tmpl["external_margin_top"] if "external_margin_top" in tmpl else tmpl["external_margin"]
+		self.external_margin_left = tmpl["external_margin_left"] if "external_margin_left" in tmpl else tmpl["external_margin"]
+		self.external_margin_right = tmpl["external_margin_right"] if "external_margin_right" in tmpl else tmpl["external_margin"]
+		self.external_margin_bottom = tmpl["external_margin_bottom"] if "external_margin_bottom" in tmpl else tmpl["external_margin"]
 		self.create_strip = tmpl["create_strip"]
 		self.strip_channel = tmpl["strip_channel"]
 		self.strip_length = tmpl["strip_length"]
+	
+	
+	def get_original_icon_files(self, context):
+		prefs = context.user_preferences.addons[__package__].preferences
+	
+		return sorted([ filename.lower()
+			for filename in os.listdir(prefs.icons_path)
+			if filename.endswith(".png") and not filename.startswith("0")])
+	
+	
+	def more_icons_allowed(self):
+		return len(self.icons) < max_icons_allowed
 	
 	
 	def test(self):
