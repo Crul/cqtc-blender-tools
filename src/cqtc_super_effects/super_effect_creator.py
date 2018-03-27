@@ -179,9 +179,6 @@ class SuperEffectCreator():
 		if not sound_file:
 			return
 		
-		if sequence.type not in sound_capable_strip_types:
-			return
-		
 		sound_strip = context.scene.sequence_editor.sequences.new_sound(sequence.name + "_SonidoEfecto", sound_file, -1, sequence.frame_final_start)
 		sound_strip.select = False
 		
