@@ -21,7 +21,9 @@ class CreateAnimatedSequenceOperator(CqtcOperator):
 		
 		self.add_sequence(context, markers)
 		
+		context.scene.animated_sequence.from_image = 0
 		context.scene.animated_sequence.to_image = 99
+		context.scene.animated_sequence.base_name = ""
 		
 		return {"FINISHED"}
 	
