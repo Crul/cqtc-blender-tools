@@ -15,6 +15,9 @@ class CreateAnimatedSequenceOperator(CqtcOperator):
 		if error:
 			return self.return_error(error)
 		
+		if context.scene.sequence_editor is None:
+			context.scene.sequence_editor_create()
+		
 		error, markers = self.get_markers(context)
 		if error:
 			return self.return_error(error)
