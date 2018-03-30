@@ -51,7 +51,7 @@ class CreateAnimatedSequenceOperator(CqtcOperator):
 		next_marker = None
 		current_frame = context.scene.frame_current
 		for marker in context.scene.timeline_markers:
-			if (marker.frame <= current_frame and (previous_marker is None or previous_marker.frame < marker.frame)):
+			if (marker.frame < current_frame and (previous_marker is None or previous_marker.frame < marker.frame)):
 				previous_marker = marker
 
 			if (marker.frame >= current_frame and (next_marker is None or next_marker.frame > marker.frame)):
