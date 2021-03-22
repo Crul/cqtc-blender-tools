@@ -181,6 +181,7 @@ class SuperEffectCreator():
 		
 		sound_strip = context.scene.sequence_editor.sequences.new_sound(sequence.name + "_SonidoEfecto", sound_file, -1, sequence.frame_final_start)
 		sound_strip.select = False
+		sound_strip.volume = context.scene.super_effect.sound_volume
 		
 		sound_final_frame = sound_strip.frame_final_end
 		while sound_final_frame < sequence.frame_final_end:
