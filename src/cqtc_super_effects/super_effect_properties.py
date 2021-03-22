@@ -291,6 +291,7 @@ class SuperEffectProperties(bpy.types.PropertyGroup):
 			name = "Alinear Imágenes pequeñas",
 			description = "Alineación de imágenes menores de 1920x1080",
 			items = [
+				("none", "Ninguno", "No alinea la imagen"),
 				("center", "Centro", "Imágenes centradas"),
 				("bottom", "Abajo", "Imágenes alineadas con el borde inferior"),
 				("top", "Arriba", "Imágenes alineadas con el borde superior"),
