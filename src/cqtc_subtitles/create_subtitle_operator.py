@@ -1,5 +1,7 @@
 import bpy
+import imghdr
 import os
+import struct
 import cqtc_bpy
 from cqtc_operator import CqtcOperator
 
@@ -26,27 +28,35 @@ class CreateSubtitleOperator(CqtcOperator):
 		if error:
 			return self.return_error(error)
 		
+		text_strip = None
+		txt_text_object = None
+		txt_border_object = None
 		font_has_border = context.scene.subtitle.font_has_border
+		icon_fullpaths_and_widths = self.get_icon_fullpaths_and_widths(context)
+		total_icons_width = sum([ icon_fullpath_and_width[1] for icon_fullpath_and_width in icon_fullpaths_and_widths ])
 		if font_has_border:
-			txt_border_object = self.create_subtitle(context, is_border_bgr=True)
-			txt_text_object = self.create_subtitle(context, is_border_over=True)
+			text_strip, txt_border_object = self.create_subtitle(context, total_icons_width, is_border_bgr=True)
+			_, txt_text_object = self.create_subtitle(context, total_icons_width, is_border_over=True)
 			txt_border_object.location.y = txt_text_object.location.y
 		else:
-			self.create_subtitle(context)
+			text_strip, txt_text_object = self.create_subtitle(context, total_icons_width)
 		
+		self.create_icons(context, icon_fullpaths_and_widths, text_strip, txt_text_object, txt_border_object)
+		
+		context.scene.subtitle.icons.clear()
 		context.scene.subtitle.scene_name = ""
 		context.scene.subtitle.text = ""
 		
 		return {"FINISHED"}
 	
 	
-	def create_subtitle(self, context, is_border_bgr=False, is_border_over=False):
-		text_scene, txt_object = self.create_subtitle_scene(context, is_border_bgr, is_border_over)
-		self.create_scene_strip(context, text_scene)
+	def create_subtitle(self, context, total_icons_width, is_border_bgr=False, is_border_over=False):
+		text_scene, txt_object = self.create_subtitle_scene(context, total_icons_width, is_border_bgr, is_border_over)
+		text_strip = self.create_scene_strip(context, text_scene)
 		
-		return txt_object
+		return text_strip, txt_object
 	
-
+	
 	def validate_data(self, context):
 		scene_names = [ self.get_scene_name(context) ]
 		font_has_border = context.scene.subtitle.font_has_border
@@ -74,8 +84,8 @@ class CreateSubtitleOperator(CqtcOperator):
 		if fullscreen_width and (position not in ["bottom", "top", "center"]):
 			return "Los subtítulos de ancho 100% solo pueden colocarse Arriba, Abajo o en el Centro"
 	
-		
-	def create_subtitle_scene(self, context, is_border_bgr, is_border_over):
+	
+	def create_subtitle_scene(self, context, total_icons_width, is_border_bgr, is_border_over):
 		current_scene = context.scene
 		
 		scene_name = self.get_scene_name(context)
@@ -100,8 +110,18 @@ class CreateSubtitleOperator(CqtcOperator):
 		bgr_color = context.scene.subtitle.bgr_color
 		bgr_alpha = context.scene.subtitle.bgr_alpha / 100
 		width = context.scene.subtitle.width / 100
-		internal_margin = context.scene.subtitle.internal_margin
-		external_margin = context.scene.subtitle.external_margin
+		
+		internal_margin_top = context.scene.subtitle.internal_margin_top
+		internal_margin_left = context.scene.subtitle.internal_margin_left
+		internal_margin_right = context.scene.subtitle.internal_margin_right
+		internal_margin_bottom = context.scene.subtitle.internal_margin_bottom
+		
+		external_margin_top = context.scene.subtitle.external_margin_top
+		external_margin_left = context.scene.subtitle.external_margin_left
+		external_margin_right = context.scene.subtitle.external_margin_right
+		external_margin_bottom = context.scene.subtitle.external_margin_bottom
+		
+		icons = context.scene.subtitle.icons
 		
 		text_scene = bpy.data.scenes.new(scene_name)
 		text_scene.render.alpha_mode = "TRANSPARENT"
@@ -136,7 +156,11 @@ class CreateSubtitleOperator(CqtcOperator):
 		
 			context.scene.update()
 			
-			max_text_width = width * global_scale_x - (external_margin * 2) - (internal_margin * 2)
+			max_text_width = width * global_scale_x \
+				- (external_margin_left + external_margin_right) \
+				- (internal_margin_left + internal_margin_right) \
+				- total_icons_width
+			
 			text_width = min(txt_object.dimensions.x, max_text_width)
 			if text_width == max_text_width:
 				txt_object.data.text_boxes[0].width = text_width
@@ -148,14 +172,17 @@ class CreateSubtitleOperator(CqtcOperator):
 					txt_position_x = -(text_width/2)
 				else:
 					txt_position_x = 0
-				
+			
+			txt_position_x -= (total_icons_width/2)
 			txt_object.location = txt_position_x, 0, 0
+			
+			text_width += total_icons_width
 			
 		else:
 			txt_object.data.align_x = "CENTER"
 			txt_object.location = 0, 0, 0
 			context.scene.update()
-			text_width = txt_object.dimensions.x
+			text_width = txt_object.dimensions.x + total_icons_width
 		
 		context.scene.update()
 	
@@ -163,13 +190,13 @@ class CreateSubtitleOperator(CqtcOperator):
 			if fullscreen_width:
 				bgr_dimensions_x = global_scale_x
 			else:
-				bgr_dimensions_x = text_width + (2 * internal_margin)
+				bgr_dimensions_x = text_width + (internal_margin_left + internal_margin_right)
 		
 		else:
-			bgr_dimensions_x = text_width + (2 * internal_margin)
+			bgr_dimensions_x = text_width + (internal_margin_left + internal_margin_right)
 			bgr_dimensions_x += (2 * global_scale_x) + (2 * marquee_margin_x)
 			
-		bgr_dimensions_y = txt_object.dimensions.y + (2 * internal_margin)
+		bgr_dimensions_y = txt_object.dimensions.y + (internal_margin_top + internal_margin_bottom)
 		
 		if create_bgr:	
 			bpy.ops.mesh.primitive_plane_add(location=(0,0,bgr_position_z))
@@ -186,20 +213,20 @@ class CreateSubtitleOperator(CqtcOperator):
 		delta_x = 0
 		delta_y = 0
 		if ("top" in position):
-			delta_y = (global_scale_y / 2 - (external_margin * 2)) - (bgr_dimensions_y / 2)
+			delta_y = (global_scale_y / 2 - (external_margin_top + external_margin_bottom)) - (bgr_dimensions_y / 2)
 		
 		if ("bottom" in position):
-			delta_y = -((global_scale_y / 2 - (external_margin * 2)) - (bgr_dimensions_y / 2))
+			delta_y = -((global_scale_y / 2 - (external_margin_top + external_margin_bottom)) - (bgr_dimensions_y / 2))
 		
 		if ("right" in position):
-			delta_x = (global_scale_x / 2 - (external_margin * 2)) - (bgr_dimensions_x / 2)
+			delta_x = (global_scale_x / 2 - (external_margin_left + external_margin_right)) - (bgr_dimensions_x / 2)
 		
 		if ("left" in position):
-			delta_x = -((global_scale_x / 2 - (external_margin * 2)) - (bgr_dimensions_x / 2))
+			delta_x = -((global_scale_x / 2 - (external_margin_left + external_margin_right)) - (bgr_dimensions_x / 2))
 		
 		if not is_marquee:
-			txt_object.location.x += delta_x
-			txt_object.location.y += delta_y
+			txt_object.location.x += delta_x + ((internal_margin_left - internal_margin_right) / 2)
+			txt_object.location.y += delta_y + ((internal_margin_bottom - internal_margin_top) / 2)
 			if create_bgr:
 				bgr_object.location.x += delta_x
 				bgr_object.location.y += delta_y
@@ -235,7 +262,7 @@ class CreateSubtitleOperator(CqtcOperator):
 	
 	def create_scene_strip(self, context, text_scene):
 		if not context.scene.subtitle.create_strip:
-			return
+			return None
 		
 		scene_name = context.scene.subtitle.scene_name
 		strip_channel = context.scene.subtitle.strip_channel
@@ -258,7 +285,9 @@ class CreateSubtitleOperator(CqtcOperator):
 		if is_marquee:
 			text_strip.use_translation = True
 			position = context.scene.subtitle.position
-			external_margin = context.scene.subtitle.external_margin
+			
+			external_margin_top = context.scene.subtitle.external_margin_top
+			external_margin_bottom = context.scene.subtitle.external_margin_bottom
 			
 			size_x = text_strip.scene.render.resolution_x
 			size_y = text_strip.scene.render.resolution_y
@@ -266,20 +295,134 @@ class CreateSubtitleOperator(CqtcOperator):
 			if position == "center":
 				text_strip.transform.offset_y = (global_scale_y - (size_y / 2) - (global_scale_y / 2))
 			elif position == "top":
-				text_strip.transform.offset_y = (global_scale_y - size_y) - external_margin
+				text_strip.transform.offset_y = (global_scale_y - size_y) - external_margin_top
 			elif position == "bottom":
-				text_strip.transform.offset_y = external_margin
+				text_strip.transform.offset_y = external_margin_bottom
 			
 			text_strip.transform.keyframe_insert("offset_x", index=-1, frame=start_frame)
 			cqtc_bpy.set_keyframe_interpolation_type(context, text_strip, "transform.offset_x", start_frame, "LINEAR")
 			text_strip.transform.offset_x = -(size_x - global_scale_x)
 			text_strip.transform.keyframe_insert("offset_x", index=-1, frame=final_frame)
 			cqtc_bpy.set_keyframe_interpolation_type(context, text_strip, "transform.offset_x", final_frame, "LINEAR")
+		
+		return text_strip
+	
+	
+	def get_icon_fullpaths_and_widths(self, context):
+		prefs = context.user_preferences.addons[__package__].preferences
+		icons_path = prefs.icons_path
+		original_icon_files = context.scene.subtitle.get_original_icon_files(context)
+		
+		icons = context.scene.subtitle.icons
+		icon_filenames = [ original_icon_files[int(icon.icon_index)]
+			for icon in icons if icon.icon_index != "-" ]
+		
+		icon_fullpaths = [ os.path.join(icons_path, icon_filename)
+			for icon_filename in icon_filenames ]
+			
+		return [ ( icon_fullpath, self.get_image_size(icon_fullpath)[0] )
+			for icon_fullpath in icon_fullpaths ]
+	
+	
+	def create_icons(self, context, icon_fullpaths_and_widths, text_strip, txt_text_object=None, txt_border_object=None):
+		start_frame = context.screen.scene.frame_current
+		strip_channel = context.scene.subtitle.strip_channel
+		strip_length = context.scene.subtitle.strip_length
+		is_marquee = context.scene.subtitle.is_marquee
+		position = context.scene.subtitle.position
+		marquee_movement_size = (text_strip.scene.render.resolution_x - global_scale_x)
+		external_margin_top = context.scene.subtitle.external_margin_top
+		external_margin_bottom = context.scene.subtitle.external_margin_bottom
+		internal_margin_bottom = context.scene.subtitle.internal_margin_bottom
+		
+		final_frame = start_frame + strip_length
+		available_channel = cqtc_bpy.get_available_channel_in_position(context, start_frame, final_frame, start_channel=strip_channel)
+		
+		txt_object = txt_text_object if txt_border_object is None else txt_border_object
+		
+		max_x = max([point[0] for point in txt_object.bound_box])
+		min_y = min([point[1] for point in txt_object.bound_box])
+		position_x = (global_scale_x/2) + max_x + txt_object.location[0]
+		position_y = (global_scale_y/2) + min_y + txt_object.location[1] - internal_margin_bottom
+		
+		original_icon_files = context.scene.subtitle.get_original_icon_files(context)
+	
+		total_width = 0
+		for icon_fullpath_and_width in icon_fullpaths_and_widths:
+			icon_fullpath = icon_fullpath_and_width[0]
+			icon_size = icon_fullpath_and_width[1]
+		
+			icon_strip = context.scene.sequence_editor.sequences.new_image(
+				"Emoticono",
+				icon_fullpath,
+				available_channel,
+				start_frame
+			)
+			
+			icon_strip.frame_final_end = final_frame
+			icon_strip.use_translation = True
+			icon_strip.transform.offset_x = position_x + total_width
+			
+			if not is_marquee:
+				icon_strip.transform.offset_y = position_y
+			else:
+				if position == "center":
+					icon_strip.transform.offset_y = (global_scale_y - (text_strip.scene.render.resolution_y / 2) - (global_scale_y / 2))
+				elif position == "top":
+					icon_strip.transform.offset_y = (global_scale_y - text_strip.scene.render.resolution_y) - external_margin_top
+				elif position == "bottom":
+					icon_strip.transform.offset_y = external_margin_bottom
+					
+				icon_strip.transform.offset_x += (marquee_movement_size/2)
+				icon_strip.transform.keyframe_insert("offset_x", index=-1, frame=start_frame)
+				cqtc_bpy.set_keyframe_interpolation_type(context, icon_strip, "transform.offset_x", start_frame, "LINEAR")
+				icon_strip.transform.offset_x -= marquee_movement_size
+				icon_strip.transform.keyframe_insert("offset_x", index=-1, frame=final_frame)
+				cqtc_bpy.set_keyframe_interpolation_type(context, icon_strip, "transform.offset_x", final_frame, "LINEAR")
+				
+			total_width += icon_size
 	
 	
 	def get_scene_name(self, context):
 		return scene_prefix + context.scene.subtitle.scene_name
-
+	
 	
 	def get_border_scene_name(self, scene_name):
 		return scene_name + scene_border_suffix
+	
+	
+	# https://stackoverflow.com/questions/8032642/how-to-obtain-image-size-using-standard-python-class-without-using-external-lib#20380514
+	def get_image_size(self, fname):
+		'''Determine the image type of fhandle and return its size.
+		from draco'''
+		with open(fname, 'rb') as fhandle:
+			head = fhandle.read(24)
+			if len(head) != 24:
+				return
+			if imghdr.what(fname) == 'png':
+				check = struct.unpack('>i', head[4:8])[0]
+				if check != 0x0d0a1a0a:
+					return
+				width, height = struct.unpack('>ii', head[16:24])
+			elif imghdr.what(fname) == 'gif':
+				width, height = struct.unpack('<HH', head[6:10])
+			elif imghdr.what(fname) == 'jpeg':
+				try:
+					fhandle.seek(0) # Read 0xff next
+					size = 2
+					ftype = 0
+					while not 0xc0 <= ftype <= 0xcf:
+						fhandle.seek(size, 1)
+						byte = fhandle.read(1)
+						while ord(byte) == 0xff:
+							byte = fhandle.read(1)
+						ftype = ord(byte)
+						size = struct.unpack('>H', fhandle.read(2))[0] - 2
+					# We are at a SOFn block
+					fhandle.seek(1, 1)  # Skip `precision' byte.
+					height, width = struct.unpack('>HH', fhandle.read(4))
+				except Exception: #IGNORE:W0703
+					return
+			else:
+				return
+			return width, height

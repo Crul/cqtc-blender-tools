@@ -90,6 +90,7 @@ class SuperEffectPanel(cqtc_panel.CqtcPanel):
 			layout.row().prop(context.scene.super_effect, "delay_image")
 			layout.row().prop(context.scene.super_effect, "speed_factor")
 			layout.row().prop(context.scene.super_effect, "sound_file")
+			layout.row().prop(context.scene.super_effect, "sound_volume")
 			layout.row().prop(context.scene.super_effect, "color")
 	
 	

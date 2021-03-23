@@ -33,6 +33,7 @@ plain_properties = [
 	"delay_image",
 	"speed_factor",
 	"sound_file",
+	"sound_volume",
 	"reverse_out_effect",
 	"mirror_horizontal_out_effect",
 	"mirror_vertical_out_effect",
@@ -253,7 +254,8 @@ class SuperEffectProperties(bpy.types.PropertyGroup):
 	delay_image = bpy.props.IntProperty(name="Retrasar la imagen (frames)", default=0, min=0, max=500, step=1)
 	speed_factor = bpy.props.FloatProperty(name="Velocidad", default=1, min=0, max=500, step=1)
 	sound_file = bpy.props.StringProperty(name="Sonido", subtype="FILE_PATH", description="Sonido para añadir en loop")
-	
+	sound_volume =  bpy.props.FloatProperty(name="Volumen audio", default=1, min=0, max=1, step=0.1)
+
 	position_x_enabled = bpy.props.BoolProperty(name="Activar Posición X", default=False, update=get_property_enabled_callback("position_x"))
 	position_x_items = bpy.props.CollectionProperty(name="Valores Posición X", type=SuperEffectIntegerPropertyItem)
 	
@@ -289,6 +291,7 @@ class SuperEffectProperties(bpy.types.PropertyGroup):
 			name = "Alinear Imágenes pequeñas",
 			description = "Alineación de imágenes menores de 1920x1080",
 			items = [
+				("none", "Ninguno", "No alinea la imagen"),
 				("center", "Centro", "Imágenes centradas"),
 				("bottom", "Abajo", "Imágenes alineadas con el borde inferior"),
 				("top", "Arriba", "Imágenes alineadas con el borde superior"),
@@ -366,7 +369,7 @@ class SuperEffectProperties(bpy.types.PropertyGroup):
 	
 	def from_dict(self, dict_values):
 		for plain_property in plain_properties:
-			if plain_property not in excluded_from_template_properties:
+			if plain_property not in excluded_from_template_properties and plain_property in dict_values:
 				setattr(self, plain_property, dict_values[plain_property])
 		
 		self.color.r = dict_values["color"][0]

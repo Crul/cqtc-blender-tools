@@ -4,7 +4,7 @@ tmp_channel = 30
 max_channel = 20
 
 def align_image(context, sequence, image_alignment, image_alignment_margin):
-	if sequence.type != "IMAGE" or len(sequence.elements) == 0:
+	if image_alignment == "none" or sequence.type != "IMAGE" or len(sequence.elements) == 0:
 		return
 		
 	image_element = sequence.elements[0]
